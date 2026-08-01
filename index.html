@@ -17,40 +17,47 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+KR:wght@400;600;900&family=Special+Elite&display=swap">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-<header class="bar">
-  <a class="bar__brand" href="./">김수민<span class="bar__tld">.games</span></a>
-  <nav class="bar__nav" aria-label="외부 링크">
-    <a href="https://github.com/soomin007" target="_blank" rel="noopener">GitHub</a>
-    <a href="https://soominsnu.itch.io" target="_blank" rel="noopener">itch.io</a>
-  </nav>
-</header>
+<!-- 홈: 목록 -->
+<div id="home" class="home">
+  <div class="ctx" id="ctxBanner" hidden></div>
 
-<div class="ctx" id="ctxBanner" hidden></div>
+  <header class="bar">
+    <div class="bar__brand">
+      <span class="bar__name">김수민</span>
+      <span class="bar__eyebrow" id="brandEyebrow">GAMES · ALL FREE</span>
+    </div>
+    <nav class="bar__nav" aria-label="외부 링크">
+      <a href="https://github.com/soomin007" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://soominsnu.itch.io" target="_blank" rel="noopener">itch.io</a>
+    </nav>
+  </header>
 
-<section class="feature" id="feature" aria-roledescription="캐러셀" aria-label="추천 게임">
-  <!-- app.js 가 채운다 -->
-</section>
+  <main class="wrap">
+    <section class="feat" id="feat" aria-roledescription="캐러셀" aria-label="추천 게임">
+      <!-- app.js 가 채운다 -->
+    </section>
+    <div class="dots" id="dots"></div>
 
-<main class="store">
-  <div class="store__head">
-    <h2 class="store__title">전체 게임</h2>
-    <span class="store__count" id="storeCount"></span>
-  </div>
-  <div class="grid" id="grid"><!-- app.js 가 채운다 --></div>
-</main>
+    <div class="rowhead">
+      <span class="rowhead__title">모든 게임</span>
+      <span class="rowhead__note" id="orderNote"></span>
+    </div>
+    <div class="grid" id="grid"><!-- app.js 가 채운다 --></div>
+  </main>
 
-<footer class="foot">
-  <p class="foot__line">전부 무료, 전부 소스 공개. 설치도 계정도 없습니다.</p>
-  <ul class="foot__links">
-    <li><a href="https://github.com/soomin007" target="_blank" rel="noopener">GitHub</a></li>
-    <li><a href="https://soominsnu.itch.io" target="_blank" rel="noopener">itch.io</a></li>
-  </ul>
-</footer>
+  <footer class="foot">
+    <span>© 2026 김수민 — 전부 혼자 만들었습니다.</span>
+    <span class="foot__mono">SOOMIN007.GITHUB.IO</span>
+  </footer>
+</div>
+
+<!-- 상세: 게임 테마 소개 (app.js 가 채운다) -->
+<div id="detail" hidden></div>
 
 <script src="games.js"></script>
 <script src="app.js"></script>
