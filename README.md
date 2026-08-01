@@ -4,20 +4,39 @@
 
 **라이브: https://soomin007.github.io/**
 
-## 배포
+스팀 상점 구조(상단 바 → 피처드 캐러셀 → 캡슐 그리드)의 원페이지.
+게임마다 고유 색이 있고, 피처드에 뜬 게임의 색이 화면을 물들인다.
 
-이 저장소의 이름은 반드시 `soomin007.github.io` 여야 한다. 이 이름일 때만 계정 루트 페이지가 된다.
+## 구조
 
-1. 새 저장소 `soomin007.github.io` 생성 (public)
-2. 이 폴더 내용을 그대로 push
-3. Settings → Pages → Source: `Deploy from a branch` → `main` / `(root)`
-4. 1~2분 뒤 `https://soomin007.github.io/` 에서 확인
+```
+index.html        뼈대. OG 태그, 폰트 로드, 빈 컨테이너
+styles.css        전체 스타일 (스팀풍 다크 + 게임별 --tone)
+games.js          게임 데이터 배열. 앞으로 유일하게 손댈 파일
+app.js            games.js 를 읽어 캐러셀·그리드를 그림 + 기기/유입 경로 적응
+assets/           게임별 캡슐 이미지 (1232x706 webp)
+og.png            카톡·인스타 공유 썸네일 (1200x630)
+icon.png          파비콘 (256x256)
+DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프 (제약·데이터·에셋 URL)
+```
 
 빌드 과정이 없다. HTML/CSS/JS 정적 파일뿐이라 push 하면 바로 반영된다.
 
+## 적응형 동작
+
+- **반응형**: 375px~1920px. 880px 아래에서 히어로가 세로로 쌓인다.
+- **기기**: 터치 기기에선 `mobile: true` 게임이 먼저 정렬된다. 키보드 필요 게임엔 표시가 붙는다.
+- **유입 경로**: `?from=insta` `?from=github` `?from=itch` 쿼리(또는 referrer 자동 감지)로
+  상단 환영 배너가 바뀐다. 인스타 프로필에는 `https://soomin007.github.io/?from=insta` 를 걸면 된다.
+- **모션**: `prefers-reduced-motion` 이면 캐러셀 자동 회전이 꺼진다.
+
 ## 게임 추가
 
-`games.js` 의 `GAMES` 배열에 항목 하나 추가. 나머지 파일은 손대지 않는다.
+1. 캡슐 이미지 하나 생성 (대표 스크린샷/키아트 → 16:9):
+   ```
+   ffmpeg -y -i <원본> -vf "crop=...,scale=1232:706" -c:v libwebp -q:v 82 assets/<게임id>.webp
+   ```
+2. `games.js` 의 `GAMES` 배열에 항목 추가. 나머지 파일은 손대지 않는다.
 
 ```js
 {
@@ -25,23 +44,22 @@
   title: "새 게임",
   kicker: "장르 한 줄",
   line: "무엇을 하는 게임인가 한 문장",
-  color: "#RRGGBB",           // 이 게임의 색. 목차 띠와 카드 왼쪽 선
+  color: "#RRGGBB",           // 이 게임의 색. 글로우·버튼·점에 쓰인다
   year: "2026",
-  meta: ["1인", "엔진", "플레이 시간"],
-  status: "live",             // 또는 "wip"
-  note: "",                   // 모바일에서 못 하는 게임이면 여기에 경고
+  meta: ["1인", "엔진", "특징"],
+  status: "live",             // 또는 "wip" ("앞서 해보기" 리본)
+  note: "",                   // 미리 알릴 주의사항 (키보드 필요 등)
   first: false,               // "처음이라면" 표. 전체에서 하나만 true
+  mobile: true,               // 터치만으로 플레이 가능한가. 폰에선 true 가 먼저 정렬
+  img: "assets/새-게임.webp", // 캡슐 이미지
   links: { play: "", code: "", itch: "" }
 }
 ```
 
-배열 순서가 곧 화면 순서다. 처음 온 사람이 제일 쉽게 붙는 게임을 맨 위에 둔다.
+배열 순서가 곧 데스크톱 화면 순서다. 처음 온 사람이 제일 쉽게 붙는 게임을 맨 위에 둔다.
 
 ## 남은 일
 
-- [ ] `og.png` 추가 (1200×630). 카톡·인스타에 링크를 붙였을 때 뜨는 썸네일. 없으면 회색 상자만 나온다
-- [ ] `favicon.ico` 또는 `icon.png` 추가
+- [ ] itch.io에 나머지 4개 업로드 후 games.js 의 itch 칸 채우기
 - [ ] 커스텀 도메인을 살 경우: 이 저장소 Settings → Pages → Custom domain 에 등록.
-      그러면 `soomin007.github.io/be-the-bee` 같은 **프로젝트 페이지도 전부 새 도메인 아래로 따라온다.**
-      기존 주소는 깃허브가 리다이렉트하므로 이미 뿌린 링크는 죽지 않는다
-- [ ] 게임별 스크린샷 1장씩 카드에 넣을지 결정 (넣으면 무거워지고, 안 넣으면 첫 화면이 빠르다)
+      그러면 프로젝트 페이지도 전부 새 도메인 아래로 따라온다. 기존 주소는 깃허브가 리다이렉트한다

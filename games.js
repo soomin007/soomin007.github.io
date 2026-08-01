@@ -7,12 +7,14 @@
      title    표시할 제목
      kicker   제목 위 한 줄. 장르·형식
      line     카드 본문 한 줄. "무엇을 하는 게임인가"만
-     color    이 게임의 색. 목차 띠와 카드 왼쪽 선에 쓰인다
+     color    이 게임의 색. 히어로 글로우·버튼·점 인디케이터에 쓰인다
      year     출시/작업 연도
-     meta     표찰에 찍히는 항목들. 3~4개까지가 읽힌다
-     status   'live' | 'wip'
-     note     모바일 방문자에게 미리 알려야 할 주의. 없으면 빈 문자열
+     meta     표찰(태그 칩)에 찍히는 항목들. 3~4개까지가 읽힌다
+     status   'live' | 'wip'  (wip 은 "앞서 해보기" 리본이 붙는다)
+     note     방문자에게 미리 알려야 할 주의. 없으면 빈 문자열
      first    true 인 카드에 "처음이라면" 표가 붙는다. 하나만
+     mobile   true = 터치만으로 플레이 가능. 폰에서는 이 게임들이 먼저 정렬된다
+     img      캡슐 이미지 경로 (assets/<id>.webp, 1232x706 권장)
      links    play / code / itch. 없는 건 빈 문자열로 두면 버튼이 안 나온다
    ============================================================ */
 
@@ -28,6 +30,8 @@ const GAMES = [
     status: "live",
     note: "",
     first: true,
+    mobile: true,
+    img: "assets/be-the-bee.webp",
     links: {
       play: "https://soomin007.github.io/be-the-bee/",
       code: "https://github.com/soomin007/be-the-bee",
@@ -45,6 +49,8 @@ const GAMES = [
     status: "live",
     note: "",
     first: false,
+    mobile: true,
+    img: "assets/enigma.webp",
     links: {
       play: "https://soomin007.github.io/Enigma/",
       code: "https://github.com/soomin007/Enigma",
@@ -62,6 +68,8 @@ const GAMES = [
     status: "live",
     note: "",
     first: false,
+    mobile: true,
+    img: "assets/otherside.webp",
     links: {
       play: "https://soomin007.github.io/Otherside/",
       code: "https://github.com/soomin007/Otherside",
@@ -79,6 +87,8 @@ const GAMES = [
     status: "live",
     note: "키보드가 필요합니다. PC에서 여세요.",
     first: false,
+    mobile: false,
+    img: "assets/eyes-on-you.webp",
     links: {
       play: "https://soomin007.github.io/EyesOnYou/",
       code: "https://github.com/soomin007/EyesOnYou",
@@ -96,6 +106,8 @@ const GAMES = [
     status: "wip",
     note: "",
     first: false,
+    mobile: true,
+    img: "assets/selection-pressure.webp",
     links: {
       play: "https://soomin007.github.io/selection-pressure/",
       code: "https://github.com/soomin007/selection-pressure",
