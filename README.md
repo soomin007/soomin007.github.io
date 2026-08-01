@@ -60,6 +60,7 @@ DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프 (제약·데이터·�
 
 ## 남은 일
 
-- [ ] itch.io에 나머지 4개 업로드 후 games.js 의 itch 칸 채우기
+- [ ] (선택) 다른 게임을 itch.io에 올리게 되면 games.js 의 itch 칸 채우기.
+      itch 업로드 자체는 의무가 아니다 — 허브는 GitHub Pages 링크만으로 완결된다
 - [ ] 커스텀 도메인을 살 경우: 이 저장소 Settings → Pages → Custom domain 에 등록.
       그러면 프로젝트 페이지도 전부 새 도메인 아래로 따라온다. 기존 주소는 깃허브가 리다이렉트한다

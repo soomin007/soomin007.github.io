@@ -73,7 +73,7 @@ const GAMES = [
     links: {
       play: "https://soomin007.github.io/Otherside/",
       code: "https://github.com/soomin007/Otherside",
-      itch: ""
+      itch: "https://soominsnu.itch.io/see-you-on-the-other-side"
     }
   },
   {
