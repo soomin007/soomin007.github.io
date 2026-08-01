@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>김수민 · 게임 목록</title>
+<meta name="description" content="브라우저에서 바로 시작하는 게임들. 설치 없음.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="김수민 · 게임 목록">
+<meta property="og:description" content="브라우저에서 바로 시작하는 게임들. 설치 없음.">
+<meta property="og:image" content="https://soomin007.github.io/og.png">
+<meta property="og:url" content="https://soomin007.github.io/">
+<meta name="twitter:card" content="summary_large_image">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<header class="rail">
+  <span class="rail__name">김수민</span>
+  <a class="rail__link" href="https://github.com/soomin007">github</a>
+</header>
+
+<section class="hero">
+  <h1 class="hero__title">브라우저에서<br>바로 시작하는 게임.</h1>
+  <p class="hero__sub">설치도, 계정도 없습니다. 눌러서 여는 순간이 첫 화면입니다.</p>
+
+  <nav class="index" aria-label="게임 목차">
+    <ul class="index__list" id="indexList"></ul>
+  </nav>
+</section>
+
+<main class="shelf" id="shelf"></main>
+
+<footer class="foot">
+  <p class="foot__line">모든 게임은 소스가 공개돼 있습니다.</p>
+  <ul class="foot__links">
+    <li><a href="https://github.com/soomin007">GitHub</a></li>
+    <li><a href="https://soominsnu.itch.io">itch.io</a></li>
+  </ul>
+</footer>
+
+<script src="games.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

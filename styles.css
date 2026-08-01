@@ -1,0 +1,292 @@
+/* ============================================================
+   색은 허브가 아니라 게임이 가진다.
+   배경과 글자는 끝까지 조용하게, 색은 각 게임의 띠에서만.
+   ============================================================ */
+
+:root {
+  --ground:   #0E1719;
+  --raised:   #152427;
+  --rule:     #24393D;
+  --paper:    #E7E3D7;
+  --muted:    #8A9C99;
+  --dim:      #5E7370;
+
+  --display: "Gowun Batang", serif;
+  --body: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --pad: 22px;
+  --max: 940px;
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--paper);
+  font-family: var(--body);
+  font-size: 16px;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 2px solid var(--paper);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ---------- 상단 레일 ---------- */
+
+.rail {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 18px var(--pad);
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: lowercase;
+  color: var(--muted);
+}
+
+.rail__link { text-decoration: none; }
+.rail__link:hover { color: var(--paper); }
+
+/* ---------- 히어로 ---------- */
+
+.hero {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 34px var(--pad) 0;
+}
+
+.hero__title {
+  margin: 0;
+  font-family: var(--display);
+  font-weight: 700;
+  font-size: clamp(34px, 9.5vw, 62px);
+  line-height: 1.22;
+  letter-spacing: -0.01em;
+}
+
+.hero__sub {
+  margin: 16px 0 0;
+  max-width: 30em;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* ---------- 색 띠 목차 ---------- */
+
+.index { margin-top: 34px; }
+
+.index__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 5px;
+}
+
+.index__item { flex: 1 1 0; min-width: 0; }
+
+.index__anchor {
+  display: block;
+  text-decoration: none;
+  padding-top: 9px;
+  border-top: 3px solid var(--tick, var(--dim));
+  transition: border-top-width 140ms ease, padding-top 140ms ease;
+}
+
+.index__anchor:hover,
+.index__anchor:focus-visible {
+  border-top-width: 8px;
+  padding-top: 4px;
+}
+
+.index__label {
+  display: block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  text-transform: uppercase;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 선반 ---------- */
+
+.shelf {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 40px var(--pad) 0;
+  display: grid;
+  gap: 16px;
+}
+
+/* ---------- 카드 ---------- */
+
+.card {
+  position: relative;
+  background: var(--raised);
+  border: 1px solid var(--rule);
+  border-left: 4px solid var(--tone, var(--dim));
+  padding: 24px 22px 22px;
+  scroll-margin-top: 24px;
+  transition: border-left-width 140ms ease, padding-left 140ms ease;
+}
+
+.card:hover {
+  border-left-width: 10px;
+  padding-left: 16px;
+}
+
+.card--wip { background: transparent; }
+
+.card__flag {
+  position: absolute;
+  top: -1px;
+  right: 18px;
+  padding: 4px 9px;
+  background: var(--tone);
+  color: #0E1719;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+}
+
+.card__kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  color: var(--tone, var(--muted));
+  text-transform: uppercase;
+}
+
+.card__title {
+  margin: 6px 0 0;
+  font-size: clamp(23px, 5.6vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+.card__line {
+  margin: 10px 0 0;
+  max-width: 42em;
+  color: var(--paper);
+  opacity: 0.82;
+  font-size: 15px;
+}
+
+.card__note {
+  margin: 12px 0 0;
+  padding-left: 11px;
+  border-left: 2px solid var(--dim);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* 표찰 */
+
+.plate {
+  margin: 18px 0 0;
+  padding-top: 11px;
+  border-top: 1px solid var(--rule);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  color: var(--dim);
+  text-transform: uppercase;
+}
+
+.plate__status { color: var(--muted); }
+
+/* 버튼 */
+
+.acts {
+  margin: 18px 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+}
+
+.act {
+  display: inline-block;
+  padding: 10px 17px;
+  border: 1px solid var(--rule);
+  color: var(--paper);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 140ms ease, color 140ms ease, border-color 140ms ease;
+}
+
+.act:hover { border-color: var(--muted); }
+
+.act--play {
+  background: var(--tone);
+  border-color: var(--tone);
+  color: #0E1719;
+}
+
+.act--play:hover { filter: brightness(1.12); }
+
+/* ---------- 푸터 ---------- */
+
+.foot {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 56px var(--pad) 64px;
+  border-top: 1px solid var(--rule);
+  margin-top: 56px;
+}
+
+.foot__line {
+  margin: 0;
+  color: var(--dim);
+  font-size: 13px;
+}
+
+.foot__links {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: flex;
+  gap: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+}
+
+.foot__links a { color: var(--muted); text-decoration: none; }
+.foot__links a:hover { color: var(--paper); }
+
+/* ---------- 넓은 화면 ---------- */
+
+@media (min-width: 760px) {
+  :root { --pad: 40px; }
+  .shelf { grid-template-columns: 1fr 1fr; }
+  .card--lead { grid-column: 1 / -1; }
+}
+
+/* ---------- 모션 최소화 ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; }
+}
