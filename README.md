@@ -17,8 +17,9 @@ g/<id>/           게임 전용 소개 페이지 (5개 게임 전부). 스타일
                   리다이렉트된다
 styles.css        홈 + 폴백 상세(.t-plain, page 필드 없는 새 게임용)
 games.js          게임 데이터 배열. 카드·피처드·폴백 상세가 읽는다
-app.js            games.js 를 읽어 홈을 그림 + 라우팅(전용 페이지 리다이렉트) + 기기/유입 적응
+app.js            games.js 를 읽어 홈을 그림 + 라우팅(전용 페이지 리다이렉트) + 기기 적응
 assets/           게임별 캡슐 이미지 (1232x706 webp)
+assets/feat/      피처드 캐러셀 전용 이미지 (1680x800 webp). 제작 규칙은 known-issues #10
 assets/shots/     스크린샷 소재 (<게임id>-*.webp). 전용 페이지들이 참조
 og.png            허브 공유 썸네일 (1200x630)
 icon.png          파비콘 (256x256)
@@ -32,8 +33,8 @@ DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프 (제약·데이터·�
 
 - **반응형**: 375px~1920px. 폰에선 캐러셀 화살표가 숨고 스와이프·점으로 넘긴다.
 - **기기**: 터치 기기에선 `mobile: true` 게임이 먼저 정렬된다. 키보드 필요 게임엔 "키보드 필요" 배지.
-- **유입 경로**: `?from=insta` `?from=github` `?from=itch` 쿼리(또는 referrer 자동 감지)로
-  상단 환영 배너가 바뀐다. 인스타 프로필에는 `https://soomin007.github.io/?from=insta` 를 걸면 된다.
+  (인스타 프로필에는 `https://soomin007.github.io/` 를 그대로 건다. 쿼리 불필요.
+  옛 `?from=...` 이 붙은 링크도 무시되고 정상 동작한다)
 - **라우팅**: 카드를 누르면 그 게임의 전용 페이지(`g/<id>/`)로. 옛 `#g/<id>` 링크는 자동 리다이렉트.
   page 필드가 없는 게임만 내장 폴백 상세(#g/<id>, 크로스페이드 전환)를 쓴다.
 - **모션**: `prefers-reduced-motion` 이면 자동 회전·연출 애니메이션이 꺼진다.
@@ -44,6 +45,8 @@ DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프 (제약·데이터·�
    ```
    ffmpeg -y -i <원본> -vf "crop=...,scale=1232:706" -c:v libwebp -q:v 82 assets/<게임id>.webp
    ```
+   피처드 캐러셀 전용 이미지(`assets/feat/<게임id>.webp`, 1680x800)도 함께 만들어
+   `imgFeat` 에 연결한다 (제작 규칙: known-issues #10). 없으면 캡슐이 대신 쓰인다.
 2. `games.js` 의 `GAMES` 배열에 항목 추가 (필드 설명은 파일 상단 주석이 단일 진실).
    `page` 를 비워 두면 내장 폴백 상세가 나오므로 이 단계만으로도 배포 가능하다.
    - 문구는 표준 안내체(합쇼체)로. em dash(U+2014)는 쓰지 않는다.
