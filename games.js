@@ -18,7 +18,7 @@
      img       캡슐 이미지 경로 (assets/<id>.webp, 1232x706 권장)
      theme     상세 페이지 테마: 'enigma'|'sand'|'bee'|'hud'|'eco'|'' (빈 값 = 범용 다크)
      tag       상세 페이지 우상단 연출 문구
-     facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만 — 수치를 지어내지 않는다
+     facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만. 수치를 지어내지 않는다
      links     play / code / itch. 없는 건 빈 문자열로 두면 버튼이 안 나온다
    ============================================================ */
 
@@ -39,7 +39,7 @@ const GAMES = [
     mobile: true,
     img: "assets/be-the-bee.webp",
     theme: "bee",
-    tag: "HIVE — 오늘도 확장 중",
+    tag: "HIVE · 오늘도 확장 중",
     facts: [
       { k: "인원", v: "2인 (온라인 · AI 대전)" },
       { k: "변형", v: "여왕벌 모드 · 무한 모드" },
@@ -60,7 +60,7 @@ const GAMES = [
     lineLong: "1942년 블레츨리 파크. 실제 2차대전 암호 다섯 가지를 직접 돌려 통신을 푼다. 라디오를 감청하고, 단서를 조합하고, 보고서를 제출하라. 15개 스테이지, 엔딩 3종.",
     color: "#C2453D",
     year: "2026",
-    yearLabel: "1942 — 2026",
+    yearLabel: "1942 ~ 2026",
     meta: ["1인", "15 스테이지", "엔딩 3종"],
     status: "live",
     note: "",
@@ -155,9 +155,9 @@ const GAMES = [
     mobile: true,
     img: "assets/selection-pressure.webp",
     theme: "eco",
-    tag: "관찰 일지 — 갱신됨",
+    tag: "관찰 일지 · 갱신됨",
     facts: [
-      { k: "조작", v: "없음 — 관전 + 카드 선택" },
+      { k: "조작", v: "없음 · 관전 + 카드 선택" },
       { k: "스택", v: "TypeScript · PixiJS" },
       { k: "환경", v: "모바일 세로 최적" },
       { k: "상태", v: "앞서 해보기" }

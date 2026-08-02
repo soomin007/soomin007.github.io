@@ -48,8 +48,8 @@
     games.sort(function (a, b) { return (b.mobile ? 1 : 0) - (a.mobile ? 1 : 0); });
   }
 
-  brandEyebrow.textContent = "GAMES — " + games.length + " TITLES · ALL FREE";
-  orderNote.textContent = isTouch ? "터치 기기 — 모바일 게임 우선 정렬" : "키보드 게임 포함 · " + games.length + "종";
+  brandEyebrow.textContent = "GAMES · " + games.length + " TITLES · ALL FREE";
+  orderNote.textContent = isTouch ? "터치 기기 · 모바일 게임 우선 정렬" : "키보드 게임 포함 · " + games.length + "종";
 
   /* ---------- 유입 경로 배너 ---------- */
 
@@ -72,7 +72,7 @@
   if (src) {
     ctxBanner.hidden = false;
     ctxBanner.appendChild(el("strong", null, src[0]));
-    ctxBanner.appendChild(document.createTextNode(" — " + src[1]));
+    ctxBanner.appendChild(document.createTextNode(" · " + src[1]));
   }
 
   /* ---------- 피처드 캐러셀 ---------- */
@@ -238,7 +238,7 @@
       var sp = el("span", "specimen");
       sp.appendChild(document.createTextNode("표본 No." + no));
       sp.appendChild(el("i", null, "|"));
-      sp.appendChild(document.createTextNode("생태 도감 — 진행 중인 관찰"));
+      sp.appendChild(document.createTextNode("생태 도감 · 진행 중인 관찰"));
       box.appendChild(sp);
     } else {
       return null;
@@ -315,7 +315,7 @@
       renderDetail(g);
       home.hidden = true;
       detail.hidden = false;
-      document.title = g.title + " — 김수민 게임";
+      document.title = g.title + " · 김수민 게임";
       window.scrollTo(0, 0);
     } else {
       detailOpen = false;

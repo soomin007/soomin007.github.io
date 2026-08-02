@@ -362,7 +362,7 @@ a:focus-visible, button:focus-visible {
 .d__ghost { white-space: nowrap; display: inline-block; }
 .d__free { white-space: nowrap; }
 
-/* ---------- 테마: ENIGMA — 1942 기밀문서 ---------- */
+/* ---------- 테마: ENIGMA · 1942 기밀문서 ---------- */
 
 .t-enigma {
   color: #2a241b;
@@ -441,7 +441,7 @@ a:focus-visible, button:focus-visible {
 .t-enigma .d__free { font-family: var(--type); font-size: 11px; color: #8a7c5f; }
 .t-enigma a:focus-visible, .t-enigma button:focus-visible { outline-color: #C2453D; }
 
-/* ---------- 테마: SYOTOS — 폭풍 뒤의 양피지 ---------- */
+/* ---------- 테마: SYOTOS · 폭풍 뒤의 양피지 ---------- */
 
 .t-sand {
   color: #3a3226;
@@ -508,7 +508,7 @@ a:focus-visible, button:focus-visible {
 .t-sand .d__free { font-size: 11px; color: #8d7f63; letter-spacing: 0.14em; }
 .t-sand a:focus-visible, .t-sand button:focus-visible { outline-color: #3a3226; }
 
-/* ---------- 테마: Be the Bee — 벌집 ---------- */
+/* ---------- 테마: Be the Bee · 벌집 ---------- */
 
 .t-bee {
   color: #3a2c10;
@@ -581,7 +581,7 @@ a:focus-visible, button:focus-visible {
 .t-bee .d__free { font-family: var(--mono); font-size: 11px; color: #a07d1e; }
 .t-bee a:focus-visible, .t-bee button:focus-visible { outline-color: #3a2c10; }
 
-/* ---------- 테마: Eyes on You — 상황실 HUD ---------- */
+/* ---------- 테마: Eyes on You · 상황실 HUD ---------- */
 
 .t-hud {
   color: #cfe0ff;
@@ -662,7 +662,7 @@ a:focus-visible, button:focus-visible {
 .t-hud .d__free { font-size: 10.5px; color: #3d5483; letter-spacing: 0.12em; }
 .t-hud a:focus-visible, .t-hud button:focus-visible { outline-color: #5B8DEF; }
 
-/* ---------- 테마: 적자생존 — 생태 도감 ---------- */
+/* ---------- 테마: 적자생존 · 생태 도감 ---------- */
 
 .t-eco {
   color: #dcebe0;
