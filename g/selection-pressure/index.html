@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>적자생존 · 관전형 진화 로그라이크</title>
+<meta name="description" content="직접 조작하지 않는 게임입니다. 카드를 골라 형질을 퍼뜨리고, 무리가 살아남는 것을 지켜보세요. 앞서 해보기.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="적자생존 · 관전형 진화 로그라이크">
+<meta property="og:description" content="한 종을 길러 생태계의 정점에 올리세요. 카드를 골라 형질을 키우고, 무리가 살아남는 것을 지켜보세요.">
+<meta property="og:image" content="https://soomin007.github.io/g/selection-pressure/og.png">
+<meta property="og:url" content="https://soomin007.github.io/g/selection-pressure/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://soomin007.github.io/g/selection-pressure/">
+
+<link rel="icon" type="image/png" href="../../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jua&display=swap">
+
+<style>
+/* ============================================================
+   적자생존 전용 페이지. 본편 "3a 포근한 관찰" 팔레트:
+   로비 배경 #12100C · 잉크 #F5EEE1 · 보조 #C6B7A2 · 희미 #8C7C68 ·
+   패널 #221A14 · lime #8FD14F · amber #F5C33B · red #E85C43 ·
+   제목 Jua · 수치 모노. 구성: 관찰 일지 도감.
+   ============================================================ */
+
+:root {
+  --bg: #12100C;
+  --ink: #F5EEE1;
+  --sub: #C6B7A2;
+  --faint: #8C7C68;
+  --panel: #221A14;
+  --line: rgba(245, 235, 220, 0.13);
+  --lime: #8FD14F;
+  --limeD: #5F9130;
+  --amber: #F5C33B;
+  --red: #E85C43;
+  --blue: #5AB0E2;
+  --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  --disp: "Jua", var(--sans);
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --pad: clamp(24px, 6.5vw, 48px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  background: radial-gradient(110% 70% at 50% 0%, #1a150e, var(--bg));
+  color: var(--sub);
+  font-family: var(--sans);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-offset: 2px; }
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 var(--pad); }
+
+/* ---------- 상단 바 ---------- */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px var(--pad);
+  max-width: 880px;
+  margin: 0 auto;
+}
+.bar__back {
+  font-size: 12.5px;
+  font-weight: 700;
+  border: 1px solid rgba(143, 209, 79, 0.5);
+  color: #b9e295;
+  padding: 8px 16px;
+  border-radius: 12px;
+  white-space: nowrap;
+}
+.bar__tag { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.14em; }
+
+/* ---------- 표지 ---------- */
+.hero { text-align: center; padding: 6vh var(--pad) 7vh; }
+.hero__badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  color: #241a06;
+  background: var(--amber);
+  padding: 4px 12px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  letter-spacing: 0.06em;
+}
+.hero__title {
+  font-family: var(--disp);
+  font-size: clamp(46px, 11vw, 92px);
+  font-weight: 400;
+  line-height: 1.05;
+  color: var(--ink);
+}
+.hero__line { font-size: clamp(15px, 3.8vw, 18px); color: var(--sub); margin-top: 14px; }
+.hero__hint { font-size: 13px; color: var(--faint); margin-top: 8px; }
+.hero__meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.1em;
+}
+.hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+.btn-play {
+  display: inline-block;
+  background: var(--lime);
+  color: #14200a;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 13px 32px;
+  border-radius: 14px;
+  border-bottom: 5px solid var(--limeD);
+  transition: transform 0.12s ease;
+}
+.btn-play:hover { transform: translateY(-2px); }
+.btn-play:active { transform: translateY(2px); border-bottom-width: 2px; }
+.btn-ghost {
+  display: inline-block;
+  border: 1px solid var(--line);
+  color: var(--sub);
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 14px;
+}
+.hero__free { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.12em; margin-top: 16px; }
+
+/* ---------- 섹션 공통 ---------- */
+.sec { padding: 5vh 0; }
+.sec__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--lime);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.sec__label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.sec__title { font-family: var(--disp); font-size: clamp(21px, 5vw, 28px); font-weight: 400; color: var(--ink); margin-bottom: 18px; }
+
+.rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.rev.rev-in { opacity: 1; transform: none; }
+
+/* 루프 단계 */
+.loop { display: grid; gap: 10px; }
+@media (min-width: 720px) { .loop { grid-template-columns: repeat(3, 1fr); } }
+.loop__item { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; position: relative; padding-left: 20px; }
+.loop__item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; }
+.loop__item.is-forage::before { background: var(--lime); }
+.loop__item.is-boss::before { background: var(--red); }
+.loop__item.is-ext::before { background: var(--amber); }
+.loop__k { font-family: var(--disp); font-size: 16px; color: var(--ink); }
+.loop__v { font-size: 12.5px; color: var(--sub); line-height: 1.7; margin-top: 3px; }
+
+/* 표본 도판 (세로 스크린샷) */
+.plates { display: grid; gap: 14px; }
+@media (min-width: 640px) { .plates { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 639px) {
+  .plates { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; padding-bottom: 6px; }
+  .plate { flex: 0 0 62%; scroll-snap-align: start; }
+}
+.plate { border: 1px solid rgba(143, 209, 79, 0.4); border-radius: 14px; overflow: hidden; background: rgba(143, 209, 79, 0.05); margin: 0; }
+.plate__bar { font-family: var(--mono); font-size: 10px; color: var(--lime); padding: 6px 10px; border-bottom: 1px dashed rgba(143, 209, 79, 0.35); letter-spacing: 0.14em; }
+.plate figcaption { padding: 7px 10px; font-size: 11.5px; color: var(--sub); }
+
+/* 월드 카드 */
+.worlds { display: grid; gap: 10px; }
+@media (min-width: 640px) { .worlds { grid-template-columns: repeat(2, 1fr); } }
+.world { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 13px 16px; }
+.world__k { font-family: var(--disp); font-size: 15px; color: var(--ink); }
+.world__k i { font-style: normal; font-family: var(--mono); font-size: 10px; color: var(--blue); margin-left: 8px; letter-spacing: 0.1em; }
+.world__v { font-size: 12.5px; color: var(--sub); line-height: 1.7; margin-top: 3px; }
+
+/* 위협 칩 */
+.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.chip {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--sub);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  padding: 6px 13px;
+  border-radius: 10px;
+}
+.chip--ext { color: #f0b9ac; border-color: rgba(232, 92, 67, 0.4); }
+.chips__note { font-size: 12.5px; color: var(--faint); margin-top: 12px; }
+
+/* ---------- 관찰 실습 ---------- */
+.lab { border: 1px solid var(--line); border-radius: 18px; padding: clamp(16px, 4vw, 26px); background: rgba(34, 26, 20, 0.5); }
+.sp-world { font-size: 12.5px; color: var(--sub); margin: 0 0 10px; border-left: 3px solid var(--lime); padding-left: 10px; line-height: 1.7; }
+.sp-canvas { width: 100%; height: 230px; display: block; border-radius: 14px; border: 1px solid var(--line); }
+.sp-xpwrap { height: 6px; background: rgba(245, 235, 220, 0.12); border-radius: 3px; margin-top: 10px; overflow: hidden; }
+.sp-xp { height: 100%; width: 0%; background: var(--amber); transition: width 0.3s ease; }
+.sp-gen { font-family: var(--mono); font-size: 11.5px; color: var(--lime); margin: 8px 0 0; min-height: 1.3em; }
+.sp-draft { margin-top: 12px; }
+.sp-drafthead { font-family: var(--disp); font-size: 17px; color: var(--ink); margin: 0 0 10px; font-weight: 400; }
+.sp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
+.sp-card {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 12px 12px 12px 16px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  color: var(--sub);
+  cursor: pointer;
+  font-family: inherit;
+}
+.sp-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; background: var(--lime); }
+.sp-card:active { transform: translateY(2px); }
+.sp-card strong { font-family: var(--disp); font-size: 15px; font-weight: 400; color: var(--ink); }
+.sp-carddesc { font-size: 11px; line-height: 1.6; }
+.sp-cardfx { font-family: var(--mono); font-size: 10.5px; color: var(--lime); }
+.sp-skip { border-radius: 12px; }
+.sp-flash { text-align: center; margin-top: 14px; }
+.sp-pass { font-size: 12.5px; color: var(--ink); margin: 0 0 4px; }
+.sp-big { font-family: var(--disp); font-size: 46px; color: #c9ffb0; letter-spacing: 0.1em; margin: 0 0 8px; }
+.sp-close { font-size: 11.5px; color: var(--faint); margin: 0 0 12px; line-height: 1.7; }
+.tz-btn {
+  cursor: pointer;
+  background: none;
+  border: 1px solid rgba(143, 209, 79, 0.5);
+  color: #b9e295;
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: 12px;
+}
+.tz-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- 마무리 ---------- */
+.final { text-align: center; padding: 7vh var(--pad) 6vh; }
+.final__line { font-family: var(--disp); font-size: clamp(17px, 4.4vw, 22px); color: var(--ink); margin-bottom: 24px; }
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 18px var(--pad) 26px;
+  border-top: 1px solid var(--line);
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--faint);
+}
+.foot a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .rev { transition: none; opacity: 1; transform: none; }
+  .btn-play, .sp-card { transition: none; }
+  .sp-xp { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="bar__back" href="../../">← 전체 게임</a>
+  <span class="bar__tag">관찰 일지 · 갱신됨</span>
+</header>
+
+<main>
+  <section class="hero">
+    <span class="hero__badge">앞서 해보기</span>
+    <h1 class="hero__title">적자생존</h1>
+    <p class="hero__line">한 종을 길러 생태계의 정점에 올리세요.</p>
+    <p class="hero__hint">카드를 골라 형질을 키우고, 무리가 살아남는 것을 지켜보세요.</p>
+    <div class="hero__meta">
+      <span>1인</span><span>조작 없음 · 관전 + 카드</span><span>모바일 세로 최적</span>
+    </div>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/selection-pressure/">바로 플레이</a>
+      <a class="btn-ghost" href="https://github.com/soomin007/selection-pressure" target="_blank" rel="noopener">소스 코드</a>
+    </div>
+    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+  </section>
+
+  <!-- 루프 -->
+  <section class="sec wrap">
+    <div class="sec__label">ONE RUN</div>
+    <h2 class="sec__title">채집, 보스, 그리고 대멸종.</h2>
+    <div class="loop">
+      <div class="loop__item is-forage rev">
+        <p class="loop__k">채집</p>
+        <p class="loop__v">무리가 스스로 먹고 번식합니다. 먹이가 곧 경험치, 레벨이 오르면 카드 3장 중 1장을 고릅니다.</p>
+      </div>
+      <div class="loop__item is-boss rev">
+        <p class="loop__k">보스</p>
+        <p class="loop__v">굶주린 상어, 그림자 매복자, 성난 말벌 떼… 예고가 뜨면 형태를 갖추고 수를 늘려 대비하세요.</p>
+      </div>
+      <div class="loop__item is-ext rev">
+        <p class="loop__k">대멸종</p>
+        <p class="loop__v">혹독한 추위, 대가뭄, 대역병, 폭염. 마지막 관문을 버티면 더 험한 다음 시대가 열립니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 표본 도판 -->
+  <section class="sec wrap">
+    <div class="sec__label">FIELD NOTES</div>
+    <h2 class="sec__title">관찰 기록.</h2>
+    <div class="plates" role="list">
+      <figure class="plate rev" role="listitem">
+        <div class="plate__bar">표본 기록 01</div>
+        <img src="../../assets/shots/selection-pressure-watch.webp" alt="" loading="lazy">
+        <figcaption>관전: 생태계가 스스로 굴러간다</figcaption>
+      </figure>
+      <figure class="plate rev" role="listitem">
+        <div class="plate__bar">표본 기록 02</div>
+        <img src="../../assets/shots/selection-pressure-creature.webp" alt="" loading="lazy">
+        <figcaption>개체 관찰: 형질이 곧 생김새다</figcaption>
+      </figure>
+      <figure class="plate rev" role="listitem">
+        <div class="plate__bar">표본 기록 03</div>
+        <img src="../../assets/shots/selection-pressure-draft.webp" alt="" loading="lazy">
+        <figcaption>라운드 사이, 카드를 고른다</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 월드 -->
+  <section class="sec wrap">
+    <div class="sec__label">WORLDS</div>
+    <h2 class="sec__title">세계가 먼저 정해지고, 종은 그 다음에 고릅니다.</h2>
+    <div class="worlds">
+      <div class="world rev">
+        <p class="world__k">대륙 <i>BASELINE</i></p>
+        <p class="world__v">땅이 넓고 바다는 호수처럼 흩어져 있습니다. 걷는 종이 살기 좋습니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k">판게아 <i>MOUNTAIN</i></p>
+        <p class="world__v">하나로 이어진 넓은 땅을 바다가 둘러쌉니다. 가운데를 가르는 산맥 위에 먹이가 많습니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k">군도 <i>ISLANDS</i></p>
+        <p class="world__v">잘게 쪼개진 섬과 얕은 바다입니다. 헤엄치거나 날지 못하면 한 섬에 갇힙니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k">대양 <i>OCEAN</i></p>
+        <p class="world__v">지구처럼 바다가 대부분입니다. 뭍은 좁아 붐비고, 바다가 진짜 삶터입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 형질 -->
+  <section class="sec wrap">
+    <div class="sec__label">TRAITS</div>
+    <h2 class="sec__title">고른 형질이 그대로 생김새가 됩니다.</h2>
+    <div class="chips rev">
+      <span class="chip">날쌘 다리</span>
+      <span class="chip">넓은 시야</span>
+      <span class="chip">무리 본능</span>
+      <span class="chip">커다란 몸</span>
+      <span class="chip">송곳니</span>
+      <span class="chip">보호색</span>
+      <span class="chip">지느러미</span>
+      <span class="chip">날개</span>
+      <span class="chip">초음파</span>
+      <span class="chip">독 살갗</span>
+      <span class="chip">가시 쏘기</span>
+      <span class="chip chip--ext">거인</span>
+      <span class="chip chip--ext">메뚜기 떼</span>
+    </div>
+    <p class="chips__note">형질 카드 60여 장. 빠르면 몸이 길어지고, 커지면 걸음이 무거워지고, 초음파를 얻으면 눈이 멉니다.</p>
+  </section>
+
+  <!-- 관찰 실습 -->
+  <section class="sec wrap">
+    <div class="sec__label">PRACTICE</div>
+    <h2 class="sec__title">관찰 실습: 이번 세계는 군도.</h2>
+    <div class="lab rev">
+      <p class="sp-world">군도: 잘게 쪼개진 섬과 얕은 바다입니다. 헤엄치거나 날지 못하면 한 섬에 갇힙니다.</p>
+      <div id="lab-mount"></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <p class="final__line">무리가 살아남는 것을 지켜보세요.</p>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/selection-pressure/">바로 플레이</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 김수민 · <a href="../../">전체 게임 보기</a></span>
+  <span>SOOMIN007.GITHUB.IO</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, reducedMotion ? 200 : ms)); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  var revs = document.querySelectorAll(".rev");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    revs.forEach(function (n) { n.classList.add("rev-in"); });
+  } else {
+    var ioAlive = false;
+    var io = new IntersectionObserver(function (entries) {
+      ioAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("rev-in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    revs.forEach(function (n) { io.observe(n); });
+    /* IO 콜백이 전혀 안 오는 환경(가려진 창, 일부 인앱 브라우저) 대비: 전부 표시 */
+    setTimeout(function () {
+      if (!ioAlive) {
+        io.disconnect();
+        revs.forEach(function (n) { n.classList.add("rev-in"); });
+      }
+    }, 1500);
+  }
+
+  /* ---------- 관찰 실습 (본편 cards.ts 원문 카드 · 군도 지형) ---------- */
+  var CARDS = [
+    { name: "커다란 몸", desc: "큰 짐승은 좀처럼 잡아먹히지 않는다. 대신 걸음이 무겁고 많이 먹으며 새끼를 적게 친다.", fx: "몸집 +24", apply: function (p) { p.size = 1.35; p.spd *= 0.85; } },
+    { name: "날개", desc: "산과 바다 위를 날아 넘고 산 위의 먹이를 먹는다. 대신 배가 빨리 곯는다.", fx: "비행 해금", apply: function (p) { p.wings = true; } },
+    { name: "초음파", desc: "눈이 멀고 귀가 열린다. 어둠도 수풀도 등 뒤도 막지 못한다.", fx: "반향 +70 · 시야 0", apply: function (p) { p.echo = true; p.spd *= 1.3; } }
+  ];
+
+  var mount = document.getElementById("lab-mount");
+  var canvas = document.createElement("canvas");
+  canvas.className = "sp-canvas";
+  canvas.setAttribute("aria-label", "개체군 시뮬레이션: 두 섬과 바다");
+  mount.appendChild(canvas);
+  var ctx = canvas.getContext("2d");
+
+  var xpWrap = el("div", "sp-xpwrap");
+  var xpBar = el("div", "sp-xp");
+  xpWrap.appendChild(xpBar);
+  var xpLab = el("p", "sp-gen", "무리가 먹이를 먹으면 경험치가 쌓입니다.");
+  xpLab.setAttribute("aria-live", "polite");
+  mount.appendChild(xpWrap);
+  mount.appendChild(xpLab);
+
+  var draft = el("div", "sp-draft");
+  draft.hidden = true;
+  draft.appendChild(el("h3", "sp-drafthead", "새 형질이 무리에 퍼져요"));
+  var cardRow = el("div", "sp-cards");
+  draft.appendChild(cardRow);
+  var skip = el("button", "tz-btn sp-skip", "건너뛰고 새끼 치기");
+  skip.type = "button";
+  draft.appendChild(skip);
+  mount.appendChild(draft);
+
+  var flash = el("div", "sp-flash");
+  flash.hidden = true;
+  mount.appendChild(flash);
+
+  var W = 320, H = 230, DPR = 1;
+  var GAP0 = 0.44, GAP1 = 0.58;
+  var pop = [];
+  var foods = [];
+  var eaten = 0, NEED = 6;
+  var paused = false, ended = false, chosen = null;
+
+  for (var i = 0; i < 12; i++) {
+    pop.push({
+      x: 20 + (i * 23) % 100, y: 30 + (i * 47) % 170,
+      dir: (i * 0.7) % (Math.PI * 2), spd: 0.55,
+      size: 1, wings: false, echo: false, tgt: null, wob: i * 3
+    });
+  }
+  function spawnFood(n, island) {
+    for (var i = 0; i < n; i++) {
+      var left = island === "L" || (island === "any" && i % 2 === 0);
+      foods.push({
+        x: left ? 12 + ((i * 53) % Math.floor(W * GAP0 - 24))
+                : W * GAP1 + 12 + ((i * 53) % Math.floor(W * (1 - GAP1) - 24)),
+        y: 16 + (i * 71) % (H - 32),
+        island: left ? "L" : "R"
+      });
+    }
+  }
+  spawnFood(7, "L");
+  spawnFood(7, "R");
+
+  function resize() {
+    W = canvas.clientWidth || 320;
+    DPR = window.devicePixelRatio || 1;
+    canvas.width = W * DPR;
+    canvas.height = H * DPR;
+    ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  }
+  function islandOf(x) { return x < W * GAP0 ? "L" : (x > W * GAP1 ? "R" : "SEA"); }
+
+  function tick() {
+    pop.forEach(function (p) {
+      if (!p.tgt || p.tgt.gone) {
+        var mine = islandOf(p.x);
+        var cand = foods.filter(function (f) { return !f.gone && (p.wings || f.island === mine); });
+        var best = null, bd = 1e9;
+        cand.forEach(function (f) {
+          var d = (f.x - p.x) * (f.x - p.x) + (f.y - p.y) * (f.y - p.y);
+          if (d < bd) { bd = d; best = f; }
+        });
+        p.tgt = best;
+      }
+      p.wob += 0.06;
+      if (p.tgt) {
+        var want = Math.atan2(p.tgt.y - p.y, p.tgt.x - p.x);
+        var diff = Math.atan2(Math.sin(want - p.dir), Math.cos(want - p.dir));
+        p.dir += diff * (p.echo ? 0.2 : 0.09) + Math.sin(p.wob) * 0.04;
+      } else {
+        p.dir += Math.sin(p.wob) * 0.08;
+      }
+      var nx = p.x + Math.cos(p.dir) * p.spd;
+      var ny = p.y + Math.sin(p.dir) * p.spd;
+      if (!p.wings && islandOf(nx) === "SEA" && islandOf(p.x) !== "SEA") {
+        p.dir += Math.PI * 0.7;
+      } else { p.x = nx; p.y = ny; }
+      if (p.x < 6) p.x = 6; if (p.x > W - 6) p.x = W - 6;
+      if (p.y < 6) p.y = 6; if (p.y > H - 6) p.y = H - 6;
+      if (p.tgt && !p.tgt.gone) {
+        var dx = p.tgt.x - p.x, dy = p.tgt.y - p.y;
+        if (dx * dx + dy * dy < 42) {
+          p.tgt.gone = true;
+          p.tgt = null;
+          onEat();
+        }
+      }
+    });
+    foods = foods.filter(function (f) { return !f.gone; });
+    if (foods.length < 8) spawnFood(4, "any");
+  }
+
+  function onEat() {
+    if (ended) return;
+    eaten++;
+    if (!chosen) {
+      xpBar.style.width = Math.min(eaten / NEED * 100, 100) + "%";
+      xpLab.textContent = "경험치 " + Math.min(eaten, NEED) + "/" + NEED;
+      if (eaten >= NEED) openDraft();
+    }
+  }
+
+  function drawCreature(p) {
+    ctx.save();
+    ctx.translate(p.x, p.y);
+    ctx.rotate(p.dir);
+    var L = 8 * p.size, Wd = 5.5 * p.size;
+    if (p.wings) {
+      ctx.fillStyle = "rgba(245, 238, 225, 0.55)";
+      ctx.beginPath(); ctx.ellipse(-1, -Wd - 2, 4.5, 2.2, -0.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.ellipse(-1, Wd + 2, 4.5, 2.2, 0.5, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.moveTo(L, 0);
+    ctx.quadraticCurveTo(L * 0.4, Wd, -L * 0.6, Wd * 0.55);
+    ctx.quadraticCurveTo(-L, 0, -L * 0.6, -Wd * 0.55);
+    ctx.quadraticCurveTo(L * 0.4, -Wd, L, 0);
+    ctx.fillStyle = "#6cc24a";
+    ctx.fill();
+    ctx.lineWidth = 1.6;
+    ctx.strokeStyle = "#3d7627";
+    ctx.stroke();
+    if (p.echo) {
+      ctx.fillStyle = "#3d7627";
+      ctx.beginPath(); ctx.moveTo(L * 0.2, -Wd * 0.7); ctx.lineTo(L * 0.55, -Wd * 1.5); ctx.lineTo(L * 0.6, -Wd * 0.5); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(L * 0.2, Wd * 0.7); ctx.lineTo(L * 0.55, Wd * 1.5); ctx.lineTo(L * 0.6, Wd * 0.5); ctx.fill();
+    } else {
+      ctx.beginPath(); ctx.arc(L * 0.45, -Wd * 0.25, 2.2 * p.size, 0, Math.PI * 2);
+      ctx.fillStyle = "#fff"; ctx.fill();
+      ctx.beginPath(); ctx.arc(L * 0.55, -Wd * 0.25, 1 * p.size, 0, Math.PI * 2);
+      ctx.fillStyle = "#1c2410"; ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#2e7096";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#80944e";
+    ctx.fillRect(0, 0, W * GAP0, H);
+    ctx.fillRect(W * GAP1, 0, W * (1 - GAP1), H);
+    ctx.fillStyle = "rgba(255,255,255,0.12)";
+    ctx.fillRect(W * GAP0, 0, 2, H);
+    ctx.fillRect(W * GAP1 - 2, 0, 2, H);
+    foods.forEach(function (f) {
+      ctx.beginPath();
+      ctx.arc(f.x, f.y, 3, 0, Math.PI * 2);
+      ctx.fillStyle = f.island ? "#9bee5a" : "#7fe9ff";
+      ctx.fill();
+    });
+    pop.forEach(drawCreature);
+  }
+
+  var raf = null;
+  function loop() {
+    if (!paused) tick();
+    draw();
+    raf = requestAnimationFrame(loop);
+  }
+
+  function openDraft() {
+    paused = true;
+    draft.hidden = false;
+    xpLab.textContent = "시뮬 정지 · 형질을 고르세요. 고른 게 몸에 보입니다.";
+  }
+
+  CARDS.forEach(function (card) {
+    var b = el("button", "sp-card");
+    b.type = "button";
+    b.appendChild(el("strong", null, card.name));
+    b.appendChild(el("span", "sp-carddesc", card.desc));
+    b.appendChild(el("span", "sp-cardfx", card.fx));
+    b.addEventListener("click", function () { pickCard(card); });
+    cardRow.appendChild(b);
+  });
+  skip.addEventListener("click", function () {
+    for (var i = 0; i < 4; i++) {
+      pop.push({ x: 30 + i * 8, y: 40 + i * 11, dir: i, spd: 0.55, size: 0.8, wings: false, echo: false, tgt: null, wob: i });
+    }
+    pickCard(null);
+  });
+
+  function pickCard(card) {
+    chosen = card || { name: "새끼 치기" };
+    draft.hidden = true;
+    paused = false;
+    if (card) pop.forEach(card.apply);
+    xpLab.textContent = card
+      ? "「" + card.name + "」 형질이 무리에 퍼집니다. 지켜보십시오."
+      : "무리가 " + pop.length + "마리로 불었습니다. 지켜보십시오.";
+    if (reducedMotion) { tick(); tick(); draw(); }
+    later(function () {
+      flash.hidden = false;
+      flash.appendChild(el("p", "sp-pass", "위협을 넘겼습니다"));
+      flash.appendChild(el("p", "sp-big", "생존"));
+      flash.appendChild(el("p", "sp-close",
+        "본편은 채집과 보스, 대멸종까지 6단계, 형질 카드 60여 장, 시대 5개입니다."));
+      var again = el("button", "tz-btn", "새 혈통으로 시작");
+      again.type = "button";
+      again.addEventListener("click", function () {
+        ended = false; chosen = null; eaten = 0;
+        pop.forEach(function (p) { p.size = 1; p.wings = false; p.echo = false; p.spd = 0.55; });
+        pop.length = 12;
+        xpBar.style.width = "0%";
+        xpLab.textContent = "무리가 먹이를 먹으면 경험치가 쌓입니다.";
+        flash.hidden = true;
+        flash.innerHTML = "";
+      });
+      flash.appendChild(again);
+      ended = true;
+    }, 9000);
+  }
+
+  resize();
+  draw();
+  window.addEventListener("resize", resize);
+  var io2 = null;
+  if (reducedMotion) {
+    for (var t = 0; t < 40; t++) tick();
+    draw();
+    openDraft();
+  } else if ("IntersectionObserver" in window) {
+    var canvasAlive = false;
+    io2 = new IntersectionObserver(function (entries) {
+      canvasAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { if (!raf) raf = requestAnimationFrame(loop); }
+        else if (raf) { cancelAnimationFrame(raf); raf = null; }
+      });
+    }, { threshold: 0.05 });
+    io2.observe(canvas);
+    /* IO 미동작 환경 폴백: 그냥 시뮬을 돌린다 */
+    setTimeout(function () {
+      if (!canvasAlive && !raf) raf = requestAnimationFrame(loop);
+    }, 1500);
+  } else {
+    raf = requestAnimationFrame(loop);
+  }
+})();
+</script>
+</body>
+</html>

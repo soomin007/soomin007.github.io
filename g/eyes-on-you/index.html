@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eyes on You · 횡스크롤 로그라이트</title>
+<meta name="description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 마지막에 VEIL의 정체가 드러납니다. 엔딩 4종. PC · 키보드 권장.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Eyes on You · 횡스크롤 로그라이트">
+<meta property="og:description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 엔딩 4종. PC · 키보드 권장.">
+<meta property="og:image" content="https://soomin007.github.io/g/eyes-on-you/og.png">
+<meta property="og:url" content="https://soomin007.github.io/g/eyes-on-you/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://soomin007.github.io/g/eyes-on-you/">
+
+<link rel="icon" type="image/png" href="../../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<style>
+/* ============================================================
+   Eyes on You 전용 페이지. 본편 팔레트: 배경 #0F121A · 스테이지
+   #1F1F24 · HUD #E6E6E6 · 보조 #A6B8D1 · VEIL 시안 #75DBFF ·
+   자막 pill #080D17 82% / #CCEBFF. 폰트는 본편처럼 Pretendard.
+   구성: 보안 관제 브리핑. VEIL 이 페이지 방문자를 "요원"으로 브리핑한다.
+   ============================================================ */
+
+:root {
+  --bg: #0F121A;
+  --panel: #1F1F24;
+  --hud: #E6E6E6;
+  --sub: #A6B8D1;
+  --dim: #6b84b8;
+  --veil: #75DBFF;
+  --pill: rgba(8, 13, 23, 0.82);
+  --pill-ink: #CCEBFF;
+  --line: rgba(117, 219, 255, 0.28);
+  --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  --pad: clamp(24px, 6.5vw, 48px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 3px, rgba(117, 219, 255, 0.02) 3px 4px),
+    radial-gradient(120% 80% at 50% 0%, #141a28, var(--bg));
+  color: var(--sub);
+  font-family: var(--sans);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-offset: 2px; }
+
+.wrap { max-width: 880px; margin: 0 auto; padding: 0 var(--pad); }
+
+/* ---------- 상단 바 ---------- */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px var(--pad);
+  max-width: 880px;
+  margin: 0 auto;
+  font-family: var(--mono);
+}
+.bar__back {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  border: 1px solid var(--line);
+  background: rgba(117, 219, 255, 0.06);
+  color: #9fd4ee;
+  padding: 8px 16px;
+  white-space: nowrap;
+}
+.bar__id { font-size: 10.5px; color: var(--dim); letter-spacing: 0.18em; text-align: right; }
+
+/* ---------- 표지: VEIL 브리핑 ---------- */
+.hero { text-align: center; padding: 6vh var(--pad) 7vh; }
+.eye {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  border: 2.5px solid var(--veil);
+  box-shadow: 0 0 34px rgba(117, 219, 255, 0.45);
+  display: grid;
+  place-items: center;
+  animation: blink 4.5s infinite;
+}
+.eye__pupil { width: 20px; height: 20px; border-radius: 50%; background: var(--veil); }
+.hero__title {
+  font-size: clamp(38px, 9vw, 76px);
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.05;
+  color: #e8f0ff;
+  text-shadow: 0 0 32px rgba(117, 219, 255, 0.35);
+}
+.hero__subs { display: flex; flex-direction: column; align-items: center; gap: 8px; min-height: 74px; margin-top: 22px; }
+.sub-pill {
+  background: var(--pill);
+  color: var(--pill-ink);
+  font-size: 13.5px;
+  line-height: 1.7;
+  padding: 7px 16px;
+  border-radius: 7px;
+  max-width: 100%;
+}
+.hero__meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.12em;
+}
+.hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+.btn-play {
+  display: inline-block;
+  background: #5B8DEF;
+  color: #070b14;
+  font-weight: 800;
+  font-size: 15px;
+  padding: 14px 32px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 0 34px -6px rgba(91, 141, 239, 0.7);
+  transition: transform 0.15s ease;
+}
+.btn-play:hover { transform: translateY(-2px); }
+.btn-ghost {
+  display: inline-block;
+  border: 1px solid var(--line);
+  color: #9fd4ee;
+  font-size: 13.5px;
+  padding: 12px 22px;
+}
+.hero__kbd {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 12px;
+  color: var(--veil);
+  border: 1px dashed var(--line);
+  padding: 7px 14px;
+}
+
+/* ---------- 브리핑 블록 (원문) ---------- */
+.brief {
+  border: 1px solid var(--line);
+  background: rgba(8, 13, 23, 0.6);
+  padding: clamp(18px, 4vw, 28px);
+  font-family: var(--mono);
+  font-size: clamp(12px, 3vw, 13.5px);
+  line-height: 2;
+  color: var(--hud);
+}
+.brief b { color: var(--veil); font-weight: 600; }
+
+/* ---------- 섹션 공통 ---------- */
+.sec { padding: 5vh 0; }
+.sec__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  color: var(--veil);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.sec__label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.sec__title { font-size: clamp(19px, 4.6vw, 26px); font-weight: 800; color: #e8f0ff; margin-bottom: 18px; }
+
+.rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.rev.rev-in { opacity: 1; transform: none; }
+
+/* CAM 피드 */
+.cams { display: grid; gap: 14px; }
+@media (min-width: 720px) { .cams { grid-template-columns: repeat(3, 1fr); } }
+.cam { border: 1px solid var(--line); background: rgba(8, 13, 23, 0.5); position: relative; }
+.cam__bar {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: #9fd4ee;
+  border-bottom: 1px solid var(--line);
+}
+.cam__rec { color: #e05252; animation: recblink 1.2s steps(1) infinite; }
+.cam::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(117, 219, 255, 0.05) 3px 4px);
+}
+.cam figcaption { padding: 7px 10px; font-size: 11.5px; color: var(--sub); }
+
+/* 루트 카드 */
+.routes { display: grid; gap: 10px; }
+@media (min-width: 640px) { .routes { grid-template-columns: repeat(2, 1fr); } }
+.route {
+  border: 1px solid var(--line);
+  background: rgba(31, 31, 36, 0.7);
+  padding: 13px 15px;
+}
+.route__name { font-size: 14px; font-weight: 700; color: #e8f0ff; }
+.route__rr { font-family: var(--mono); font-size: 10.5px; color: var(--dim); letter-spacing: 0.1em; margin: 2px 0 4px; }
+.route__desc { font-size: 12px; color: var(--sub); line-height: 1.7; }
+.routes__note { font-size: 12.5px; color: var(--dim); margin-top: 12px; }
+
+/* 신뢰 시스템 */
+.trust { display: grid; gap: 12px; }
+@media (min-width: 720px) { .trust { grid-template-columns: repeat(3, 1fr); } }
+.trust__item { border-left: 3px solid var(--veil); background: rgba(8, 13, 23, 0.5); padding: 13px 15px; }
+.trust__k { font-size: 14px; font-weight: 700; color: #e8f0ff; }
+.trust__v { font-size: 12.5px; color: var(--sub); line-height: 1.75; margin-top: 4px; }
+.trust__v b { color: var(--veil); font-weight: 600; }
+
+/* ---------- 시뮬레이션 (첫 갈림길) ---------- */
+.lab { border: 1px solid var(--line); padding: clamp(16px, 4vw, 26px); background: rgba(8, 13, 23, 0.4); }
+.ey-head { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; min-width: 0; }
+.ey-eye {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 auto;
+  border-radius: 50%;
+  border: 2px solid var(--veil);
+  box-shadow: 0 0 16px rgba(117, 219, 255, 0.5);
+  display: grid;
+  place-items: center;
+  animation: blink 4s infinite;
+}
+.ey-pupil { width: 10px; height: 10px; border-radius: 50%; background: var(--veil); }
+.ey-hud { font-family: var(--mono); font-size: 11px; color: var(--hud); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ey-subs { display: flex; flex-direction: column; gap: 6px; min-height: 34px; margin-bottom: 12px; align-items: flex-start; }
+.ey-sub {
+  margin: 0;
+  background: var(--pill);
+  color: var(--pill-ink);
+  font-size: 12.5px;
+  line-height: 1.7;
+  padding: 6px 14px;
+  border-radius: 7px;
+}
+.ey-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin-bottom: 12px; }
+.ey-card {
+  position: relative;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 14px;
+  background: rgba(31, 31, 36, 0.85);
+  border: 1px solid rgba(91, 141, 239, 0.4);
+  color: #cfe0ff;
+  cursor: pointer;
+  font-family: inherit;
+}
+.ey-card.is-rec { border-color: var(--veil); box-shadow: 0 0 22px -8px rgba(117, 219, 255, 0.45); }
+.ey-card:disabled { opacity: 0.55; cursor: default; }
+.ey-recbadge { font-size: 10px; color: var(--veil); letter-spacing: 0.14em; }
+.ey-card strong { font-size: 14.5px; color: #e8f0ff; }
+.ey-rr { font-family: var(--mono); font-size: 10.5px; color: var(--dim); letter-spacing: 0.1em; }
+.ey-cardline { font-size: 11.5px; color: var(--sub); line-height: 1.6; }
+.ey-result p { margin: 0 0 8px; }
+.ey-clear { font-size: 12.5px; color: var(--sub); }
+.ey-gauge { font-family: var(--mono); font-size: 13px; color: #99B3CC; letter-spacing: 0.06em; }
+.ey-gauge.is-up { color: #8CE6EB; }
+.ey-note { font-size: 11.5px; color: var(--dim); line-height: 1.7; }
+.tz-btn {
+  cursor: pointer;
+  border: 1px solid rgba(91, 141, 239, 0.55);
+  color: #9fb9ee;
+  background: rgba(91, 141, 239, 0.07);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  padding: 10px 16px;
+}
+.tz-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- 마무리 ---------- */
+.final { text-align: center; padding: 8vh var(--pad) 6vh; }
+.final__line { font-size: clamp(15px, 3.8vw, 19px); color: var(--pill-ink); margin-bottom: 26px; }
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 880px;
+  margin: 0 auto;
+  padding: 18px var(--pad) 26px;
+  border-top: 1px solid rgba(117, 219, 255, 0.12);
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--dim);
+}
+.foot a { text-decoration: underline; text-underline-offset: 3px; }
+
+@keyframes blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.15); } }
+@keyframes recblink { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rev { transition: none; opacity: 1; transform: none; }
+  .eye, .ey-eye { animation: none; }
+  .cam__rec { animation: none; }
+  .btn-play { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="bar__back" href="../../">← 전체 게임</a>
+  <span class="bar__id">SESSION 7734 · 암호화됨</span>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eye" aria-hidden="true"><span class="eye__pupil"></span></div>
+    <h1 class="hero__title">Eyes on You</h1>
+    <div class="hero__subs" id="heroSubs" aria-live="polite"></div>
+    <div class="hero__meta">
+      <span>1인</span><span>한 판 8~15분</span><span>엔딩 4종</span><span>Godot 4.6</span>
+    </div>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/EyesOnYou/">바로 플레이</a>
+      <a class="btn-ghost" href="https://github.com/soomin007/EyesOnYou" target="_blank" rel="noopener">소스 코드</a>
+    </div>
+    <p class="hero__kbd">키보드가 필요한 게임입니다. PC 환경을 권장합니다.</p>
+  </section>
+
+  <!-- 임무 브리핑 (본편 원문) -->
+  <section class="sec wrap">
+    <div class="sec__label">MISSION BRIEF</div>
+    <div class="brief rev">
+      침투 작전 · 보안 시설 <b>SILO-7</b><br>
+      최종 목표: 시설 심장부 도달 → 데이터 회수 → 탈출<br>
+      도면 없음. 사전 정보 없음.<br>
+      현장 지원 AI: <b>VEIL</b>.<br>
+      작전명: <b>PALIMPSEST</b>
+    </div>
+  </section>
+
+  <!-- 감시 화면 -->
+  <section class="sec wrap">
+    <div class="sec__label">SURVEILLANCE</div>
+    <h2 class="sec__title">모든 구역이 당신을 보고 있습니다.</h2>
+    <div class="cams">
+      <figure class="cam rev">
+        <div class="cam__bar"><span>CAM-01</span><span class="cam__rec">● REC</span></div>
+        <img src="../../assets/shots/eyes-on-you-rooftops.webp" alt="" loading="lazy">
+        <figcaption>옥상 루트</figcaption>
+      </figure>
+      <figure class="cam rev">
+        <div class="cam__bar"><span>CAM-02</span><span class="cam__rec">● REC</span></div>
+        <img src="../../assets/shots/eyes-on-you-subway.webp" alt="" loading="lazy">
+        <figcaption>지하철 루트</figcaption>
+      </figure>
+      <figure class="cam rev">
+        <div class="cam__bar"><span>CAM-03</span><span class="cam__rec">● REC</span></div>
+        <img src="../../assets/shots/eyes-on-you-watchtower.webp" alt="" loading="lazy">
+        <figcaption>감시탑 루트</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 루트 -->
+  <section class="sec wrap">
+    <div class="sec__label">ROUTES</div>
+    <h2 class="sec__title">갈림길마다 VEIL 이 하나를 권합니다. 따를지는 당신 몫입니다.</h2>
+    <div class="routes">
+      <div class="route rev">
+        <p class="route__name">외곽 진입로</p>
+        <p class="route__rr">RISK 1 · REWARD 1</p>
+        <p class="route__desc">외벽 정비 통로. 침투가 시작되는 곳입니다.</p>
+      </div>
+      <div class="route rev">
+        <p class="route__name">폐쇄 지하철</p>
+        <p class="route__rr">RISK 2 · REWARD 2</p>
+        <p class="route__desc">좁고 어두운 폐역. 대시로 함정을 넘습니다.</p>
+      </div>
+      <div class="route rev">
+        <p class="route__name">감시탑</p>
+        <p class="route__rr">RISK 3 · REWARD 3</p>
+        <p class="route__desc">관제 구역. 사선에 들어가면 즉시 피격됩니다.</p>
+      </div>
+      <div class="route rev">
+        <p class="route__name">데이터 센터</p>
+        <p class="route__rr">RISK 3 · REWARD 3</p>
+        <p class="route__desc">서버 랙 사이로 드론과 저격이 동시에 옵니다.</p>
+      </div>
+    </div>
+    <p class="routes__note">일반 임무는 7스테이지, 루트는 총 12종. 도면에 없는 층도 있다고 합니다.</p>
+  </section>
+
+  <!-- 신뢰 -->
+  <section class="sec wrap">
+    <div class="sec__label">TRUST</div>
+    <h2 class="sec__title">VEIL 은 당신의 선택을 전부 기록합니다.</h2>
+    <div class="trust">
+      <div class="trust__item rev">
+        <p class="trust__k">조언</p>
+        <p class="trust__v">갈림길 추천, 위험 경고, 레벨업 조언. VEIL 은 당신의 실력까지 보고 권합니다.</p>
+      </div>
+      <div class="trust__item rev">
+        <p class="trust__k">신뢰</p>
+        <p class="trust__v">추천을 따라 살아남으면 신뢰가 쌓이고, VEIL 의 <b>어투가 변합니다</b>. 무시해도 벌은 없습니다. 관계가 자라지 않을 뿐.</p>
+      </div>
+      <div class="trust__item rev">
+        <p class="trust__k">정체</p>
+        <p class="trust__v">마지막에 VEIL 이 누구였는지 드러납니다. <b>엔딩 4종</b>은 당신의 선택 패턴이 가릅니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 시뮬레이션 -->
+  <section class="sec wrap">
+    <div class="sec__label">SIMULATION</div>
+    <h2 class="sec__title">첫 갈림길을 미리 겪어 보십시오.</h2>
+    <div class="lab rev">
+      <div id="lab-mount"></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <p class="final__line">"요원이 저를 믿을수록, 제가 더 많이 도와드릴 수 있습니다."</p>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/EyesOnYou/">바로 플레이</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 김수민 · <a href="../../">전체 게임 보기</a></span>
+  <span>SOOMIN007.GITHUB.IO</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var timers = [];
+  var typingIv = null;
+  function later(fn, ms) { timers.push(setTimeout(fn, reducedMotion ? 100 : ms)); }
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  var revs = document.querySelectorAll(".rev");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    revs.forEach(function (n) { n.classList.add("rev-in"); });
+  } else {
+    var ioAlive = false;
+    var io = new IntersectionObserver(function (entries) {
+      ioAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("rev-in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    revs.forEach(function (n) { io.observe(n); });
+    /* IO 콜백이 전혀 안 오는 환경(가려진 창, 일부 인앱 브라우저) 대비: 전부 표시 */
+    setTimeout(function () {
+      if (!ioAlive) {
+        io.disconnect();
+        revs.forEach(function (n) { n.classList.add("rev-in"); });
+      }
+    }, 1500);
+  }
+
+  /* ---------- 히어로: VEIL 자막 타이핑 (본편 원문) ---------- */
+  function typeInto(container, text, cls, thenFn) {
+    var line = el("p", cls || "sub-pill");
+    container.appendChild(line);
+    var full = "VEIL ▸ " + text;
+    if (reducedMotion) {
+      line.textContent = full;
+      if (thenFn) later(thenFn, 200);
+      return;
+    }
+    var i = 0;
+    typingIv = setInterval(function () {
+      i++;
+      line.textContent = full.slice(0, i);
+      if (i >= full.length) {
+        clearInterval(typingIv);
+        typingIv = null;
+        if (thenFn) later(thenFn, 500);
+      }
+    }, 24);
+  }
+  var heroSubs = document.getElementById("heroSubs");
+  later(function () {
+    typeInto(heroSubs, "...통신 연결됐습니다. 들립니까, 요원?", null, function () {
+      typeInto(heroSubs, "멀리는 제가 보겠습니다. 눈앞은 요원이 맡으십시오.", null, null);
+    });
+  }, 600);
+
+  /* ---------- 시뮬레이션: 첫 갈림길 (본편 RouteData 실구조) ---------- */
+  var ROUTES = [
+    {
+      name: "외곽 진입로", risk: 1, reward: 1, rec: true,
+      line: "여기로 가요. 경비도 약하고, 길도 단순해요.",
+      entry: "외곽으로 들어왔어요. 깊숙한 안쪽이 목표예요. 다 싸울 필요는 없어요."
+    },
+    {
+      name: "외벽 옥상", risk: 2, reward: 2, rec: false,
+      line: "수직 상승 구간. 트인 만큼 저격에 노출됩니다.",
+      entry: "여기서 감각을 익히십시오. 무리하지 마십시오."
+    }
+  ];
+
+  var mount = document.getElementById("lab-mount");
+  var labIv = null;
+
+  var head = el("div", "ey-head");
+  var eye = el("span", "ey-eye");
+  eye.appendChild(el("span", "ey-pupil"));
+  head.appendChild(eye);
+  head.appendChild(el("span", "ey-hud", "STAGE 1/7 · 루트 선택   HP ♥♥♥   VEIL ○○○○○"));
+  mount.appendChild(head);
+
+  var sub = el("div", "ey-subs");
+  sub.setAttribute("aria-live", "polite");
+  mount.appendChild(sub);
+  var cardRow = el("div", "ey-cards");
+  cardRow.hidden = true;
+  mount.appendChild(cardRow);
+  var result = el("div", "ey-result");
+  mount.appendChild(result);
+
+  function say(text, thenFn) {
+    var line = el("p", "ey-sub");
+    sub.appendChild(line);
+    var full = "VEIL ▸ " + text;
+    if (reducedMotion) {
+      line.textContent = full;
+      if (thenFn) later(thenFn, 200);
+      return;
+    }
+    var i = 0;
+    labIv = setInterval(function () {
+      i++;
+      line.textContent = full.slice(0, i);
+      if (i >= full.length) {
+        clearInterval(labIv);
+        labIv = null;
+        if (thenFn) later(thenFn, 420);
+      }
+    }, 22);
+  }
+
+  function offer() {
+    cardRow.hidden = false;
+    ROUTES.forEach(function (rt) {
+      var c = el("button", "ey-card" + (rt.rec ? " is-rec" : ""));
+      c.type = "button";
+      if (rt.rec) c.appendChild(el("span", "ey-recbadge", "★ 베일 추천"));
+      c.appendChild(el("strong", null, rt.name));
+      c.appendChild(el("span", "ey-rr", "위험 " + rt.risk + " · 보상 " + rt.reward));
+      c.appendChild(el("span", "ey-cardline", rt.line));
+      c.addEventListener("click", function () { choose(rt); });
+      cardRow.appendChild(c);
+    });
+  }
+
+  function choose(rt) {
+    cardRow.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+    say(rt.entry, function () {
+      var followed = rt.rec;
+      var trust = followed ? 2 : 0;
+      result.appendChild(el("p", "ey-clear", "…구간 통과. 데이터 링크 유지 중."));
+      var gauge = el("p", "ey-gauge",
+        "VEIL 신뢰 +" + trust + "   " + (followed ? "●○○○○" : "○○○○○"));
+      if (followed) gauge.classList.add("is-up");
+      result.appendChild(gauge);
+      result.appendChild(el("p", "ey-note",
+        followed
+          ? "본편 규칙 그대로입니다: 추천을 따라 클리어하면 신뢰 +2. 신뢰는 VEIL 의 어투를 바꾸고, 엔딩 4종을 가릅니다."
+          : "본편 규칙 그대로입니다: 무시해도 벌점은 없습니다. 신뢰가 자라지 않을 뿐이고, 그 신뢰가 VEIL 의 어투와 엔딩 4종을 가릅니다."));
+      var again = el("button", "tz-btn", "다른 선택 해보기");
+      again.type = "button";
+      again.addEventListener("click", function () {
+        sub.innerHTML = ""; cardRow.innerHTML = ""; result.innerHTML = "";
+        cardRow.hidden = true;
+        start();
+      });
+      result.appendChild(again);
+    });
+  }
+
+  function start() {
+    say("처음이니 무난한 쪽으로 가요.", offer);
+  }
+
+  var labStarted = false;
+  function startOnce() {
+    if (labStarted) return;
+    labStarted = true;
+    later(start, 300);
+  }
+  var lab = document.querySelector(".lab");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    startOnce();
+  } else {
+    var labAlive = false;
+    var labIo = new IntersectionObserver(function (entries) {
+      labAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting && !labStarted) {
+          startOnce();
+          labIo.disconnect();
+        }
+      });
+    }, { threshold: 0.3 });
+    labIo.observe(lab);
+    /* IO 미동작 환경 폴백 */
+    setTimeout(function () {
+      if (!labAlive) { labIo.disconnect(); startOnce(); }
+    }, 2000);
+  }
+})();
+</script>
+</body>
+</html>

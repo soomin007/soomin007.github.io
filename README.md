@@ -14,8 +14,9 @@ Eyes on You는 상황실 HUD, 적자생존은 생태 도감). 클로드 디자�
 
 ```
 index.html        뼈대. OG 태그, 폰트 로드, 홈/상세 컨테이너
-g/<id>/           게임 전용 소개 페이지 (파일럿: g/enigma/). 자기 OG·제목을 가진 단일
-                  HTML. games.js 의 page 필드로 연결되고 옛 #g/<id> 는 리다이렉트된다
+g/<id>/           게임 전용 소개 페이지 (5개 게임 전부). 자기 OG·제목을 가진 단일
+                  HTML(스타일·스크립트·맛보기 내장). games.js 의 page 필드로 연결되고
+                  옛 #g/<id> 는 리다이렉트된다. 내장 상세는 page 없는 새 게임의 폴백
 styles.css        홈 + 상세 테마 5종(.t-enigma/.t-sand/.t-bee/.t-hud/.t-eco) + 범용(.t-plain)
 games.js          게임 데이터 배열 (shots 갤러리 포함). 게임 추가 시 주로 손대는 파일
 teasers.js        게임별 맛보기(미니 체험). 게임 id 로 등록, 없으면 섹션이 안 나온다

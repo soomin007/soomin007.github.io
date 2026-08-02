@@ -31,6 +31,7 @@
 const GAMES = [
   {
     id: "be-the-bee",
+    page: "g/be-the-bee/",
     title: "Be the Bee",
     kicker: "2인 육각 보드게임",
     line: "타일을 깔아 벌집을 키우고, 같은 색 꿀벌 5마리를 한 줄로 이으면 승리하는 보드게임입니다.",
@@ -100,6 +101,7 @@ const GAMES = [
   },
   {
     id: "otherside",
+    page: "g/otherside/",
     title: "See you on the other side",
     kicker: "비동기 로그라이트",
     line: "폭풍마다 원정대가 떠나고 대부분 돌아오지 못합니다. 죽기 전 단 한 번, 다음 원정대에게 물건을 남길 수 있습니다.",
@@ -134,6 +136,7 @@ const GAMES = [
   },
   {
     id: "eyes-on-you",
+    page: "g/eyes-on-you/",
     title: "Eyes on You",
     kicker: "횡스크롤 로그라이트",
     line: "AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 마지막에 VEIL의 정체가 드러납니다.",
@@ -168,6 +171,7 @@ const GAMES = [
   },
   {
     id: "selection-pressure",
+    page: "g/selection-pressure/",
     title: "적자생존",
     kicker: "관전형 진화 로그라이크",
     line: "직접 조작하지 않는 게임입니다. 라운드 사이에 카드를 고르면 생태계 시뮬레이션이 결과를 보여 줍니다.",

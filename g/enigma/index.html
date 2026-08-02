@@ -472,12 +472,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   if (reducedMotion || !("IntersectionObserver" in window)) {
     revs.forEach(function (n) { n.classList.add("rev-in"); });
   } else {
+    var ioAlive = false;
     var io = new IntersectionObserver(function (entries) {
+      ioAlive = true;
       entries.forEach(function (en) {
         if (en.isIntersecting) { en.target.classList.add("rev-in"); io.unobserve(en.target); }
       });
     }, { threshold: 0.18 });
     revs.forEach(function (n) { io.observe(n); });
+    /* IO 콜백이 전혀 안 오는 환경(가려진 창, 일부 인앱 브라우저) 대비: 전부 표시 */
+    setTimeout(function () {
+      if (!ioAlive) {
+        io.disconnect();
+        revs.forEach(function (n) { n.classList.add("rev-in"); });
+      }
+    }, 1500);
   }
 
   /* ---------- 열람자 실습: 본편 챕터 0 실제 퍼즐 ----------

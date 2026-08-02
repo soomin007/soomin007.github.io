@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>See you on the other side · 비동기 로그라이트</title>
+<meta name="description" content="폭풍마다 원정대가 떠나고 대부분 돌아오지 못합니다. 모래폭풍이 글씨를 지우는 세계라 말은 남길 수 없습니다. 죽기 전 단 한 번, 다음 원정대에게 물건 하나를 남길 수 있습니다.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="See you on the other side · 비동기 로그라이트">
+<meta property="og:description" content="말은 남지 않는다. 물건만 남는다. 죽기 전 단 한 번, 다음 원정대에게 물건 하나를 남기는 로그라이트.">
+<meta property="og:image" content="https://soomin007.github.io/g/otherside/og.png">
+<meta property="og:url" content="https://soomin007.github.io/g/otherside/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://soomin007.github.io/g/otherside/">
+
+<link rel="icon" type="image/png" href="../../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600&family=Noto+Serif+KR:wght@400;600;700&display=swap">
+
+<style>
+/* ============================================================
+   See you on the other side 전용 페이지. 본편 UITheme.gd 팔레트:
+   배경 #0a0705 · 아이보리 #F6ECD4 · 모래 #D6B278 · 가죽 #241A11
+   · 가죽 테두리 #8C6B3D · 위험 #E06B61. 명조 본문 + Cinzel 아이브로우.
+   시그니처: 스크롤이 곧 원정길. 내려갈수록 우상단 물·식량이 줄고,
+   페이지 끝에서 "남기고 가기" 의식으로 이어진다.
+   ============================================================ */
+
+:root {
+  --bg: #0a0705;
+  --ivory: #F6ECD4;
+  --sand: #D6B278;
+  --sand-dim: #a5946c;
+  --leather: #241A11;
+  --leather-line: #8C6B3D;
+  --danger: #E06B61;
+  --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  --serif: "Noto Serif KR", serif;
+  --eyebrow: "Cinzel", serif;
+  --pad: clamp(24px, 6.5vw, 48px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  background:
+    radial-gradient(120% 60% at 50% 0%, rgba(42, 28, 16, 0.5), transparent 60%),
+    var(--bg);
+  color: var(--ivory);
+  font-family: var(--serif);
+  line-height: 1.85;
+  -webkit-font-smoothing: antialiased;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid var(--sand); outline-offset: 2px; }
+
+.wrap { max-width: 860px; margin: 0 auto; padding: 0 var(--pad); }
+
+/* ---------- 상단 바 + 원정 계기 ---------- */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px var(--pad);
+  max-width: 860px;
+  margin: 0 auto;
+}
+.bar__back {
+  font-size: 12.5px;
+  letter-spacing: 0.14em;
+  border: 1px solid rgba(246, 236, 212, 0.45);
+  padding: 8px 16px;
+  border-radius: 2px;
+  white-space: nowrap;
+}
+.hud {
+  position: fixed;
+  top: 14px;
+  right: max(14px, calc((100vw - 860px) / 2));
+  z-index: 5;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  color: var(--sand);
+  background: rgba(10, 7, 5, 0.75);
+  border: 1px solid rgba(140, 107, 61, 0.5);
+  padding: 7px 13px;
+  border-radius: 2px;
+}
+.hud.is-low { color: var(--danger); border-color: rgba(224, 107, 97, 0.5); }
+
+/* ---------- 표지 ---------- */
+.hero { text-align: center; padding: 9vh var(--pad) 10vh; }
+.hero__eyebrow { font-family: var(--eyebrow); font-size: 12px; letter-spacing: 0.5em; color: var(--sand-dim); }
+.hero__title {
+  font-size: clamp(30px, 7vw, 58px);
+  font-weight: 700;
+  line-height: 1.3;
+  letter-spacing: 0.01em;
+  margin: 18px 0 30px;
+  color: #f0e5c6;
+  text-shadow: 0 2px 18px rgba(0, 0, 0, 0.6);
+}
+.hero__open p {
+  font-size: clamp(15px, 3.6vw, 18px);
+  color: var(--ivory);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+}
+.hero__open p.is-in { opacity: 1; transform: none; }
+.hero__open p + p { margin-top: 8px; }
+.hero__motto { margin-top: 26px; font-size: 14px; letter-spacing: 0.2em; color: var(--sand); }
+.hero__meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px 18px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+  font-family: var(--sans);
+  font-size: 11.5px;
+  color: var(--sand-dim);
+  letter-spacing: 0.1em;
+}
+.hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
+.btn-play {
+  display: inline-block;
+  background: #d9c9a0;
+  color: #241b10;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 14px 34px;
+  letter-spacing: 0.12em;
+  border-radius: 2px;
+  transition: transform 0.15s ease;
+}
+.btn-play:hover { transform: translateY(-2px); }
+.btn-ghost {
+  display: inline-block;
+  border: 1px solid rgba(246, 236, 212, 0.5);
+  color: var(--ivory);
+  font-size: 13.5px;
+  padding: 12px 22px;
+  letter-spacing: 0.08em;
+  border-radius: 2px;
+}
+.hero__free { font-family: var(--sans); font-size: 11px; color: var(--sand-dim); letter-spacing: 0.12em; margin-top: 16px; }
+
+/* ---------- 구간(일지) 공통 ---------- */
+.leg { padding: 6vh 0; }
+.leg__label {
+  font-family: var(--eyebrow);
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  color: var(--sand-dim);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 8px;
+}
+.leg__label::after { content: ""; flex: 1; height: 1px; background: rgba(214, 178, 120, 0.3); }
+.leg__title { font-size: clamp(19px, 4.6vw, 26px); font-weight: 600; color: #f0e5c6; margin-bottom: 18px; }
+
+.rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.rev.rev-in { opacity: 1; transform: none; }
+
+/* 절차 카드 (사진 + 설명) */
+.walk { display: grid; gap: 18px; }
+@media (min-width: 760px) { .walk { grid-template-columns: repeat(3, 1fr); } }
+.walk__item { border: 1px solid rgba(140, 107, 61, 0.45); background: rgba(36, 26, 17, 0.55); padding: 10px; border-radius: 2px; }
+.walk__item img { filter: sepia(0.18) contrast(0.98); border-radius: 1px; }
+.walk__name { font-size: 15px; font-weight: 600; color: var(--ivory); margin: 10px 4px 4px; }
+.walk__desc { font-family: var(--sans); font-size: 12.5px; color: var(--sand-dim); line-height: 1.7; margin: 0 4px 4px; }
+
+/* 위협 삼각형 */
+.threats { display: grid; gap: 12px; }
+@media (min-width: 640px) { .threats { grid-template-columns: repeat(3, 1fr); } }
+.threat { border-left: 3px solid var(--danger); background: rgba(36, 26, 17, 0.5); padding: 14px 16px; }
+.threat__k { font-size: 14.5px; font-weight: 700; color: #f0e5c6; }
+.threat__v { font-family: var(--sans); font-size: 12.5px; color: var(--sand-dim); line-height: 1.7; margin-top: 4px; }
+.threat__v b { color: var(--sand); font-weight: 600; }
+
+/* 유산 인용 */
+.legacyq {
+  border: 1px solid rgba(140, 107, 61, 0.5);
+  background: rgba(36, 26, 17, 0.6);
+  padding: clamp(18px, 4vw, 28px);
+  border-radius: 2px;
+}
+.legacyq p { font-size: 15.5px; }
+.legacyq .tagline { color: var(--sand); }
+.legacyq .aside { font-family: var(--sans); font-size: 12.5px; color: var(--sand-dim); margin-top: 14px; line-height: 1.7; }
+
+/* ---------- 미니 원정 ---------- */
+.lab { border: 1px solid rgba(214, 178, 120, 0.35); padding: clamp(16px, 4vw, 26px); border-radius: 2px; }
+.tz-btn {
+  cursor: pointer;
+  background: none;
+  border: 1px solid rgba(226, 213, 180, 0.5);
+  color: #e2d5b4;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 10px 16px;
+  border-radius: 2px;
+  letter-spacing: 0.06em;
+}
+.tz-btn:disabled { opacity: 0.45; cursor: default; }
+.sy-h { font-size: 17px; color: #f0e5c6; margin: 0 0 6px; letter-spacing: 0.06em; font-weight: 600; }
+.sy-sub { font-family: var(--sans); font-size: 12.5px; color: var(--sand-dim); margin: 0 0 14px; line-height: 1.7; }
+.sy-legacy { border-left: 2px solid rgba(226, 213, 180, 0.5); padding-left: 10px; color: var(--sand); font-size: 13px; margin: 0 0 16px; line-height: 1.7; }
+.sy-slots { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 12px; }
+.sy-slot {
+  min-height: 52px;
+  border: 1px dashed rgba(226, 213, 180, 0.4);
+  background: rgba(36, 26, 17, 0.6);
+  color: var(--sand-dim);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+  padding: 4px;
+}
+.sy-slot.has-item { border-style: solid; border-color: var(--leather-line); background: var(--leather); color: var(--ivory); }
+.sy-items { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+.sy-item { display: flex; flex-direction: column; gap: 2px; align-items: flex-start; text-align: left; }
+.sy-itemdesc { font-family: var(--sans); font-size: 10.5px; color: var(--sand-dim); }
+.sy-preview { font-size: 13px; color: var(--sand); margin: 0 0 4px; letter-spacing: 0.04em; }
+.sy-warn { font-family: var(--sans); font-size: 12px; color: var(--danger); min-height: 1.2em; margin: 0 0 10px; }
+.sy-npc { font-size: 12.5px; color: var(--sand-dim); margin: 0 0 12px; }
+.sy-status { font-size: 14px; color: #f0e5c6; margin: 0 0 4px; }
+.sy-trail { color: #8d7f63; letter-spacing: 4px; min-height: 1.2em; margin: 0 0 10px; }
+.sy-card { border: 1px solid rgba(226, 213, 180, 0.4); background: rgba(36, 26, 17, 0.75); padding: 14px; margin: 10px 0; border-radius: 2px; }
+.sy-cardtitle { font-size: 15px; color: var(--ivory); margin: 0 0 10px; }
+.sy-choices { display: flex; gap: 8px; flex-wrap: wrap; }
+.sy-note { font-family: var(--sans); font-size: 12.5px; color: var(--sand-dim); margin: 10px 0 0; }
+.sy-crumble { margin: 12px 0 0; color: var(--sand); animation: syFade 1.1s ease both; }
+.sy-words { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 14px; }
+.sy-word {
+  border: 1px solid rgba(226, 213, 180, 0.45);
+  background: none;
+  color: #e2d5b4;
+  font-family: inherit;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 2px;
+  cursor: pointer;
+}
+.sy-word.is-on { background: rgba(226, 213, 180, 0.22); color: var(--ivory); }
+.sy-death { font-size: 15px; color: var(--danger); margin: 4px 0 8px; }
+.sy-motto { font-size: 16px; letter-spacing: 0.08em; color: #f0e5c6; margin: 0 0 8px; }
+.sy-card--legacy p { margin: 0 0 10px; font-size: 13.5px; color: #e2d5b4; line-height: 1.7; }
+
+/* ---------- 결말 CTA ---------- */
+.final { text-align: center; padding: 9vh var(--pad) 7vh; }
+.final__line { font-size: clamp(16px, 4vw, 20px); color: #f0e5c6; letter-spacing: 0.06em; margin-bottom: 26px; }
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 18px var(--pad) 26px;
+  border-top: 1px solid rgba(246, 236, 212, 0.12);
+  font-family: var(--sans);
+  font-size: 12px;
+  color: var(--sand-dim);
+}
+.foot a { text-decoration: underline; text-underline-offset: 3px; }
+
+@keyframes syFade { from { opacity: 1; } to { opacity: 0.25; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rev, .hero__open p { transition: none; opacity: 1; transform: none; }
+  .btn-play { transition: none; }
+  .sy-crumble { animation: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="bar__back" href="../../">← 전체 게임</a>
+</header>
+<div class="hud" id="hud" aria-hidden="true">물 7 · 식량 6</div>
+
+<main>
+  <section class="hero">
+    <p class="hero__eyebrow">EXPEDITION RECORD</p>
+    <h1 class="hero__title">See you on<br>the other side</h1>
+    <div class="hero__open" id="opening">
+      <p>폭풍이 지나가고 모래가 가라앉으면,</p>
+      <p>재앙을 멈추러 원정대가 떠납니다.</p>
+      <p class="hero__motto">모래폭풍은 글을 지웁니다. 말은 남지 않고, 물건만 남습니다.</p>
+    </div>
+    <div class="hero__meta">
+      <span>1인</span><span>Godot 4.6</span><span>폰 · PC 모두</span>
+    </div>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/Otherside/">바로 플레이</a>
+      <a class="btn-ghost" href="https://soominsnu.itch.io/see-you-on-the-other-side" target="_blank" rel="noopener">itch.io</a>
+    </div>
+    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+  </section>
+
+  <!-- 구간 1: 원정의 걸음 -->
+  <section class="leg wrap">
+    <div class="leg__label">LEG I · VILLAGE</div>
+    <h2 class="leg__title">가방은 여섯 칸. 담은 만큼이 이번 원정의 목숨이다.</h2>
+    <div class="walk">
+      <figure class="walk__item rev">
+        <img src="../../assets/shots/otherside-pack.webp" alt="" loading="lazy">
+        <figcaption class="walk__name">가방을 꾸린다</figcaption>
+        <p class="walk__desc">물통과 식량, 로프와 장막. 무게가 12를 넘으면 걸음마다 물이 더 듭니다.</p>
+      </figure>
+      <figure class="walk__item rev">
+        <img src="../../assets/shots/otherside-map.webp" alt="" loading="lazy">
+        <figcaption class="walk__name">경로를 고른다</figcaption>
+        <p class="walk__desc">마른 강에서 폭풍의 문까지. 갈림길마다 걸음 수와 위험이 다릅니다.</p>
+      </figure>
+      <figure class="walk__item rev">
+        <img src="../../assets/shots/otherside-storm.webp" alt="" loading="lazy">
+        <figcaption class="walk__name">폭풍을 견딘다</figcaption>
+        <p class="walk__desc">한 걸음마다 물이 줄고, 위기는 예고 없이 옵니다. 대부분 돌아오지 못합니다.</p>
+      </figure>
+    </div>
+  </section>
+
+  <!-- 구간 2: 위협 삼각형 -->
+  <section class="leg wrap">
+    <div class="leg__label">LEG II · THREATS</div>
+    <h2 class="leg__title">위협은 세 갈래, 준비도 세 갈래.</h2>
+    <div class="threats">
+      <div class="threat rev">
+        <p class="threat__k">소모</p>
+        <p class="threat__v">갈증과 굶주림. <b>물통과 식량</b>이 막습니다. "몸이 불덩이 같다" 같은 위기가 물을 앗아 갑니다.</p>
+      </div>
+      <div class="threat rev">
+        <p class="threat__k">차단</p>
+        <p class="threat__v">갈라진 틈과 벽. <b>로프</b>가 막습니다. 한 번 건 로프는 다음 원정에도 다리로 남습니다.</p>
+      </div>
+      <div class="threat rev">
+        <p class="threat__k">폭풍</p>
+        <p class="threat__v">"느닷없이 모래바람이 몰아친다." <b>장막</b>이 막습니다. 없으면 이를 악물고 버팁니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 구간 3: 유산 -->
+  <section class="leg wrap">
+    <div class="leg__label">LEG III · BEQUEATH</div>
+    <h2 class="leg__title">죽기 전 단 한 번, 물건 하나를 남길 수 있다.</h2>
+    <div class="legacyq rev">
+      <p>"물건 하나를 여기 둔다. 그만큼 잃지만, 계속 갈 수 있다."</p>
+      <p class="tagline">"말은 남지 않는다. 물건만 남는다."</p>
+      <p class="aside">남긴 물건에는 두 단어까지 새길 수 있습니다. 다음 원정대는 그 자리에서 이런 카드를 만납니다:
+        "이전 원정대가 남긴 물통. 아직 쓸 만하다. 곁의 표식: [ 또 · 봐 ]"</p>
+    </div>
+  </section>
+
+  <!-- 구간 4: 미니 원정 -->
+  <section class="leg wrap">
+    <div class="leg__label">LEG IV · PRACTICE</div>
+    <h2 class="leg__title">미니 원정: 마른 강까지</h2>
+    <div class="lab rev">
+      <div id="lab-mount"></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <p class="final__line" id="finalLine">물이 얼마 남지 않았습니다. 건너편에서 봅시다.</p>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/Otherside/">바로 플레이</a>
+      <a class="btn-ghost" href="https://github.com/soomin007/Otherside" target="_blank" rel="noopener">소스 코드</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 김수민 · <a href="../../">전체 게임 보기</a></span>
+  <span>SOOMIN007.GITHUB.IO</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  /* ---------- 오프닝 순차 등장 ---------- */
+  var opening = document.querySelectorAll("#opening p");
+  if (reducedMotion) {
+    opening.forEach(function (p) { p.classList.add("is-in"); });
+  } else {
+    opening.forEach(function (p, i) {
+      setTimeout(function () { p.classList.add("is-in"); }, 350 + i * 650);
+    });
+  }
+
+  /* ---------- 스크롤 등장 ---------- */
+  var revs = document.querySelectorAll(".rev");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    revs.forEach(function (n) { n.classList.add("rev-in"); });
+  } else {
+    var ioAlive = false;
+    var io = new IntersectionObserver(function (entries) {
+      ioAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("rev-in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    revs.forEach(function (n) { io.observe(n); });
+    /* IO 콜백이 전혀 안 오는 환경(가려진 창, 일부 인앱 브라우저) 대비: 전부 표시 */
+    setTimeout(function () {
+      if (!ioAlive) {
+        io.disconnect();
+        revs.forEach(function (n) { n.classList.add("rev-in"); });
+      }
+    }, 1500);
+  }
+
+  /* ---------- 스크롤 = 원정길: 내려갈수록 물·식량이 준다 ---------- */
+  var hud = document.getElementById("hud");
+  function onScroll() {
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    var t = max > 0 ? Math.min(window.scrollY / max, 1) : 0;
+    var water = Math.max(Math.round(7 * (1 - t)), 0);
+    var food = Math.max(Math.round(6 * (1 - t * 0.85)), 1);
+    hud.textContent = "물 " + water + " · 식량 " + food;
+    hud.classList.toggle("is-low", water <= 2);
+  }
+  window.addEventListener("scroll", onScroll, { passive: true });
+  onScroll();
+
+  /* ---------- 미니 원정 (본편 Items.gd·Situations.gd 실데이터) ---------- */
+  var ITEMS = {
+    "물통": { water: 7, food: 0, w: 3, desc: "물 +7" },
+    "식량 자루": { water: 0, food: 6, w: 3, desc: "식량 +6" },
+    "말린 고기": { water: -2, food: 9, w: 5, desc: "식량 +9 · 물 -2" },
+    "장막": { water: 0, food: 0, w: 2, desc: "폭풍 버티기" },
+    "로프": { water: 0, food: 0, w: 1, desc: "틈 건너기" }
+  };
+  var WORDS = ["또", "봐", "앞", "없다", "끝", "물", "조심", "여기"];
+  var LS_KEY = "syotos-legacy";
+
+  var timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, reducedMotion ? Math.min(ms, 250) : ms)); }
+
+  var legacy = null;
+  try { legacy = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch (e) {}
+
+  var screen = document.getElementById("lab-mount");
+  function clear() { screen.innerHTML = ""; }
+
+  var bag = [];
+  var leftItem = null, leftWords = [];
+
+  function packScreen() {
+    clear();
+    if (legacy && legacy.item && ITEMS[legacy.item]) {
+      screen.appendChild(el("p", "sy-legacy",
+        "이전 원정대가 남긴 " + legacy.item + ". 아직 쓸 만하다." +
+        (legacy.words && legacy.words.length ? " 곁의 표식: [ " + legacy.words.join(" · ") + " ]" : "")));
+      bag.push(legacy.item);
+    }
+    screen.appendChild(el("h3", "sy-h", "가방을 꾸린다"));
+    screen.appendChild(el("p", "sy-sub", "가방은 여섯 칸. 여기서는 네 칸만 꾸립니다."));
+
+    var slotRow = el("div", "sy-slots");
+    var itemRow = el("div", "sy-items");
+    var preview = el("p", "sy-preview", "");
+    preview.setAttribute("aria-live", "polite");
+    var warn = el("p", "sy-warn", "");
+    var goBtn = el("button", "tz-btn", "떠난다");
+    goBtn.type = "button";
+
+    function stats() {
+      var water = 0, food = 0, w = 0;
+      bag.forEach(function (name) {
+        var it = ITEMS[name];
+        water += it.water; food += it.food; w += it.w;
+      });
+      return { water: Math.max(water, 0), food: Math.max(food, 0), w: w };
+    }
+    function render() {
+      slotRow.innerHTML = "";
+      for (var i = 0; i < 4; i++) {
+        (function (idx) {
+          var s = el("button", "sy-slot" + (bag[idx] ? " has-item" : ""), bag[idx] || "빈 칸");
+          s.type = "button";
+          s.setAttribute("aria-label", bag[idx] ? bag[idx] + " 빼기" : "빈 칸");
+          s.addEventListener("click", function () {
+            if (bag[idx]) { bag.splice(idx, 1); render(); }
+          });
+          slotRow.appendChild(s);
+        })(i);
+      }
+      var st = stats();
+      preview.textContent = "물 " + st.water + " · 식량 " + st.food + " · 무게 " + st.w;
+      warn.textContent = st.w > 12 ? "짐이 무겁다. 걸음마다 물이 더 든다." : "";
+      goBtn.disabled = bag.length === 0;
+    }
+    Object.keys(ITEMS).forEach(function (name) {
+      var b = el("button", "tz-btn sy-item", name);
+      b.type = "button";
+      b.appendChild(el("span", "sy-itemdesc", ITEMS[name].desc));
+      b.addEventListener("click", function () {
+        if (bag.length < 4) { bag.push(name); render(); }
+      });
+      itemRow.appendChild(b);
+    });
+    goBtn.addEventListener("click", function () {
+      var st = stats();
+      marchScreen(st.water, st.food, st.w);
+    });
+
+    screen.appendChild(slotRow);
+    screen.appendChild(itemRow);
+    screen.appendChild(preview);
+    screen.appendChild(warn);
+    screen.appendChild(goBtn);
+    render();
+  }
+
+  function marchScreen(water, food, weight) {
+    clear();
+    screen.appendChild(el("p", "sy-npc", "시장: 또 떠나는군. 부디 조심히 가게."));
+    var status = el("p", "sy-status", "");
+    status.setAttribute("aria-live", "polite");
+    var trail = el("p", "sy-trail", "");
+    screen.appendChild(status);
+    screen.appendChild(trail);
+
+    var step = 0;
+    var drain = weight > 12 ? 2 : 1;
+    function tick() {
+      step++;
+      water -= drain;
+      if (step % 2 === 0) food -= 1;
+      trail.textContent += "· ";
+      status.textContent = step + "걸음째 · 물 " + Math.max(water, 0) + " · 식량 " + Math.max(food, 0);
+      if (step === 4) return later(crisis, 700);
+      if (water <= 2) return later(bequeathScreen, 700);
+      if (water <= 0 || food <= 0) return later(deathScreen, 700);
+      later(tick, 650);
+    }
+
+    function crisis() {
+      var card = el("div", "sy-card");
+      card.appendChild(el("p", "sy-cardtitle", "느닷없이 모래바람이 몰아친다"));
+      var row = el("div", "sy-choices");
+      if (bag.indexOf("장막") >= 0) {
+        var a = el("button", "tz-btn", "장막을 펼친다");
+        a.type = "button";
+        a.addEventListener("click", function () {
+          card.remove();
+          screen.appendChild(el("p", "sy-note", "장막이 바람을 받아냈다."));
+          later(tick, 700);
+        });
+        row.appendChild(a);
+      }
+      var b = el("button", "tz-btn", "이 악물고 버틴다 (?)");
+      b.type = "button";
+      b.addEventListener("click", function () {
+        water -= 4;
+        card.remove();
+        screen.appendChild(el("p", "sy-note", "버텼다. 물 -4."));
+        if (water <= 0) return later(deathScreen, 800);
+        later(tick, 700);
+      });
+      row.appendChild(b);
+      card.appendChild(row);
+      screen.appendChild(card);
+    }
+
+    later(tick, 400);
+  }
+
+  function bequeathScreen() {
+    clear();
+    screen.appendChild(el("h3", "sy-h", "무엇을 남길까"));
+    screen.appendChild(el("p", "sy-sub", "물건 하나를 여기 둔다. 그만큼 잃지만, 계속 갈 수 있다."));
+    var row = el("div", "sy-items");
+    bag.slice(0, 3).forEach(function (name) {
+      var b = el("button", "tz-btn", name + " 남기기");
+      b.type = "button";
+      b.addEventListener("click", function () { pick(name); });
+      row.appendChild(b);
+    });
+    var mark = el("button", "tz-btn", "표식만 남긴다");
+    mark.type = "button";
+    mark.addEventListener("click", function () { pick(null); });
+    row.appendChild(mark);
+    screen.appendChild(row);
+
+    function pick(name) {
+      leftItem = name;
+      row.querySelectorAll("button").forEach(function (x) { x.disabled = true; });
+      screen.appendChild(el("p", "sy-crumble", name ? name + "이(가) 모래 속에 잠긴다…" : "돌을 쌓아 표식을 세운다…"));
+      later(wordScreen, reducedMotion ? 300 : 1100);
+    }
+  }
+
+  function wordScreen() {
+    clear();
+    screen.appendChild(el("h3", "sy-h", "어떤 말을 새길까"));
+    screen.appendChild(el("p", "sy-sub", "두 단어까지. 모래폭풍이 못 지우는 건 돌에 새긴 말뿐이다."));
+    var chipRow = el("div", "sy-words");
+    var goBtn = el("button", "tz-btn", "남기고 계속 간다");
+    goBtn.type = "button";
+    WORDS.forEach(function (w) {
+      var c = el("button", "sy-word", w);
+      c.type = "button";
+      c.setAttribute("aria-pressed", "false");
+      c.addEventListener("click", function () {
+        var on = c.classList.contains("is-on");
+        if (!on && leftWords.length >= 2) return;
+        c.classList.toggle("is-on");
+        c.setAttribute("aria-pressed", String(!on));
+        if (on) leftWords.splice(leftWords.indexOf(w), 1);
+        else leftWords.push(w);
+      });
+      chipRow.appendChild(c);
+    });
+    goBtn.addEventListener("click", deathScreen);
+    screen.appendChild(chipRow);
+    screen.appendChild(goBtn);
+  }
+
+  function deathScreen() {
+    try {
+      if (leftItem) localStorage.setItem(LS_KEY, JSON.stringify({ item: leftItem, words: leftWords }));
+    } catch (e) {}
+    clear();
+    screen.appendChild(el("p", "sy-death", "물이 떨어졌다. 여기서 갈증으로 끝났다."));
+    screen.appendChild(el("p", "sy-motto", "말은 남지 않는다. 물건만 남는다."));
+    later(function () {
+      var card = el("div", "sy-card sy-card--legacy");
+      card.appendChild(el("p", "sy-cardtitle", "…모래가 다시 가라앉았다."));
+      var found = leftItem
+        ? "다음 원정대가 남긴 " + leftItem + "을(를) 발견할 것이다." +
+          (leftWords.length ? " 곁의 표식: [ " + leftWords.join(" · ") + " ]" : "")
+        : "다음 원정대가 돌 표식을 발견할 것이다." +
+          (leftWords.length ? " [ " + leftWords.join(" · ") + " ]" : "");
+      card.appendChild(el("p", null, found));
+      card.appendChild(el("p", "sy-note", "실제로 남았습니다. 다음 방문 때 이 가방에 들어 있습니다."));
+      var again = el("button", "tz-btn", "다음 원정을 떠난다");
+      again.type = "button";
+      again.addEventListener("click", function () {
+        try { legacy = JSON.parse(localStorage.getItem(LS_KEY) || "null"); } catch (e) {}
+        bag = []; leftItem = null; leftWords = [];
+        packScreen();
+      });
+      card.appendChild(again);
+      screen.appendChild(card);
+    }, 1200);
+  }
+
+  packScreen();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Be the Bee · 2인 육각 보드게임</title>
+<meta name="description" content="같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요. 온라인 대전과 AI 대전. 설치 없이 브라우저에서.">
+
+<meta property="og:type" content="website">
+<meta property="og:title" content="Be the Bee · 2인 육각 보드게임">
+<meta property="og:description" content="같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요. 온라인 대전과 AI 대전.">
+<meta property="og:image" content="https://soomin007.github.io/g/be-the-bee/og.png">
+<meta property="og:url" content="https://soomin007.github.io/g/be-the-bee/">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="canonical" href="https://soomin007.github.io/g/be-the-bee/">
+
+<link rel="icon" type="image/png" href="../../icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+
+<style>
+/* ============================================================
+   Be the Bee 전용 페이지. 이 게임만은 밝다: 본편 honey 테마 그대로
+   (배경 #fdf8ec→#f4ead0 · 잉크 #2b2b2b · 꿀 #d2a230/#F0B429
+   · 노랑 타일 #ffd400 · 갈색 타일 #97581d).
+   구성: 보드게임 상자 뒷면. 한 줄 목표 → 룰 3장 → 모드 → 연습 대국.
+   ============================================================ */
+
+:root {
+  --ink: #2b2b2b;
+  --ink-soft: #5a4a28;
+  --mut: #8a7a55;
+  --honey: #d2a230;
+  --honey-hot: #F0B429;
+  --tile-y: #ffd400;
+  --tile-b: #97581d;
+  --card: #fffdf6;
+  --line: rgba(90, 58, 20, 0.18);
+  --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
+  --pad: clamp(24px, 6.5vw, 48px);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { overflow-x: clip; }
+body {
+  background: linear-gradient(160deg, #fdf8ec 0%, #f4ead0 100%);
+  color: var(--ink);
+  font-family: var(--sans);
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+  word-break: keep-all;
+}
+img { max-width: 100%; display: block; }
+a { color: inherit; text-decoration: none; }
+button { font-family: inherit; }
+a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offset: 2px; }
+::selection { background: #fde68a; color: #5a3a14; }
+
+.wrap { max-width: 900px; margin: 0 auto; padding: 0 var(--pad); }
+
+/* ---------- 상단 바 ---------- */
+.bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 18px var(--pad);
+  max-width: 900px;
+  margin: 0 auto;
+}
+.bar__back {
+  font-size: 12.5px;
+  font-weight: 800;
+  border: 2px solid var(--ink);
+  background: #fff;
+  padding: 8px 16px;
+  border-radius: 20px;
+  box-shadow: 0 3px 0 var(--ink);
+  white-space: nowrap;
+}
+.bar__tag { font-size: 11px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; }
+
+/* ---------- 표지 ---------- */
+.hero { text-align: center; padding: 6vh var(--pad) 7vh; position: relative; overflow: hidden; }
+.hero__hexbg {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(rgba(240, 180, 41, 0.2) 1.5px, transparent 1.5px);
+  background-size: 26px 26px;
+}
+.hero > * { position: relative; }
+.hero__bees { display: flex; justify-content: center; gap: 8px; margin-bottom: 14px; }
+.hero__hex {
+  width: 26px;
+  height: 30px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  animation: floaty 2.4s ease-in-out infinite;
+}
+.hero__hex:nth-child(1) { background: var(--tile-y); }
+.hero__hex:nth-child(2) { background: var(--tile-b); animation-delay: 0.3s; }
+.hero__hex:nth-child(3) { background: var(--honey-hot); animation-delay: 0.6s; }
+.hero__title {
+  font-size: clamp(42px, 10vw, 84px);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+  line-height: 1.02;
+  color: #241a06;
+}
+.hero__line { font-size: clamp(15px, 3.8vw, 18px); font-weight: 600; color: var(--ink-soft); margin-top: 16px; }
+.hero__meta {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 20px;
+}
+.hero__meta span {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--ink-soft);
+  background: #fff;
+  border: 1.5px solid var(--line);
+  padding: 5px 12px;
+  border-radius: 20px;
+}
+.hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
+.btn-play {
+  display: inline-block;
+  background: var(--honey-hot);
+  color: #241a06;
+  font-weight: 900;
+  font-size: 15.5px;
+  padding: 14px 34px;
+  border-radius: 26px;
+  box-shadow: 0 4px 0 #3a2c10;
+  transition: transform 0.15s ease;
+}
+.btn-play:hover { transform: translateY(-2px); }
+.btn-ghost {
+  display: inline-block;
+  border: 2px solid var(--ink);
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 13.5px;
+  padding: 12px 22px;
+  border-radius: 26px;
+  background: #fff;
+}
+.hero__free { font-size: 11px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; margin-top: 16px; }
+
+/* ---------- 섹션 공통 ---------- */
+.sec { padding: 5vh 0; }
+.sec__eyebrow { font-size: 12px; font-weight: 900; letter-spacing: 0.16em; color: var(--honey); margin-bottom: 6px; }
+.sec__title { font-size: clamp(20px, 5vw, 27px); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 18px; color: #241a06; }
+
+.rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
+.rev.rev-in { opacity: 1; transform: none; }
+
+/* 룰 카드 */
+.rules { display: grid; gap: 16px; }
+@media (min-width: 760px) { .rules { grid-template-columns: repeat(3, 1fr); } }
+.rule {
+  background: var(--card);
+  border: 2.5px solid #3a2c10;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 6px 0 rgba(58, 44, 16, 0.9);
+}
+.rule img { border-bottom: 2px solid var(--line); }
+.rule__body { padding: 14px 16px 16px; }
+.rule__no { font-size: 11px; font-weight: 900; color: var(--honey); letter-spacing: 0.12em; }
+.rule__name { font-size: 16px; font-weight: 900; margin: 2px 0 6px; color: #241a06; }
+.rule__desc { font-size: 13px; color: var(--ink-soft); line-height: 1.75; }
+
+/* 턴 구조 스트립 */
+.turns { display: grid; gap: 12px; }
+@media (min-width: 640px) { .turns { grid-template-columns: 1fr 1fr; } }
+.turn {
+  background: #fff;
+  border: 1.5px solid var(--line);
+  border-radius: 14px;
+  padding: 14px 16px;
+}
+.turn__k { font-size: 14px; font-weight: 900; color: #241a06; }
+.turn__v { font-size: 12.5px; color: var(--ink-soft); margin-top: 3px; line-height: 1.7; }
+
+/* 모드 칩 */
+.modes { display: flex; gap: 10px; flex-wrap: wrap; }
+.mode {
+  background: #fff;
+  border: 2px solid #3a2c10;
+  border-radius: 22px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #241a06;
+}
+.modes__note { font-size: 12.5px; color: var(--mut); margin-top: 12px; }
+
+/* ---------- 연습 대국 ---------- */
+.lab {
+  background: var(--card);
+  border: 3px solid var(--honey-hot);
+  border-radius: 20px;
+  padding: clamp(16px, 4vw, 26px);
+}
+.lab__intro { font-size: 13px; color: var(--ink-soft); margin-bottom: 10px; }
+.bb-board { position: relative; margin: 14px auto 12px; background: linear-gradient(160deg, #fdf8ec, #f4ead0); border: 2px solid var(--line); border-radius: 14px; max-width: 100%; }
+.bb-cell {
+  position: absolute;
+  width: 36px;
+  height: 42px;
+  border: 0;
+  padding: 0;
+  cursor: default;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: #f1e6c6;
+}
+.bb-cell.can { background: #f9edb9; cursor: pointer; }
+.bb-cell.can:hover, .bb-cell.can:focus-visible { background: #ffe58a; }
+.bb-cell.t-y { background: var(--tile-y); }
+.bb-cell.t-b { background: var(--tile-b); }
+.bb-cell.t-y.can:hover, .bb-cell.t-y.can:focus-visible { background: #ffe63a; }
+.bb-cell.t-b.can:hover, .bb-cell.t-b.can:focus-visible { background: #c4843a; }
+.bb-cell.p-y::after, .bb-cell.p-b::after {
+  content: "";
+  position: absolute;
+  inset: 24%;
+  border-radius: 50%;
+  animation: beePop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.bb-cell.p-y::after { background: #ffd000; border: 2.5px solid #7a5a10; }
+.bb-cell.p-b::after { background: #8a5418; border: 2.5px solid #241200; }
+.bb-cell.in-line.p-y::after { background: #fff2b0; border-color: #b8860b; }
+.bb-cell.in-line.p-b::after { background: #e0a35c; border-color: #43280a; }
+.bb-status { font-size: 13.5px; font-weight: 800; color: var(--ink-soft); min-height: 22px; margin: 0 0 6px; }
+.bb-status.is-win { color: #b8860b; }
+.bb-status.is-lose { color: #a04d20; }
+.bb-tip { font-size: 12px; color: var(--mut); margin: 0 0 10px; line-height: 1.7; }
+.tz-btn {
+  cursor: pointer;
+  background: #fff;
+  border: 2px solid #3a2c10;
+  color: #241a06;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 9px 18px;
+  border-radius: 20px;
+}
+.tz-btn:disabled { opacity: 0.45; cursor: default; }
+
+/* ---------- 마무리 ---------- */
+.final { text-align: center; padding: 7vh var(--pad) 6vh; }
+.final__line { font-size: clamp(16px, 4.2vw, 21px); font-weight: 900; color: #241a06; margin-bottom: 24px; }
+.foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 18px var(--pad) 26px;
+  border-top: 1.5px solid var(--line);
+  font-size: 12px;
+  color: var(--mut);
+}
+.foot a { text-decoration: underline; text-underline-offset: 3px; }
+
+@keyframes floaty { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-7px); } }
+@keyframes beePop { 0% { transform: scale(0); } 60% { transform: scale(1.25); } 100% { transform: scale(1); } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rev { transition: none; opacity: 1; transform: none; }
+  .hero__hex { animation: none; }
+  .bb-cell.p-y::after, .bb-cell.p-b::after { animation: none; }
+  .btn-play { transition: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="bar">
+  <a class="bar__back" href="../../">← 전체 게임</a>
+  <span class="bar__tag">2인 추상전략 · 온라인 · AI</span>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero__hexbg"></div>
+    <div class="hero__bees">
+      <span class="hero__hex"></span><span class="hero__hex"></span><span class="hero__hex"></span>
+    </div>
+    <h1 class="hero__title">Be the Bee</h1>
+    <p class="hero__line">같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요.</p>
+    <div class="hero__meta">
+      <span>2인</span><span>온라인 대전</span><span>AI 대전</span><span>폰 · PC 모두</span>
+    </div>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/be-the-bee/">바로 플레이</a>
+      <a class="btn-ghost" href="https://github.com/soomin007/be-the-bee" target="_blank" rel="noopener">소스 코드</a>
+    </div>
+    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+  </section>
+
+  <!-- 룰 -->
+  <section class="sec wrap">
+    <p class="sec__eyebrow">HOW TO PLAY</p>
+    <h2 class="sec__title">타일을 깔아 판을 넓히고, 말 5개를 한 줄로.</h2>
+    <div class="rules">
+      <div class="rule rev">
+        <img src="../../assets/shots/be-the-bee-hive.webp" alt="" loading="lazy">
+        <div class="rule__body">
+          <p class="rule__no">RULE 1</p>
+          <p class="rule__name">보드가 자란다</p>
+          <p class="rule__desc">고정 보드가 없습니다. 타일 2장에서 시작해, 서로 타일을 이어 붙이며 판이 커집니다.</p>
+        </div>
+      </div>
+      <div class="rule rev">
+        <img src="../../assets/shots/be-the-bee-queen.webp" alt="" loading="lazy">
+        <div class="rule__body">
+          <p class="rule__no">RULE 2</p>
+          <p class="rule__name">승리는 오직 말 5목</p>
+          <p class="rule__desc">"말 5개를 한 줄로 이으면 승리예요." 타일 쌓기에 끌려다니면 집니다. 말은 타일 위에만 놓을 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="rule rev">
+        <img src="../../assets/shots/be-the-bee-board.webp" alt="" loading="lazy">
+        <div class="rule__body">
+          <p class="rule__no">RULE 3</p>
+          <p class="rule__name">벌집은 잠긴다</p>
+          <p class="rule__desc">타일 5장이 한 줄이 되면 벌집이 됩니다. 완성된 벌집 타일 위에는 주인만 새 말을 놓을 수 있습니다.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 턴 구조 -->
+  <section class="sec wrap">
+    <p class="sec__eyebrow">YOUR TURN</p>
+    <h2 class="sec__title">한 턴에 둘 중 하나.</h2>
+    <div class="turns">
+      <div class="turn rev">
+        <p class="turn__k">① 타일 2개</p>
+        <p class="turn__v">내 타일 2개를 놓아 판을 빠르게 넓힙니다. 말은 놓지 않습니다.</p>
+      </div>
+      <div class="turn rev">
+        <p class="turn__k">② 타일 + 말</p>
+        <p class="turn__v">타일 1개를 깔고, 아무 타일 위에나 내 말 1개를 올립니다. 5목으로 가는 길입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 모드 -->
+  <section class="sec wrap">
+    <p class="sec__eyebrow">MODES</p>
+    <h2 class="sec__title">상대가 없어도, 상대가 세도.</h2>
+    <div class="modes rev">
+      <span class="mode">온라인 대전</span>
+      <span class="mode">AI 대전 · 난이도 4단계</span>
+      <span class="mode">여왕벌 모드</span>
+      <span class="mode">무한 모드</span>
+    </div>
+    <p class="modes__note">최상급 AI는 수읽기 탐색으로 둡니다. 여왕벌 모드는 잠긴 벌집을 한 번 무시할 수 있는 변형 룰입니다.</p>
+  </section>
+
+  <!-- 연습 대국 -->
+  <section class="sec wrap">
+    <p class="sec__eyebrow">PRACTICE</p>
+    <h2 class="sec__title">연습 대국: 갈색 AI와 한 판.</h2>
+    <div class="lab rev">
+      <p class="lab__intro">본편의 ② 턴만 씁니다: 타일 1개를 깔고, 아무 타일 위에 말 1개. 노랑(당신) 선입니다.</p>
+      <div id="lab-mount"></div>
+    </div>
+  </section>
+
+  <section class="final">
+    <p class="final__line">벌집의 주인이 되세요.</p>
+    <div class="hero__cta">
+      <a class="btn-play" href="https://soomin007.github.io/be-the-bee/">바로 플레이</a>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>© 2026 김수민 · <a href="../../">전체 게임 보기</a></span>
+  <span>SOOMIN007.GITHUB.IO</span>
+</footer>
+
+<script>
+(function () {
+  "use strict";
+  var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  function el(tag, cls, text) {
+    var n = document.createElement(tag);
+    if (cls) n.className = cls;
+    if (text) n.textContent = text;
+    return n;
+  }
+
+  var revs = document.querySelectorAll(".rev");
+  if (reducedMotion || !("IntersectionObserver" in window)) {
+    revs.forEach(function (n) { n.classList.add("rev-in"); });
+  } else {
+    var ioAlive = false;
+    var io = new IntersectionObserver(function (entries) {
+      ioAlive = true;
+      entries.forEach(function (en) {
+        if (en.isIntersecting) { en.target.classList.add("rev-in"); io.unobserve(en.target); }
+      });
+    }, { threshold: 0.15 });
+    revs.forEach(function (n) { io.observe(n); });
+    /* IO 콜백이 전혀 안 오는 환경(가려진 창, 일부 인앱 브라우저) 대비: 전부 표시 */
+    setTimeout(function () {
+      if (!ioAlive) {
+        io.disconnect();
+        revs.forEach(function (n) { n.classList.add("rev-in"); });
+      }
+    }, 1500);
+  }
+
+  /* ---------- 연습 대국 (본편 실룰: ② 턴 + 3축 5목 판정) ---------- */
+  var S = 21, R = 3;
+  var AX = [[1, 0], [1, -1], [0, -1]];
+  function key(q, r) { return q + "," + r; }
+  function inBoard(q, r) { return Math.max(Math.abs(q), Math.abs(r), Math.abs(q + r)) <= R; }
+  function neighbors(q, r) {
+    return [[1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1]]
+      .map(function (d) { return [q + d[0], r + d[1]]; })
+      .filter(function (c) { return inBoard(c[0], c[1]); });
+  }
+  function runThrough(pieces, owner, q, r) {
+    var best = [key(q, r)];
+    AX.forEach(function (d) {
+      var line = [key(q, r)], i, k;
+      for (i = 1; i <= 6; i++) {
+        k = key(q + d[0] * i, r + d[1] * i);
+        if (pieces[k] === owner) line.push(k); else break;
+      }
+      for (i = 1; i <= 6; i++) {
+        k = key(q - d[0] * i, r - d[1] * i);
+        if (pieces[k] === owner) line.push(k); else break;
+      }
+      if (line.length > best.length) best = line;
+    });
+    return best;
+  }
+
+  var timers = [];
+  function later(fn, ms) { timers.push(setTimeout(fn, reducedMotion ? 60 : ms)); }
+
+  var mount = document.getElementById("lab-mount");
+  var tiles = {}, pieces = {};
+  tiles[key(0, 0)] = "y";
+  tiles[key(1, 0)] = "b";
+  var over = false;
+  var phase = "tile";
+  var cells = {};
+
+  var boardWrap = el("div", "bb-board");
+  var W = Math.ceil(Math.sqrt(3) * S * (2 * R + 1)) + 8;
+  var H = Math.ceil(1.5 * S * 2 * R + 2 * S) + 8;
+  boardWrap.style.width = W + "px";
+  boardWrap.style.height = H + "px";
+
+  for (var q = -R; q <= R; q++) {
+    for (var r = -R; r <= R; r++) {
+      if (!inBoard(q, r)) continue;
+      (function (q, r) {
+        var c = el("button", "bb-cell");
+        c.type = "button";
+        c.setAttribute("aria-label", "벌집 칸");
+        var x = Math.sqrt(3) * S * (q + r / 2) + W / 2;
+        var y = 1.5 * S * r + H / 2;
+        c.style.left = (x - Math.sqrt(3) * S / 2) + "px";
+        c.style.top = (y - S) + "px";
+        c.addEventListener("click", function () { onCell(q, r); });
+        cells[key(q, r)] = c;
+        boardWrap.appendChild(c);
+      })(q, r);
+    }
+  }
+  mount.appendChild(boardWrap);
+
+  var status = el("p", "bb-status", "");
+  status.setAttribute("aria-live", "polite");
+  mount.appendChild(status);
+  mount.appendChild(el("p", "bb-tip", "본편에는 ① 타일 2개 턴, 벌집 잠금, 여왕벌 모드가 더 있습니다."));
+  var reset = el("button", "tz-btn", "다시 두기");
+  reset.type = "button";
+  reset.hidden = true;
+  mount.appendChild(reset);
+
+  function paint() {
+    Object.keys(cells).forEach(function (k) {
+      var c = cells[k];
+      c.className = "bb-cell";
+      if (tiles[k]) c.classList.add("t-" + tiles[k]);
+      if (pieces[k]) c.classList.add("p-" + pieces[k]);
+      if (over) return;
+      if (phase === "tile" && !tiles[k] && hasTileNeighbor(k)) c.classList.add("can");
+      if (phase === "piece" && tiles[k] && !pieces[k]) c.classList.add("can");
+    });
+  }
+  function hasTileNeighbor(k) {
+    var p = k.split(",");
+    return neighbors(+p[0], +p[1]).some(function (n) { return tiles[key(n[0], n[1])]; });
+  }
+  function emptyAdjacent() {
+    var out = [];
+    Object.keys(cells).forEach(function (k) {
+      if (!tiles[k] && hasTileNeighbor(k)) out.push(k);
+    });
+    return out;
+  }
+  function pieceSpots() {
+    return Object.keys(tiles).filter(function (k) { return !pieces[k]; });
+  }
+
+  function onCell(q, r) {
+    if (over || phase === "ai") return;
+    var k = key(q, r);
+    if (phase === "tile") {
+      if (tiles[k] || !hasTileNeighbor(k)) return;
+      tiles[k] = "y";
+      phase = "piece";
+      status.textContent = "말을 놓을 타일을 클릭하세요.";
+      paint();
+    } else if (phase === "piece") {
+      if (!tiles[k] || pieces[k]) return;
+      pieces[k] = "y";
+      if (checkWin("y", q, r)) return;
+      phase = "ai";
+      status.textContent = "갈색이 생각 중…";
+      paint();
+      later(aiTurn, 650);
+    }
+  }
+
+  function checkWin(owner, q, r) {
+    var line = runThrough(pieces, owner, q, r);
+    if (line.length >= 5) {
+      over = true;
+      line.forEach(function (k) { cells[k].classList.add("in-line"); });
+      status.textContent = owner === "y"
+        ? "노랑 승리! 말 5개가 한 줄로 이어졌습니다."
+        : "갈색 승리! 상대가 먼저 5목을 만들었습니다.";
+      status.classList.add(owner === "y" ? "is-win" : "is-lose");
+      reset.hidden = false;
+      paint();
+      return true;
+    }
+    return false;
+  }
+
+  function aiTurn() {
+    var target = null, tileAt = null;
+    function tryPiece(k) {
+      var p = k.split(",");
+      pieces[k] = "b";
+      var len = runThrough(pieces, "b", +p[0], +p[1]).length;
+      delete pieces[k];
+      return len;
+    }
+    pieceSpots().forEach(function (k) {
+      if (!target && tryPiece(k) >= 5) target = k;
+    });
+    if (!target) {
+      var bestLine = [], axis = null;
+      Object.keys(pieces).forEach(function (k) {
+        if (pieces[k] !== "y") return;
+        var p = k.split(",");
+        AX.forEach(function (d) {
+          var line = [k], i, kk;
+          for (i = 1; i <= 6; i++) {
+            kk = key(+p[0] + d[0] * i, +p[1] + d[1] * i);
+            if (pieces[kk] === "y") line.push(kk); else break;
+          }
+          for (i = 1; i <= 6; i++) {
+            kk = key(+p[0] - d[0] * i, +p[1] - d[1] * i);
+            if (pieces[kk] === "y") line.push(kk); else break;
+          }
+          if (line.length > bestLine.length) { bestLine = line; axis = d; }
+        });
+      });
+      if (bestLine.length >= 3 && axis) {
+        var proj = bestLine.map(function (k) {
+          var p = k.split(",");
+          return { q: +p[0], r: +p[1], t: (+p[0]) * axis[0] + (+p[1]) * axis[1] };
+        }).sort(function (a, b) { return a.t - b.t; });
+        var lo = proj[0], hi = proj[proj.length - 1];
+        [[hi.q + axis[0], hi.r + axis[1]], [lo.q - axis[0], lo.r - axis[1]]].some(function (c) {
+          var k = key(c[0], c[1]);
+          if (!inBoard(c[0], c[1])) return false;
+          if (tiles[k] && !pieces[k]) { target = k; return true; }
+          if (!tiles[k] && hasTileNeighbor(k)) { target = k; tileAt = k; return true; }
+          return false;
+        });
+      }
+    }
+    if (!target) {
+      var best = -1;
+      pieceSpots().forEach(function (k) {
+        var len = tryPiece(k);
+        var p = k.split(",");
+        var score = len * 10 - (Math.abs(+p[0]) + Math.abs(+p[1]) + Math.abs(+p[0] + +p[1]));
+        if (score > best) { best = score; target = k; }
+      });
+    }
+    if (!tileAt) {
+      var opts = emptyAdjacent();
+      if (opts.length) {
+        opts.sort(function (a, b) {
+          function near(k) {
+            var p = k.split(",");
+            var d = 99;
+            Object.keys(pieces).forEach(function (pk) {
+              if (pieces[pk] !== "b") return;
+              var pp = pk.split(",");
+              var dd = Math.max(Math.abs(+p[0] - +pp[0]), Math.abs(+p[1] - +pp[1]),
+                Math.abs((+p[0] + +p[1]) - (+pp[0] + +pp[1])));
+              if (dd < d) d = dd;
+            });
+            return d;
+          }
+          return near(a) - near(b);
+        });
+        tileAt = opts[0];
+      }
+    }
+    if (tileAt) tiles[tileAt] = "b";
+    if (!target || !tiles[target]) { endTurnToPlayer(); return; }
+    pieces[target] = "b";
+    var p = target.split(",");
+    if (checkWin("b", +p[0], +p[1])) return;
+    endTurnToPlayer();
+  }
+
+  function endTurnToPlayer() {
+    phase = emptyAdjacent().length ? "tile" : "piece";
+    status.textContent = phase === "tile"
+      ? "노랑 차례 · 타일을 놓을 빈 칸을 클릭하세요."
+      : "노랑 차례 · 말을 놓을 타일을 클릭하세요.";
+    paint();
+  }
+
+  reset.addEventListener("click", function () {
+    tiles = {}; pieces = {}; over = false;
+    tiles[key(0, 0)] = "y"; tiles[key(1, 0)] = "b";
+    status.classList.remove("is-win", "is-lose");
+    reset.hidden = true;
+    endTurnToPlayer();
+  });
+
+  status.textContent = "노랑 차례 · 타일을 놓을 빈 칸을 클릭하세요. (선플레이어 첫 턴)";
+  paint();
+})();
+</script>
+</body>
+</html>
