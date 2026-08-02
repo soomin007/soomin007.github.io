@@ -52,6 +52,7 @@
 | Otherside 캡슐 | https://soomin007.github.io/assets/otherside.webp | 1232x706 |
 | Eyes on You 캡슐 | https://soomin007.github.io/assets/eyes-on-you.webp | 1232x706 |
 | 적자생존 캡슐 | https://soomin007.github.io/assets/selection-pressure.webp | 1232x706 |
+| 피처드 전용 5장 | https://soomin007.github.io/assets/feat/<게임id>.webp | 1680x800 |
 | OG 썸네일 | https://soomin007.github.io/og.png | 1200x630 |
 | 파비콘 | https://soomin007.github.io/icon.png | 256x256 |
 

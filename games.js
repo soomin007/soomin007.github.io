@@ -18,6 +18,9 @@
      first     true 인 카드에 "입문 추천" 표가 붙는다. 하나만
      mobile    true = 터치만으로 플레이 가능. 폰에서는 이 게임들이 먼저 정렬된다
      img       캡슐 이미지 경로 (assets/<id>.webp, 1232x706 권장)
+     imgFeat   피처드 캐러셀 전용 이미지 (assets/feat/<id>.webp, 1680x800 권장).
+               하단 45%는 어둡고 비어 있게 만들어 오버레이 문구 자리를 확보한다.
+               게임 UI·텍스트가 박힌 스크린샷을 그대로 쓰지 않는다. 없으면 img 를 쓴다
      theme     (구버전 내장 테마 식별자. 전용 페이지 체제 이후 미사용, 기록용으로만 남김)
      tag       상세 페이지 우상단 연출 문구
      facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만. 수치를 지어내지 않는다
@@ -45,6 +48,7 @@ const GAMES = [
     first: true,
     mobile: true,
     img: "assets/be-the-bee.webp",
+    imgFeat: "assets/feat/be-the-bee.webp",
     theme: "bee",
     tag: "HIVE · 오늘도 확장 중",
     facts: [
@@ -80,6 +84,7 @@ const GAMES = [
     first: false,
     mobile: true,
     img: "assets/enigma.webp",
+    imgFeat: "assets/feat/enigma.webp",
     theme: "enigma",
     tag: "문서 № E-1942-05 · 복호화 완료",
     facts: [
@@ -115,6 +120,7 @@ const GAMES = [
     first: false,
     mobile: true,
     img: "assets/otherside.webp",
+    imgFeat: "assets/feat/otherside.webp",
     theme: "sand",
     tag: "제 41차 원정 기록",
     facts: [
@@ -150,6 +156,7 @@ const GAMES = [
     first: false,
     mobile: false,
     img: "assets/eyes-on-you.webp",
+    imgFeat: "assets/feat/eyes-on-you.webp",
     theme: "hud",
     tag: "SESSION 7734 · 암호화됨",
     facts: [
@@ -185,6 +192,7 @@ const GAMES = [
     first: false,
     mobile: true,
     img: "assets/selection-pressure.webp",
+    imgFeat: "assets/feat/selection-pressure.webp",
     theme: "eco",
     tag: "관찰 일지 · 갱신됨",
     facts: [

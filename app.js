@@ -93,7 +93,7 @@
     home.style.background = "radial-gradient(1100px 650px at 20% -10%, " + hexA(g.color, 0.15) + ", transparent 60%), #0b0c0f";
 
     var img = el("img", "feat__art");
-    img.src = g.img;
+    img.src = g.imgFeat || g.img;
     img.alt = g.title + " 게임 화면";
     feat.appendChild(img);
 
