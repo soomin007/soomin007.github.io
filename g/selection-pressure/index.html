@@ -142,7 +142,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 .hero__free { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.12em; margin-top: 16px; }
 
 /* ---------- 섹션 공통 ---------- */
-.sec { padding: 5vh 0; }
+/* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
+.sec { padding-top: 5vh; padding-bottom: 5vh; }
 .sec__label {
   font-family: var(--mono);
   font-size: 11px;

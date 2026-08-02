@@ -152,7 +152,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--sand); outline-
 .hero__free { font-family: var(--sans); font-size: 11px; color: var(--sand-dim); letter-spacing: 0.12em; margin-top: 16px; }
 
 /* ---------- 구간(일지) 공통 ---------- */
-.leg { padding: 6vh 0; }
+/* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
+.leg { padding-top: 6vh; padding-bottom: 6vh; }
 .leg__label {
   font-family: var(--eyebrow);
   font-size: 11px;

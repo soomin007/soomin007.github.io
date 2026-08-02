@@ -151,7 +151,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 .hero__free { font-size: 11px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; margin-top: 16px; }
 
 /* ---------- 섹션 공통 ---------- */
-.sec { padding: 5vh 0; }
+/* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
+.sec { padding-top: 5vh; padding-bottom: 5vh; }
 .sec__eyebrow { font-size: 12px; font-weight: 900; letter-spacing: 0.16em; color: var(--honey); margin-bottom: 6px; }
 .sec__title { font-size: clamp(20px, 5vw, 27px); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 18px; color: #241a06; }
 
