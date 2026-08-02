@@ -49,7 +49,7 @@
   }
 
   brandEyebrow.textContent = "GAMES · " + games.length + " TITLES · ALL FREE";
-  orderNote.textContent = isTouch ? "터치 기기 · 모바일 게임 우선 정렬" : "키보드 게임 포함 · " + games.length + "종";
+  orderNote.textContent = isTouch ? "모바일 지원 게임 우선 표시" : "총 " + games.length + "개 게임";
 
   /* ---------- 유입 경로 배너 ---------- */
 
@@ -72,7 +72,7 @@
   if (src) {
     ctxBanner.hidden = false;
     ctxBanner.appendChild(el("strong", null, src[0]));
-    ctxBanner.appendChild(document.createTextNode(" · " + src[1]));
+    ctxBanner.appendChild(el("span", null, src[1]));
   }
 
   /* ---------- 피처드 캐러셀 ---------- */
@@ -82,6 +82,14 @@
 
   function renderFeat() {
     var g = games[current];
+    /* innerHTML 재생성 전에 캐러셀 안 포커스를 기억해 뒀다가 복원 (키보드 연타 유지) */
+    var ae = document.activeElement;
+    var refocus = null;
+    if (feat.contains(ae)) {
+      refocus = ae.classList.contains("feat__nav--prev") ? ".feat__nav--prev"
+        : ae.classList.contains("feat__nav--next") ? ".feat__nav--next"
+        : ".feat__link";
+    }
     feat.innerHTML = "";
     feat.style.boxShadow = "0 0 0 1px " + hexA(g.color, 0.45) + ", 0 26px 70px -18px " + hexA(g.color, 0.35);
     home.style.background = "radial-gradient(1100px 650px at 20% -10%, " + hexA(g.color, 0.15) + ", transparent 60%), #0b0c0f";
@@ -123,20 +131,28 @@
     feat.appendChild(next);
 
     renderDots();
+    if (refocus) {
+      var rb = feat.querySelector(refocus);
+      if (rb) rb.focus({ preventScroll: true });
+    }
   }
 
   function renderDots() {
+    var focusIdx = Array.prototype.indexOf.call(dotsBox.children, document.activeElement);
     dotsBox.innerHTML = "";
     games.forEach(function (g, i) {
       var d = el("button", "dot");
       d.setAttribute("aria-label", g.title + " 보기");
       if (i === current) {
         d.setAttribute("aria-current", "true");
-        d.style.background = g.color;
+        d.style.setProperty("--dotc", g.color);
       }
       d.addEventListener("click", function () { go(i, true); });
       dotsBox.appendChild(d);
     });
+    if (focusIdx >= 0 && dotsBox.children[focusIdx]) {
+      dotsBox.children[focusIdx].focus({ preventScroll: true });
+    }
   }
 
   function go(i, manual) {
@@ -145,13 +161,25 @@
     if (manual) restartTimer();
   }
 
+  function stopTimer() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
   function restartTimer() {
-    if (timer) clearInterval(timer);
+    stopTimer();
     if (reducedMotion) return;
     timer = setInterval(function () {
       if (!detailOpen) go(current + 1, false);
     }, 6500);
   }
+
+  /* 마우스가 올라가 있거나 키보드 포커스가 캐러셀 안에 있는 동안은 자동 회전 정지 */
+  [feat, dotsBox].forEach(function (zone) {
+    zone.addEventListener("mouseenter", stopTimer);
+    zone.addEventListener("mouseleave", restartTimer);
+    zone.addEventListener("focusin", stopTimer);
+    zone.addEventListener("focusout", restartTimer);
+  });
 
   var touchX = null;
   feat.addEventListener("touchstart", function (e) { touchX = e.touches[0].clientX; }, { passive: true });
@@ -172,7 +200,7 @@
     var media = el("div", "gcard__media");
     var img = el("img");
     img.src = g.img;
-    img.alt = g.title + " 게임 화면";
+    img.alt = ""; /* 링크 텍스트에 제목이 이미 있어 alt 는 비운다 (중복 낭독 방지) */
     img.loading = "lazy";
     media.appendChild(img);
     if (g.status === "wip") {
@@ -180,12 +208,12 @@
       wip.style.background = g.color;
       media.appendChild(wip);
     } else if (g.first) {
-      var first = el("span", "badge badge--first", "처음이라면");
+      var first = el("span", "badge badge--first", "입문 추천");
       first.style.color = g.color;
       first.style.border = "1px solid " + hexA(g.color, 0.4);
       media.appendChild(first);
     }
-    if (!g.mobile) media.appendChild(el("span", "badge badge--kbd", "⌨ 키보드"));
+    if (!g.mobile) media.appendChild(el("span", "badge badge--kbd", "키보드 필요"));
     card.appendChild(media);
 
     var body = el("div", "gcard__body");
@@ -196,14 +224,14 @@
     head.appendChild(kick);
     body.appendChild(head);
 
-    var short = g.line.length > 58 ? g.line.slice(0, 57) + "…" : g.line;
+    var short = g.line.length > 58 ? g.line.slice(0, 57).replace(/\s+\S*$/, "") + "…" : g.line;
     body.appendChild(el("p", "gcard__line", short));
 
     var foot = el("div", "gcard__foot");
     var chips = el("div", "gcard__chips");
     g.meta.slice(0, 3).forEach(function (m) { chips.appendChild(el("span", null, m)); });
     foot.appendChild(chips);
-    var open = el("span", "gcard__go", "열기 ›");
+    var open = el("span", "gcard__go", "자세히 보기 ›");
     open.style.color = g.color;
     foot.appendChild(open);
     body.appendChild(foot);
@@ -254,8 +282,8 @@
     detail.appendChild(el("div", "d__texture"));
 
     var bar = el("header", "d__bar");
-    var back = el("button", "d__back", "← 전체 게임");
-    back.addEventListener("click", function () { location.hash = ""; });
+    var back = el("button", "d__back", "← 목록으로");
+    back.addEventListener("click", closeDetail);
     bar.appendChild(back);
     bar.appendChild(el("span", "d__tag", g.tag || ""));
     detail.appendChild(bar);
@@ -280,7 +308,7 @@
     main.appendChild(frame);
 
     main.appendChild(el("p", "d__line", g.lineLong || g.line));
-    if (g.note) main.appendChild(el("div", "d__note", "⌨ " + g.note));
+    if (g.note) main.appendChild(el("div", "d__note", g.note));
 
     var facts = el("dl", "d__facts");
     (g.facts || []).forEach(function (f) {
@@ -293,7 +321,7 @@
 
     var acts = el("div", "d__acts");
     acts.appendChild(extLink(g.links.play, "바로 플레이", "d__play"));
-    if (g.links.code) acts.appendChild(extLink(g.links.code, "코드 보기", "d__ghost"));
+    if (g.links.code) acts.appendChild(extLink(g.links.code, "소스 코드", "d__ghost"));
     if (g.links.itch) acts.appendChild(extLink(g.links.itch, "itch.io", "d__ghost"));
     acts.appendChild(el("span", "d__free", "무료 · 브라우저 · 설치 없음"));
     main.appendChild(acts);
@@ -305,30 +333,67 @@
 
   var detailOpen = false;
   var homeScrollY = 0;
+  var detailFromHome = false; /* 이 세션의 홈에서 들어온 상세인가 (딥링크 진입이면 false) */
+  var lastFocusCard = null;
+
+  /* 상세 닫기: 홈에서 들어왔으면 히스토리 엔트리를 pop 해 뒤로가기 루프를 막는다 */
+  function closeDetail() {
+    if (detailFromHome) history.back();
+    else location.hash = "";
+  }
 
   function route() {
     var m = (location.hash || "").match(/^#g\/(.+)$/);
     var g = m ? GAMES.find(function (x) { return x.id === m[1]; }) : null;
     if (g) {
-      if (!detailOpen) homeScrollY = window.scrollY;
+      if (!detailOpen) {
+        lastFocusCard = home.contains(document.activeElement) ? document.activeElement : null;
+      }
       detailOpen = true;
       renderDetail(g);
       home.hidden = true;
       detail.hidden = false;
       document.title = g.title + " · 김수민 게임";
+      var backBtn = detail.querySelector(".d__back");
+      if (backBtn) backBtn.focus({ preventScroll: true });
       window.scrollTo(0, 0);
     } else {
+      var wasOpen = detailOpen;
       detailOpen = false;
       detail.hidden = true;
       home.hidden = false;
       document.title = HOME_TITLE;
       window.scrollTo(0, homeScrollY);
+      if (wasOpen && lastFocusCard && document.contains(lastFocusCard)) {
+        lastFocusCard.focus({ preventScroll: true });
+      }
     }
   }
 
-  window.addEventListener("hashchange", route);
+  /* 홈 ↔ 상세 전환: 지원 브라우저에선 크로스페이드로 감싼다.
+     전환이 중간에 스킵돼도 route 는 항상 실행되므로 promise 거부는 조용히 삼킨다 */
+  function routeWithTransition() {
+    if (!reducedMotion && document.startViewTransition) {
+      var t = document.startViewTransition(route);
+      if (t && t.ready) t.ready.catch(function () {});
+      if (t && t.finished) t.finished.catch(function () {});
+    } else {
+      route();
+    }
+  }
+
+  window.addEventListener("hashchange", function () {
+    var toDetail = /^#g\//.test(location.hash || "");
+    if (toDetail && !detailOpen) {
+      /* 스크롤 스냅샷은 전환(비동기) 시작 전에 동기로 뜬다 */
+      homeScrollY = window.scrollY;
+      detailFromHome = true;
+    }
+    if (!toDetail) detailFromHome = false;
+    routeWithTransition();
+  });
   window.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && detailOpen) location.hash = "";
+    if (e.key === "Escape" && detailOpen) closeDetail();
   });
 
   /* ---------- 시작 ---------- */
