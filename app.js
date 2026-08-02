@@ -100,7 +100,7 @@
     feat.appendChild(img);
 
     var link = el("a", "feat__link");
-    link.href = "#g/" + g.id;
+    link.href = g.page || ("#g/" + g.id);
     link.setAttribute("aria-label", g.title + " 자세히 보기");
     feat.appendChild(link);
 
@@ -194,7 +194,7 @@
 
   games.forEach(function (g) {
     var card = el("a", "gcard");
-    card.href = "#g/" + g.id;
+    card.href = g.page || ("#g/" + g.id);
     card.style.setProperty("--tone40", hexA(g.color, 0.4));
 
     var media = el("div", "gcard__media");
@@ -427,6 +427,10 @@
   function route() {
     var m = (location.hash || "").match(/^#g\/(.+)$/);
     var g = m ? GAMES.find(function (x) { return x.id === m[1]; }) : null;
+    if (g && g.page) { /* 전용 페이지가 있으면 옛 해시 링크를 그리로 보낸다 */
+      location.replace(g.page);
+      return;
+    }
     if (g) {
       if (!detailOpen) {
         lastFocusCard = home.contains(document.activeElement) ? document.activeElement : null;
