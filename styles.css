@@ -73,7 +73,7 @@ a:focus-visible, button:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 18px 4.5vw 14px;
+  padding: 18px clamp(20px, 4.5vw, 56px) 14px;
 }
 .bar__brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .bar__name { font-weight: 900; font-size: 17px; letter-spacing: -0.02em; }
@@ -91,7 +91,7 @@ a:focus-visible, button:focus-visible {
   width: 100%;
   max-width: 1180px;
   margin: 0 auto;
-  padding: 0 4.5vw 40px;
+  padding: 0 clamp(20px, 4.5vw, 56px) 40px;
 }
 
 /* ---------- 피처드 ---------- */
@@ -319,7 +319,7 @@ a:focus-visible, button:focus-visible {
 
 .foot {
   margin-top: auto;
-  padding: 16px 4.5vw 22px;
+  padding: 16px clamp(20px, 4.5vw, 56px) 22px;
   display: flex;
   justify-content: space-between;
   gap: 12px;
@@ -341,14 +341,14 @@ a:focus-visible, button:focus-visible {
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 18px 4.5vw;
+  padding: 18px clamp(20px, 4.5vw, 56px);
 }
 .d__back { cursor: pointer; white-space: nowrap; }
 .d__main {
   position: relative;
   max-width: 860px;
   margin: 0 auto;
-  padding: 3vh 5vw 8vh;
+  padding: 3vh clamp(22px, 5vw, 56px) 8vh;
 }
 .d__meta { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
 .d__flourish { display: flex; gap: 10px; align-items: center; margin: 2px 0 18px; }
