@@ -476,11 +476,17 @@ a:focus-visible, button:focus-visible {
 /* ============================ 반응형 ============================ */
 
 @media (max-width: 640px) {
+  /* 폰에선 21:10 이 너무 낮아 오버레이 텍스트(킥커)가 카드 위로 잘린다 → 세로 여유 확보 */
+  .feat__art { aspect-ratio: 16 / 11; }
   .feat__scrim { padding: 50px 16px 16px; }
   .feat__line { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .feat__nav { display: none; } /* 폰에선 스와이프·점으로 */
   .bar__eyebrow { display: none; }
   .grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 359px) {
+  /* 초협폭(폴드 커버 등)은 한 단계 더 */
+  .feat__art { aspect-ratio: 4 / 3; }
 }
 
 /* ============================ 모션 최소화 ============================ */
