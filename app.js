@@ -9,7 +9,6 @@
   var feat = document.getElementById("feat");
   var dotsBox = document.getElementById("dots");
   var grid = document.getElementById("grid");
-  var ctxBanner = document.getElementById("ctxBanner");
   var orderNote = document.getElementById("orderNote");
   var brandEyebrow = document.getElementById("brandEyebrow");
 
@@ -48,30 +47,6 @@
 
   brandEyebrow.textContent = "GAMES · " + games.length + " TITLES · ALL FREE";
   orderNote.textContent = isTouch ? "모바일 지원 게임 우선 표시" : "총 " + games.length + "개 게임";
-
-  /* ---------- 유입 경로 배너 ---------- */
-
-  function detectSource() {
-    var from = new URLSearchParams(location.search).get("from");
-    var ref = document.referrer || "";
-    if (from) return from;
-    if (/instagram\.|threads\./.test(ref)) return "insta";
-    if (/github\./.test(ref)) return "github";
-    if (/itch\.io/.test(ref)) return "itch";
-    return "";
-  }
-
-  var CTX_LINES = {
-    insta: ["인스타그램에서 방문해 주셔서 감사합니다", "모든 게임은 무료이며, 설치 없이 브라우저에서 바로 플레이하실 수 있습니다."],
-    github: ["GitHub에서 방문해 주셔서 감사합니다", "모든 게임의 소스 코드가 공개되어 있습니다."],
-    itch: ["itch.io에서 방문해 주셔서 감사합니다", "직접 만든 게임들을 이곳에 모아 두었습니다."]
-  };
-  var src = CTX_LINES[detectSource()];
-  if (src) {
-    ctxBanner.hidden = false;
-    ctxBanner.appendChild(el("strong", null, src[0]));
-    ctxBanner.appendChild(el("span", null, src[1]));
-  }
 
   /* ---------- 피처드 캐러셀 ---------- */
 
@@ -369,7 +344,7 @@
       renderDetail(g);
       home.hidden = true;
       detail.hidden = false;
-      document.title = g.title + " · 김수민 게임";
+      document.title = g.title + " · soomin007";
       var backBtn = detail.querySelector(".d__back");
       if (backBtn) backBtn.focus({ preventScroll: true });
       window.scrollTo(0, 0);

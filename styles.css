@@ -55,22 +55,6 @@ a:focus-visible, button:focus-visible {
   transition: background 0.7s ease;
 }
 
-.ctx {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  column-gap: 10px;
-  row-gap: 2px;
-  text-align: center;
-  font-size: 12.5px;
-  line-height: 1.5;
-  padding: 9px 16px;
-  color: #cfccc5;
-  background: rgba(255, 255, 255, 0.04);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-.ctx strong { color: #fff; font-weight: 700; white-space: nowrap; }
-
 .bar {
   display: flex;
   align-items: center;
@@ -334,7 +318,6 @@ a:focus-visible, button:focus-visible {
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   flex-wrap: wrap;
 }
-.foot__mono { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; }
 
 /* ============================ 상세 공통 ============================ */
 

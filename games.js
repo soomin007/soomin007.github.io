@@ -150,7 +150,7 @@ const GAMES = [
     color: "#5B8DEF",
     year: "2026",
     yearLabel: "",
-    meta: ["1인", "Godot 4.6", "8~15분", "엔딩 4종"],
+    meta: ["1인", "Godot 4.6", "엔딩 4종"],
     status: "live",
     note: "키보드가 필요한 게임입니다. PC 환경을 권장합니다.",
     first: false,
@@ -161,7 +161,7 @@ const GAMES = [
     tag: "SESSION 7734 · 암호화됨",
     facts: [
       { k: "인원", v: "1인" },
-      { k: "한 판", v: "8~15분 · 엔딩 4종" },
+      { k: "분량", v: "한 판 완결 · 엔딩 4종" },
       { k: "환경", v: "PC · 키보드 필요" },
       { k: "엔진", v: "Godot 4.6" }
     ],
