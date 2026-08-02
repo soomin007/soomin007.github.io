@@ -19,7 +19,11 @@
      theme     상세 페이지 테마: 'enigma'|'sand'|'bee'|'hud'|'eco'|'' (빈 값 = 범용 다크)
      tag       상세 페이지 우상단 연출 문구
      facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만. 수치를 지어내지 않는다
+     shots     상세 갤러리. {src, cap} 배열 (assets/shots/<id>-*.webp). 없으면 [] 로.
+               테마가 액자 연출을 정한다 (enigma=증거 사진, hud=CAM 피드, eco=표본 도판)
      links     play / code / itch. 없는 건 빈 문자열로 두면 버튼이 안 나온다
+
+     맛보기(미니 체험)는 teasers.js 에 게임 id 로 등록한다. 등록이 없으면 섹션이 안 나온다
    ============================================================ */
 
 const GAMES = [
@@ -45,6 +49,11 @@ const GAMES = [
       { k: "변형", v: "여왕벌 모드 · 무한 모드" },
       { k: "환경", v: "폰 · PC 모두" },
       { k: "상태", v: "라이브" }
+    ],
+    shots: [
+      { src: "assets/shots/be-the-bee-hive.webp", cap: "타일을 이어 붙이며 벌집이 자란다" },
+      { src: "assets/shots/be-the-bee-queen.webp", cap: "여왕벌 모드" },
+      { src: "assets/shots/be-the-bee-board.webp", cap: "보드 테마" }
     ],
     links: {
       play: "https://soomin007.github.io/be-the-bee/",
@@ -75,6 +84,11 @@ const GAMES = [
       { k: "환경", v: "폰 · PC 모두" },
       { k: "상태", v: "라이브" }
     ],
+    shots: [
+      { src: "assets/shots/enigma-radio.webp", cap: "라디오 감청" },
+      { src: "assets/shots/enigma-decoder.webp", cap: "해독기" },
+      { src: "assets/shots/enigma-evidence.webp", cap: "증거 보드" }
+    ],
     links: {
       play: "https://soomin007.github.io/Enigma/",
       code: "https://github.com/soomin007/Enigma",
@@ -103,6 +117,11 @@ const GAMES = [
       { k: "엔진", v: "Godot 4.6" },
       { k: "환경", v: "폰 · PC 모두" },
       { k: "상태", v: "라이브" }
+    ],
+    shots: [
+      { src: "assets/shots/otherside-storm.webp", cap: "폭풍이 온다" },
+      { src: "assets/shots/otherside-pack.webp", cap: "가방을 꾸린다" },
+      { src: "assets/shots/otherside-map.webp", cap: "다음 원정의 지도" }
     ],
     links: {
       play: "https://soomin007.github.io/Otherside/",
@@ -133,6 +152,11 @@ const GAMES = [
       { k: "환경", v: "PC · 키보드 필요" },
       { k: "엔진", v: "Godot 4.6" }
     ],
+    shots: [
+      { src: "assets/shots/eyes-on-you-rooftops.webp", cap: "옥상 루트" },
+      { src: "assets/shots/eyes-on-you-subway.webp", cap: "지하철 루트" },
+      { src: "assets/shots/eyes-on-you-watchtower.webp", cap: "감시탑 루트" }
+    ],
     links: {
       play: "https://soomin007.github.io/EyesOnYou/",
       code: "https://github.com/soomin007/EyesOnYou",
@@ -161,6 +185,11 @@ const GAMES = [
       { k: "스택", v: "TypeScript · PixiJS" },
       { k: "환경", v: "모바일 세로 최적" },
       { k: "상태", v: "앞서 해보기" }
+    ],
+    shots: [
+      { src: "assets/shots/selection-pressure-watch.webp", cap: "관전: 생태계가 스스로 굴러간다" },
+      { src: "assets/shots/selection-pressure-creature.webp", cap: "개체 관찰" },
+      { src: "assets/shots/selection-pressure-draft.webp", cap: "라운드 사이, 카드를 고른다" }
     ],
     links: {
       play: "https://soomin007.github.io/selection-pressure/",

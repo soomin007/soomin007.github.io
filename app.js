@@ -242,6 +242,80 @@
 
   /* ---------- 상세 페이지 ---------- */
 
+  var SHOT_HEADS = {
+    enigma: "첨부 · 증거 사진",
+    sand: "원정 기록",
+    bee: "벌집 앨범",
+    hud: "감시 화면",
+    eco: "표본 도판"
+  };
+
+  var teaserCleanup = null;
+  var revealObs = null;
+
+  /* 상세를 떠나거나 다시 그릴 때 타이머·raf·옵저버를 정리한다 */
+  function cleanupDetailFx() {
+    if (teaserCleanup) { teaserCleanup(); teaserCleanup = null; }
+    if (revealObs) { revealObs.disconnect(); revealObs = null; }
+  }
+
+  function shotsFor(g) {
+    if (!g.shots || !g.shots.length) return null;
+    var sec = el("section", "d__shots");
+    sec.appendChild(el("h2", "d__shots-head", SHOT_HEADS[g.theme] || "장면들"));
+    var wrap = el("div", "d__shots-grid");
+    g.shots.forEach(function (s, i) {
+      var fig = el("figure", "d__shot rev");
+      if (g.theme === "hud") {
+        var bar = el("div", "d__shot-bar");
+        bar.appendChild(el("span", null, "CAM-0" + (i + 1)));
+        bar.appendChild(el("span", "d__shot-rec", "● REC"));
+        fig.appendChild(bar);
+      } else if (g.theme === "eco") {
+        fig.appendChild(el("div", "d__shot-bar", "표본 기록 " + String(i + 1).padStart(2, "0")));
+      }
+      var img = el("img");
+      img.src = s.src;
+      img.alt = ""; /* 설명은 figcaption 이 맡는다 */
+      img.loading = "lazy";
+      fig.appendChild(img);
+      var prefix = g.theme === "enigma" ? "증거 사진 №" + (i + 1) + " · " : "";
+      fig.appendChild(el("figcaption", null, prefix + s.cap));
+      wrap.appendChild(fig);
+    });
+    sec.appendChild(wrap);
+    return sec;
+  }
+
+  function teaserFor(g) {
+    var t = window.TEASERS && window.TEASERS[g.id];
+    if (!t) return null;
+    var sec = el("section", "d__teaser rev");
+    sec.appendChild(el("h2", "d__teaser-head", t.title));
+    var body = el("div", "d__teaser-body");
+    sec.appendChild(body);
+    teaserCleanup = t.make(body, g, reducedMotion) || null;
+    return sec;
+  }
+
+  /* 스크롤 등장 연출: .rev 요소가 뷰포트에 들어오면 .rev-in */
+  function armReveals() {
+    var nodes = detail.querySelectorAll(".rev");
+    if (reducedMotion || !("IntersectionObserver" in window)) {
+      nodes.forEach(function (n) { n.classList.add("rev-in"); });
+      return;
+    }
+    revealObs = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (en.isIntersecting) {
+          en.target.classList.add("rev-in");
+          revealObs.unobserve(en.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    nodes.forEach(function (n) { revealObs.observe(n); });
+  }
+
   function flourishFor(g) {
     var box = el("div", "d__flourish");
     if (g.theme === "enigma") {
@@ -275,6 +349,7 @@
   }
 
   function renderDetail(g) {
+    cleanupDetailFx();
     detail.innerHTML = "";
     detail.className = "detail " + (THEMES[g.theme] || "t-plain");
     if (!THEMES[g.theme]) detail.style.setProperty("--tone", g.color);
@@ -310,6 +385,12 @@
     main.appendChild(el("p", "d__line", g.lineLong || g.line));
     if (g.note) main.appendChild(el("div", "d__note", g.note));
 
+    var shots = shotsFor(g);
+    if (shots) main.appendChild(shots);
+
+    var teaser = teaserFor(g);
+    if (teaser) main.appendChild(teaser);
+
     var facts = el("dl", "d__facts");
     (g.facts || []).forEach(function (f) {
       var box = el("div", "d__fact");
@@ -327,6 +408,7 @@
     main.appendChild(acts);
 
     detail.appendChild(main);
+    armReveals();
   }
 
   /* ---------- 라우팅 ---------- */
@@ -359,6 +441,7 @@
       window.scrollTo(0, 0);
     } else {
       var wasOpen = detailOpen;
+      cleanupDetailFx();
       detailOpen = false;
       detail.hidden = true;
       home.hidden = false;
@@ -393,7 +476,10 @@
     routeWithTransition();
   });
   window.addEventListener("keydown", function (e) {
-    if (e.key === "Escape" && detailOpen) closeDetail();
+    /* 맛보기 입력창에서 타이핑 중일 땐 Escape 로 페이지를 닫지 않는다 */
+    if (e.key === "Escape" && detailOpen && !/^(INPUT|TEXTAREA)$/.test(e.target.tagName)) {
+      closeDetail();
+    }
   });
 
   /* ---------- 시작 ---------- */
