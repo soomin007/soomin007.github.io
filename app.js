@@ -17,8 +17,6 @@
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   var isTouch = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 1;
 
-  var THEMES = { enigma: "t-enigma", sand: "t-sand", bee: "t-bee", hud: "t-hud", eco: "t-eco" };
-
   /* ---------- 헬퍼 ---------- */
 
   function el(tag, cls, text) {
@@ -242,59 +240,29 @@
 
   /* ---------- 상세 페이지 ---------- */
 
-  var SHOT_HEADS = {
-    enigma: "첨부 · 증거 사진",
-    sand: "원정 기록",
-    bee: "벌집 앨범",
-    hud: "감시 화면",
-    eco: "표본 도판"
-  };
-
-  var teaserCleanup = null;
   var revealObs = null;
 
-  /* 상세를 떠나거나 다시 그릴 때 타이머·raf·옵저버를 정리한다 */
+  /* 상세를 떠나거나 다시 그릴 때 옵저버를 정리한다 */
   function cleanupDetailFx() {
-    if (teaserCleanup) { teaserCleanup(); teaserCleanup = null; }
     if (revealObs) { revealObs.disconnect(); revealObs = null; }
   }
 
   function shotsFor(g) {
     if (!g.shots || !g.shots.length) return null;
     var sec = el("section", "d__shots");
-    sec.appendChild(el("h2", "d__shots-head", SHOT_HEADS[g.theme] || "장면들"));
+    sec.appendChild(el("h2", "d__shots-head", "장면들"));
     var wrap = el("div", "d__shots-grid");
-    g.shots.forEach(function (s, i) {
+    g.shots.forEach(function (s) {
       var fig = el("figure", "d__shot rev");
-      if (g.theme === "hud") {
-        var bar = el("div", "d__shot-bar");
-        bar.appendChild(el("span", null, "CAM-0" + (i + 1)));
-        bar.appendChild(el("span", "d__shot-rec", "● REC"));
-        fig.appendChild(bar);
-      } else if (g.theme === "eco") {
-        fig.appendChild(el("div", "d__shot-bar", "표본 기록 " + String(i + 1).padStart(2, "0")));
-      }
       var img = el("img");
       img.src = s.src;
       img.alt = ""; /* 설명은 figcaption 이 맡는다 */
       img.loading = "lazy";
       fig.appendChild(img);
-      var prefix = g.theme === "enigma" ? "증거 사진 №" + (i + 1) + " · " : "";
-      fig.appendChild(el("figcaption", null, prefix + s.cap));
+      fig.appendChild(el("figcaption", null, s.cap));
       wrap.appendChild(fig);
     });
     sec.appendChild(wrap);
-    return sec;
-  }
-
-  function teaserFor(g) {
-    var t = window.TEASERS && window.TEASERS[g.id];
-    if (!t) return null;
-    var sec = el("section", "d__teaser rev");
-    sec.appendChild(el("h2", "d__teaser-head", t.title));
-    var body = el("div", "d__teaser-body");
-    sec.appendChild(body);
-    teaserCleanup = t.make(body, g, reducedMotion) || null;
     return sec;
   }
 
@@ -316,43 +284,11 @@
     nodes.forEach(function (n) { revealObs.observe(n); });
   }
 
-  function flourishFor(g) {
-    var box = el("div", "d__flourish");
-    if (g.theme === "enigma") {
-      box.appendChild(el("span", "stamp", "TOP SECRET · 기밀"));
-      box.appendChild(el("span", "redact redact--long"));
-      box.appendChild(el("span", "redact redact--short"));
-    } else if (g.theme === "hud") {
-      box.appendChild(el("span", "rec", "● REC"));
-      box.appendChild(el("span", "track", "VEIL ▸ 대상 추적 중"));
-      box.appendChild(el("span", "scanline"));
-      box.appendChild(el("span", "cam", "CAM-04"));
-    } else if (g.theme === "bee") {
-      box.appendChild(el("span", "hex"));
-      box.appendChild(el("span", "hex"));
-      box.appendChild(el("span", "hex"));
-    } else if (g.theme === "sand") {
-      box.appendChild(el("span", "ridge"));
-      box.appendChild(el("span", "ridge__label", "폭풍 이후, 서쪽 능선"));
-      box.appendChild(el("span", "ridge"));
-    } else if (g.theme === "eco") {
-      var no = String(GAMES.indexOf(g) + 1).padStart(3, "0");
-      var sp = el("span", "specimen");
-      sp.appendChild(document.createTextNode("표본 No." + no));
-      sp.appendChild(el("i", null, "|"));
-      sp.appendChild(document.createTextNode("생태 도감 · 진행 중인 관찰"));
-      box.appendChild(sp);
-    } else {
-      return null;
-    }
-    return box;
-  }
-
   function renderDetail(g) {
     cleanupDetailFx();
     detail.innerHTML = "";
-    detail.className = "detail " + (THEMES[g.theme] || "t-plain");
-    if (!THEMES[g.theme]) detail.style.setProperty("--tone", g.color);
+    detail.className = "detail t-plain";
+    detail.style.setProperty("--tone", g.color);
 
     detail.appendChild(el("div", "d__texture"));
 
@@ -372,9 +308,6 @@
 
     main.appendChild(el("h1", "d__title", g.title));
 
-    var fl = flourishFor(g);
-    if (fl) main.appendChild(fl);
-
     var frame = el("div", "d__frame");
     var img = el("img");
     img.src = g.img;
@@ -387,9 +320,6 @@
 
     var shots = shotsFor(g);
     if (shots) main.appendChild(shots);
-
-    var teaser = teaserFor(g);
-    if (teaser) main.appendChild(teaser);
 
     var facts = el("dl", "d__facts");
     (g.facts || []).forEach(function (f) {

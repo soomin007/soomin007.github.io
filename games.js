@@ -18,7 +18,7 @@
      first     true 인 카드에 "입문 추천" 표가 붙는다. 하나만
      mobile    true = 터치만으로 플레이 가능. 폰에서는 이 게임들이 먼저 정렬된다
      img       캡슐 이미지 경로 (assets/<id>.webp, 1232x706 권장)
-     theme     상세 페이지 테마: 'enigma'|'sand'|'bee'|'hud'|'eco'|'' (빈 값 = 범용 다크)
+     theme     (구버전 내장 테마 식별자. 전용 페이지 체제 이후 미사용, 기록용으로만 남김)
      tag       상세 페이지 우상단 연출 문구
      facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만. 수치를 지어내지 않는다
      shots     상세 갤러리. {src, cap} 배열 (assets/shots/<id>-*.webp). 없으면 [] 로.
@@ -54,9 +54,9 @@ const GAMES = [
       { k: "상태", v: "라이브" }
     ],
     shots: [
-      { src: "assets/shots/be-the-bee-hive.webp", cap: "타일을 이어 붙이며 벌집이 자란다" },
-      { src: "assets/shots/be-the-bee-queen.webp", cap: "여왕벌 모드" },
-      { src: "assets/shots/be-the-bee-board.webp", cap: "보드 테마" }
+      { src: "assets/shots/be-the-bee-turn.webp", cap: "타일을 이어 붙이며 판이 자란다" },
+      { src: "assets/shots/be-the-bee-goal.webp", cap: "꿀벌 5개를 한 줄로" },
+      { src: "assets/shots/be-the-bee-hivelock.webp", cap: "타일 5줄은 벌집이 되어 잠긴다" }
     ],
     links: {
       play: "https://soomin007.github.io/be-the-bee/",

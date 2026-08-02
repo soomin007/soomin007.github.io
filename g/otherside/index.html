@@ -44,6 +44,11 @@
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* 줄바꿈: 제목은 균형(balance), 본문은 고아 단어 방지(pretty) */
+h1, h2, h3 { text-wrap: balance; }
+p, figcaption { text-wrap: pretty; }
+
 html, body { overflow-x: clip; }
 body {
   background:
@@ -53,6 +58,9 @@ body {
   font-family: var(--serif);
   line-height: 1.85;
   -webkit-font-smoothing: antialiased;
+  /* 한글이 단어 중간에서 끊기지 않게. 긴 토큰은 break-word 안전망 */
+  word-break: keep-all;
+  overflow-wrap: break-word;
 }
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
