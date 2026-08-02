@@ -1,0 +1,56 @@
+# known-issues
+
+반복 위험이 있는 함정 모음. **코드를 작성·수정하기 전에 먼저 읽는다.**
+새 실수가 드러나면 수정 커밋과 함께 여기 항목을 추가한다. 경위·서사는 세션 로그에.
+
+## 1. padding 단축 속성이 .wrap 좌우 여백을 지운다 (2회 재발, 2026-08-02)
+
+- 증상: 폰에서 본문 텍스트가 화면 끝에 붙는다. 데스크톱은 max-width 중앙 정렬 때문에 안 보인다.
+- 원인: `.wrap { padding: 0 var(--pad) }` 뒤에 오는 `.sec { padding: 5vh 0 }` 단축 속성이
+  (`class="sec wrap"` 인 요소에서) 좌우 여백까지 0으로 리셋한다.
+- 규칙: 래퍼와 클래스를 공유하는 요소에는 padding 단축 속성 금지.
+  세로 리듬은 `padding-top` / `padding-bottom` 으로 축을 분리한다.
+- 규칙: 새/수정 페이지는 배포 전에 375px iframe 실측을 전 페이지 일괄로 돌린다:
+  본문 섹션 computed padding-left ≥ 20px, 텍스트 rect.left ≥ 20px, scrollWidth == clientWidth.
+
+## 2. em dash 가 인용·커밋 메시지로 스며든다 (2026-08-02)
+
+- 증상: 본문에서는 걸러도, 게임 원문 인용("VEIL — ")이나 커밋 메시지에 em dash 가 들어간다.
+- 규칙: 커밋 메시지·인용 포함 전부 금지. 인용 원문에 있으면 `▸`나 `·`로 바꿔 옮긴다.
+  커밋 전 `grep -c "—"` 로 확인한다. (전역 CLAUDE.md 글쓰기 규칙 참조)
+
+## 3. 가려진 크롬 창에서는 검증이 오탐 난다 (2026-08-02)
+
+- 증상: IntersectionObserver 콜백이 영영 안 오고(reveal 이 opacity 0), rAF 정지,
+  setInterval 이 수백 ms 로 늘어지고, 심하면 trivial JS 평가도 45s 타임아웃.
+- 원인: 크롬이 다른 창에 가려진(occluded) 창의 렌더링 프레임을 멈춘다.
+- 규칙: CDP 검증 전에 PowerShell `(New-Object -ComObject WScript.Shell).AppActivate('Chrome')`
+  로 창을 전경화한다. 탭이 계속 무응답이면 새 탭을 만들어 검증한다.
+- 관련 규칙(제품 쪽): IO 에 의존하는 연출은 "일정 시간 내 콜백 부재 시 전부 표시" 폴백을 넣는다.
+
+## 4. Chrome 캐시로 구버전을 검증하게 된다 (2026-08-02)
+
+- 증상: 파일을 고쳤는데 브라우저 동작이 그대로다 (http.server 는 캐시 헤더가 없음).
+- 규칙: 로컬 검증 URL 에 `?v=<임의값>` 쿼리를 붙여 캐시를 우회한다.
+
+## 5. 이모지 글리프가 데스크톱 Chrome 에서 깨질 수 있다 (2026-08-01)
+
+- 증상: 📱⌨️ 같은 칩이 격자 글리프로 렌더된다.
+- 규칙: UI 라벨에 이모지를 쓰지 않는다. 텍스트("키보드 필요")나 CSS 도형으로 대체한다.
+
+## 6. ViewTransition promise 를 안 잡으면 콘솔 에러 (2026-08-02)
+
+- 증상: 전환이 스킵될 때 `InvalidStateError: Transition was aborted` 가 콘솔에 쌓인다.
+- 규칙: `startViewTransition` 의 `ready`/`finished` 를 `.catch(function () {})` 로 삼킨다.
+  (콜백의 route 실행은 전환 스킵과 무관하게 항상 일어난다.)
+
+## 7. reduced-motion 오버라이드는 특이도까지 맞춰야 한다 (2026-08-02)
+
+- 증상: `@media (prefers-reduced-motion)` 안의 `.d__main { animation: none }` 이
+  `.t-enigma .d__main`(0,2,0) 에 져서 애니메이션이 계속 돈다. 미디어 쿼리는 특이도를 안 올린다.
+- 규칙: 감속 블록의 선택자는 원본과 특이도 동률 이상으로 쓴다 (예: `.detail .d__main`).
+
+## 8. 검증 안 된 수치를 지어내지 않는다 (2026-08-01, 사용자 지시)
+
+- 규칙: 플레이 시간·판 수 같은 수치는 코드나 README 에 근거가 있을 때만 쓴다.
+  facts 표·카피 전부 해당.
