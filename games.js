@@ -144,7 +144,7 @@ const GAMES = [
     id: "eyes-on-you",
     page: "g/eyes-on-you/",
     title: "Eyes on You",
-    kicker: "횡스크롤 로그라이트",
+    kicker: "횡스크롤 다회차 서사 액션",
     line: "AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 마지막에 VEIL의 정체가 드러납니다.",
     lineLong: "",
     color: "#5B8DEF",
