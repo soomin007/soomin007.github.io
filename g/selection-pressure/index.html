@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>적자생존 · 관전형 진화 로그라이크</title>
-<meta name="description" content="직접 조작하지 않는 게임입니다. 카드를 골라 형질을 퍼뜨리고, 무리가 살아남는 것을 지켜보세요. 앞서 해보기.">
+<title>적자생존 · 무리 지휘 진화 로그라이크</title>
+<meta name="description" content="한 종을 길러 생태계의 정점에 올리는 진화 로그라이크입니다. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시키세요. 개발은 잠시 멈춘 상태이며, 올라온 판은 그대로 플레이할 수 있습니다.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="적자생존 · 관전형 진화 로그라이크">
-<meta property="og:description" content="한 종을 길러 생태계의 정점에 올리세요. 카드를 골라 형질을 키우고, 무리가 살아남는 것을 지켜보세요.">
+<meta property="og:title" content="적자생존 · 무리 지휘 진화 로그라이크">
+<meta property="og:description" content="한 종을 길러 생태계의 정점에 올리세요. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시키세요.">
 <meta property="og:image" content="https://soomin007.github.io/g/selection-pressure/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/selection-pressure/">
 <meta name="twitter:card" content="summary_large_image">
@@ -207,13 +207,12 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   padding: 6px 13px;
   border-radius: 10px;
 }
-.chip--ext { color: #f0b9ac; border-color: rgba(232, 92, 67, 0.4); }
 .chips__note { font-size: 12.5px; color: var(--faint); margin-top: 12px; }
 
 /* ---------- 관찰 실습 ---------- */
 .lab { border: 1px solid var(--line); border-radius: 18px; padding: clamp(16px, 4vw, 26px); background: rgba(34, 26, 20, 0.5); }
 .sp-world { font-size: 12.5px; color: var(--sub); margin: 0 0 10px; border-left: 3px solid var(--lime); padding-left: 10px; line-height: 1.7; }
-.sp-canvas { width: 100%; height: 230px; display: block; border-radius: 14px; border: 1px solid var(--line); }
+.sp-canvas { width: 100%; height: 230px; display: block; border-radius: 14px; border: 1px solid var(--line); touch-action: manipulation; cursor: crosshair; }
 .sp-xpwrap { height: 6px; background: rgba(245, 235, 220, 0.12); border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .sp-xp { height: 100%; width: 0%; background: var(--amber); transition: width 0.3s ease; }
 .sp-gen { font-family: var(--mono); font-size: 11.5px; color: var(--lime); margin: 8px 0 0; min-height: 1.3em; }
@@ -255,6 +254,33 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 }
 .tz-btn:disabled { opacity: 0.45; cursor: default; }
 
+/* ---------- 보류 표시 ---------- */
+.hero__badge--paused { background: rgba(245, 235, 220, 0.12); color: var(--sub); border: 1px solid var(--line); }
+.hero__notice {
+  max-width: 540px;
+  margin: 22px auto 0;
+  font-size: 12.5px;
+  color: var(--sub);
+  line-height: 1.7;
+  border: 1px dashed var(--line);
+  border-radius: 12px;
+  padding: 10px 14px;
+}
+
+/* ---------- 지휘 · 범주 ---------- */
+.cmd__k b { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--amber); margin-left: 8px; letter-spacing: 0.1em; }
+.cats { display: grid; gap: 8px; margin-bottom: 14px; }
+@media (min-width: 640px) { .cats { grid-template-columns: repeat(5, 1fr); } }
+.cat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; }
+.cat__k { font-family: var(--disp); font-size: 15px; color: var(--ink); display: flex; align-items: center; gap: 7px; }
+.cat__k::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--c); flex: none; }
+.cat__v { font-size: 11.5px; color: var(--sub); line-height: 1.65; margin-top: 4px; }
+.grow__note { font-size: 12.5px; color: var(--sub); line-height: 1.75; margin: 0 0 14px; }
+.grow__note strong { color: var(--amber); font-weight: 600; }
+.chip--key { color: #bfe0f3; border-color: rgba(90, 176, 226, 0.4); }
+.chip--rule { color: #f0b9ac; border-color: rgba(232, 92, 67, 0.4); }
+.sp-hint { font-family: var(--mono); font-size: 11px; color: var(--faint); margin: 6px 0 0; min-height: 1.3em; }
+
 /* ---------- 마무리 ---------- */
 .final { text-align: center; padding: 7vh var(--pad) 6vh; }
 .final__line { font-family: var(--disp); font-size: clamp(17px, 4.4vw, 22px); color: var(--ink); margin-bottom: 24px; }
@@ -284,23 +310,24 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
 <header class="bar">
   <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__tag">관찰 일지 · 갱신됨</span>
+  <span class="bar__tag">관찰 일지 · 잠시 덮어 둠</span>
 </header>
 
 <main>
   <section class="hero">
-    <span class="hero__badge">앞서 해보기</span>
+    <span class="hero__badge hero__badge--paused">개발 보류</span>
     <h1 class="hero__title">적자생존</h1>
     <p class="hero__line">한 종을 길러 생태계의 정점에 올리세요.</p>
-    <p class="hero__hint">카드를 골라 형질을 키우고, 무리가 살아남는 것을 지켜보세요.</p>
+    <p class="hero__hint">탭으로 무리를 이끌고, 라운드마다 닥치는 시련을 넘으세요.</p>
     <div class="hero__meta">
-      <span>1인</span><span>조작 없음 · 관전 + 카드</span><span>모바일 세로 최적</span>
+      <span>1인</span><span>탭 · 더블탭 · 길게 누르기</span><span>모바일 세로 최적</span>
     </div>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/selection-pressure/">바로 플레이</a>
       <a class="btn-ghost" href="https://github.com/soomin007/selection-pressure" target="_blank" rel="noopener">소스 코드</a>
     </div>
     <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+    <p class="hero__notice">개발은 2026년 8월 말에 잠시 멈췄습니다. 지금 올라와 있는 판은 그대로 플레이할 수 있습니다.</p>
   </section>
 
   <!-- 루프 -->
@@ -310,15 +337,39 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     <div class="loop">
       <div class="loop__item is-forage rev">
         <p class="loop__k">채집</p>
-        <p class="loop__v">무리가 스스로 먹고 번식합니다. 먹이가 곧 경험치, 레벨이 오르면 카드 3장 중 1장을 고릅니다.</p>
+        <p class="loop__v">무리를 먹여 키웁니다. 먹이가 곧 경험치, 레벨이 오르면 카드 3장 중 1장을 고릅니다. 라운드마다 사냥, 새끼 치기, 자리 지키기, 금빛 짐승 잡기 같은 시련이 걸립니다.</p>
       </div>
       <div class="loop__item is-boss rev">
         <p class="loop__k">보스</p>
-        <p class="loop__v">굶주린 상어, 그림자 매복자, 성난 말벌 떼… 예고가 뜨면 형태를 갖추고 수를 늘려 대비하세요.</p>
+        <p class="loop__v">굶주린 상어, 그림자 매복자, 성난 말벌 떼… 예고가 뜨면 무리를 모아 맞서세요. 체력 바를 깎아 물리치면 방울이 떨어집니다.</p>
       </div>
       <div class="loop__item is-ext rev">
         <p class="loop__k">대멸종</p>
-        <p class="loop__v">혹독한 추위, 대가뭄, 대역병, 폭염. 마지막 관문을 버티면 더 험한 다음 시대가 열립니다.</p>
+        <p class="loop__v">혹독한 추위, 대가뭄, 대역병, 폭염. 버티면 더 험한 다음 시대가 열리고, 깊은 시대에는 긴이빨 맹수와 검붉은 폭군이 야생에 섞입니다. 시대 5를 넘기면 정복입니다.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 지휘 -->
+  <section class="sec wrap">
+    <div class="sec__label">COMMAND</div>
+    <h2 class="sec__title">한 마리가 아니라 무리를 지휘합니다.</h2>
+    <div class="worlds">
+      <div class="world rev">
+        <p class="world__k cmd__k">탭 <b>이동</b></p>
+        <p class="world__v">그 자리로 무리를 보냅니다. 명령 줄을 다시 누르면 철회됩니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k cmd__k">더블탭 <b>회피</b></p>
+        <p class="world__v">탭한 자리에서 반대쪽으로 흩어져 달아납니다. 다리 1단부터 열립니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k cmd__k">길게 누르기 <b>명령 휠</b></p>
+        <p class="world__v">밀어서 고르고 떼면 실행됩니다. 지금 열린 명령은 이동과 회피 둘이고, 나머지 칸은 준비 중입니다.</p>
+      </div>
+      <div class="world rev">
+        <p class="world__k cmd__k">목소리 <b>닿는 거리</b></p>
+        <p class="world__v">명령은 목소리가 닿는 거리 안의 개체에게만 갑니다. 무리 범주를 키우면 그 거리가 넓어집니다.</p>
       </div>
     </div>
   </section>
@@ -330,20 +381,51 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     <div class="plates" role="list">
       <figure class="plate rev" role="listitem">
         <div class="plate__bar">표본 기록 01</div>
-        <img src="../../assets/shots/selection-pressure-watch.webp" alt="" loading="lazy">
-        <figcaption>관전: 생태계가 스스로 굴러간다</figcaption>
+        <img src="../../assets/shots/selection-pressure-command.webp" alt="" loading="lazy">
+        <figcaption>탭 한 번, 무리가 그 자리로 간다</figcaption>
       </figure>
       <figure class="plate rev" role="listitem">
         <div class="plate__bar">표본 기록 02</div>
-        <img src="../../assets/shots/selection-pressure-creature.webp" alt="" loading="lazy">
-        <figcaption>개체 관찰: 형질이 곧 생김새다</figcaption>
+        <img src="../../assets/shots/selection-pressure-boss.webp" alt="" loading="lazy">
+        <figcaption>보스: 성난 말벌 떼가 덮친다</figcaption>
       </figure>
       <figure class="plate rev" role="listitem">
         <div class="plate__bar">표본 기록 03</div>
         <img src="../../assets/shots/selection-pressure-draft.webp" alt="" loading="lazy">
-        <figcaption>라운드 사이, 카드를 고른다</figcaption>
+        <figcaption>라운드 사이, 카드로 진화한다</figcaption>
       </figure>
     </div>
+  </section>
+
+  <!-- 성장 -->
+  <section class="sec wrap">
+    <div class="sec__label">GROWTH</div>
+    <h2 class="sec__title">도장은 방울로, 능력은 카드로.</h2>
+    <div class="cats rev">
+      <div class="cat" style="--c:#E85C43"><p class="cat__k">이빨</p><p class="cat__v">무는 힘과 사냥. 키울수록 풀에서 얻는 것이 줄어듭니다.</p></div>
+      <div class="cat" style="--c:#8FD14F"><p class="cat__k">다리</p><p class="cat__v">빠르기와 험한 땅. 키울수록 몸이 가벼워지고 잘 지칩니다.</p></div>
+      <div class="cat" style="--c:#5AB0E2"><p class="cat__k">눈</p><p class="cat__v">보는 거리와 어둠. 키울수록 옆과 뒤가 좁아집니다.</p></div>
+      <div class="cat" style="--c:#F5C33B"><p class="cat__k">가죽</p><p class="cat__v">버티는 힘과 추위. 키울수록 몸이 커지고 더위에 약해집니다.</p></div>
+      <div class="cat" style="--c:#B48CF0"><p class="cat__k">무리</p><p class="cat__v">새끼와 명령이 닿는 거리. 키울수록 나눠 먹고 병이 돕니다.</p></div>
+    </div>
+    <p class="grow__note">범주 다섯의 도장은 카드가 아니라 <strong>방울</strong>로만 오릅니다. 방울은 보스를 물리치거나 대멸종을 버티거나 새 시대에 들어설 때 떨어지고, 무리가 밟고 지나가면 주워집니다. 도장이 문턱을 넘으면 티어 효과가 켜지고 드래프트에 새 카드가 열립니다.</p>
+    <div class="chips rev">
+      <span class="chip chip--key">지느러미</span>
+      <span class="chip chip--key">날개</span>
+      <span class="chip chip--key">초음파</span>
+      <span class="chip chip--key">숨기</span>
+      <span class="chip chip--key">독니</span>
+      <span class="chip chip--key">뿔</span>
+      <span class="chip chip--key">부름</span>
+      <span class="chip">수풀의 미식가</span>
+      <span class="chip">밤 사냥</span>
+      <span class="chip">달아나는 등</span>
+      <span class="chip">등을 맞대고</span>
+      <span class="chip chip--rule">등에 그린 눈</span>
+      <span class="chip chip--rule">죽지 않는 것</span>
+      <span class="chip chip--rule">연어의 귀향</span>
+    </div>
+    <p class="chips__note">카드 79장. 열쇠 7종은 없던 능력을 열고, 조건부 특성은 밤·수풀·굶주림처럼 맥락이 맞을 때만 켜지며, 3·4단이 여는 고유 카드 20장에는 효과마다 대가가 붙습니다.</p>
   </section>
 
   <!-- 월드 -->
@@ -351,6 +433,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     <div class="sec__label">WORLDS</div>
     <h2 class="sec__title">세계가 먼저 정해지고, 종은 그 다음에 고릅니다.</h2>
     <div class="worlds">
+      <div class="world rev">
+        <p class="world__k">초원 <i>GRASSLAND</i></p>
+        <p class="world__v">평평한 초원에 작은 호수가 몇 개 있습니다. 산도 험한 곳도 없어 어디로든 걸어갈 수 있습니다.</p>
+      </div>
       <div class="world rev">
         <p class="world__k">대륙 <i>BASELINE</i></p>
         <p class="world__v">땅이 넓고 바다는 호수처럼 흩어져 있습니다. 걷는 종이 살기 좋습니다.</p>
@@ -368,28 +454,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
         <p class="world__v">지구처럼 바다가 대부분입니다. 뭍은 좁아 붐비고, 바다가 진짜 삶터입니다.</p>
       </div>
     </div>
-  </section>
-
-  <!-- 형질 -->
-  <section class="sec wrap">
-    <div class="sec__label">TRAITS</div>
-    <h2 class="sec__title">고른 형질이 그대로 생김새가 됩니다.</h2>
-    <div class="chips rev">
-      <span class="chip">날쌘 다리</span>
-      <span class="chip">넓은 시야</span>
-      <span class="chip">무리 본능</span>
-      <span class="chip">커다란 몸</span>
-      <span class="chip">송곳니</span>
-      <span class="chip">보호색</span>
-      <span class="chip">지느러미</span>
-      <span class="chip">날개</span>
-      <span class="chip">초음파</span>
-      <span class="chip">독 살갗</span>
-      <span class="chip">가시 쏘기</span>
-      <span class="chip chip--ext">거인</span>
-      <span class="chip chip--ext">메뚜기 떼</span>
-    </div>
-    <p class="chips__note">형질 카드 60여 장. 빠르면 몸이 길어지고, 커지면 걸음이 무거워지고, 초음파를 얻으면 눈이 멉니다.</p>
+    <p class="chips__note">시대가 지나면 세계도 바뀝니다. 지금 세계에서 잘 살던 형질이 다음 세계에서는 짐이 되기도 합니다.</p>
   </section>
 
   <!-- 관찰 실습 -->
@@ -403,7 +468,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   </section>
 
   <section class="final">
-    <p class="final__line">무리가 살아남는 것을 지켜보세요.</p>
+    <p class="final__line">무리를 이끌고, 살아남는 것을 지켜보세요.</p>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/selection-pressure/">바로 플레이</a>
     </div>
@@ -458,7 +523,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   var mount = document.getElementById("lab-mount");
   var canvas = document.createElement("canvas");
   canvas.className = "sp-canvas";
-  canvas.setAttribute("aria-label", "개체군 시뮬레이션: 두 섬과 바다");
+  canvas.setAttribute("aria-label", "개체군 시뮬레이션: 두 섬과 바다. 탭하면 무리가 그리로 갑니다");
   mount.appendChild(canvas);
   var ctx = canvas.getContext("2d");
 
@@ -469,6 +534,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   xpLab.setAttribute("aria-live", "polite");
   mount.appendChild(xpWrap);
   mount.appendChild(xpLab);
+  var ORD_HINT = "캔버스를 탭하면 무리가 그리로 갑니다. 바다 건너는 날개가 있어야 갑니다.";
+  var ordLab = el("p", "sp-hint", ORD_HINT);
+  mount.appendChild(ordLab);
 
   var draft = el("div", "sp-draft");
   draft.hidden = true;
@@ -490,6 +558,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   var foods = [];
   var eaten = 0, NEED = 6;
   var paused = false, ended = false, chosen = null;
+  var order = null; /* 탭 명령 {x, y, ttl} · 본편의 「이동」 축소판 */
 
   for (var i = 0; i < 12; i++) {
     pop.push({
@@ -534,10 +603,18 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
         p.tgt = best;
       }
       p.wob += 0.06;
-      if (p.tgt) {
-        var want = Math.atan2(p.tgt.y - p.y, p.tgt.x - p.x);
+      /* 명령이 있으면 먹이보다 명령이 먼저. 길이 없는(바다 건너) 개체는 명령을 놓아 준다 */
+      var goal = null;
+      if (order && !p.arrived && (p.wings || islandOf(order.x) === islandOf(p.x))) goal = order;
+      else if (p.tgt) goal = p.tgt;
+      if (goal) {
+        var want = Math.atan2(goal.y - p.y, goal.x - p.x);
         var diff = Math.atan2(Math.sin(want - p.dir), Math.cos(want - p.dir));
         p.dir += diff * (p.echo ? 0.2 : 0.09) + Math.sin(p.wob) * 0.04;
+        if (goal === order) {
+          var ox = order.x - p.x, oy = order.y - p.y;
+          if (ox * ox + oy * oy < 144) p.arrived = true;
+        }
       } else {
         p.dir += Math.sin(p.wob) * 0.08;
       }
@@ -559,6 +636,19 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     });
     foods = foods.filter(function (f) { return !f.gone; });
     if (foods.length < 8) spawnFood(4, "any");
+    if (order) {
+      order.ttl--;
+      var canGo = 0, went = 0;
+      pop.forEach(function (p) {
+        if (p.wings || islandOf(order.x) === islandOf(p.x)) { canGo++; if (p.arrived) went++; }
+      });
+      ordLab.textContent = "「이동」 · 따르는 중 " + went + "/" + canGo +
+        (canGo < pop.length ? " · 바다 건너 " + (pop.length - canGo) + "마리는 못 갑니다" : "");
+      if (order.ttl <= 0 || went === canGo) {
+        order = null;
+        ordLab.textContent = "무리 도착. 다시 탭하면 또 갑니다.";
+      }
+    }
   }
 
   function onEat() {
@@ -620,6 +710,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
       ctx.fillStyle = f.island ? "#9bee5a" : "#7fe9ff";
       ctx.fill();
     });
+    if (order) {
+      ctx.strokeStyle = "rgba(245, 195, 59, 0.9)";
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(order.x, order.y + 6); ctx.lineTo(order.x, order.y - 12); ctx.stroke();
+      ctx.fillStyle = "#F5C33B";
+      ctx.beginPath(); ctx.moveTo(order.x, order.y - 12); ctx.lineTo(order.x + 9, order.y - 8); ctx.lineTo(order.x, order.y - 4); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.arc(order.x, order.y + 6, 3, 0, Math.PI * 2); ctx.fill();
+    }
     pop.forEach(drawCreature);
   }
 
@@ -666,13 +764,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
       flash.appendChild(el("p", "sp-pass", "위협을 넘겼습니다"));
       flash.appendChild(el("p", "sp-big", "생존"));
       flash.appendChild(el("p", "sp-close",
-        "본편은 채집과 보스, 대멸종까지 6단계, 형질 카드 60여 장, 시대 5개입니다."));
+        "본편은 채집·보스·대멸종의 6단계를 시대 5개 동안 되풀이하고, 카드 79장과 다섯 범주의 도장으로 종을 키웁니다."));
       var again = el("button", "tz-btn", "새 혈통으로 시작");
       again.type = "button";
       again.addEventListener("click", function () {
         ended = false; chosen = null; eaten = 0;
         pop.forEach(function (p) { p.size = 1; p.wings = false; p.echo = false; p.spd = 0.55; });
         pop.length = 12;
+        order = null;
+        pop.forEach(function (p) { p.arrived = false; });
+        ordLab.textContent = ORD_HINT;
         xpBar.style.width = "0%";
         xpLab.textContent = "무리가 먹이를 먹으면 경험치가 쌓입니다.";
         flash.hidden = true;
@@ -686,6 +787,21 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   resize();
   draw();
   window.addEventListener("resize", resize);
+  canvas.addEventListener("pointerdown", function (e) {
+    if (paused || ended) return;
+    var r = canvas.getBoundingClientRect();
+    var x = e.clientX - r.left, y = e.clientY - r.top;
+    var isle = islandOf(x);
+    var canGo = pop.filter(function (p) { return p.wings || (isle !== "SEA" && islandOf(p.x) === isle); }).length;
+    if (canGo === 0) {
+      order = null;
+      ordLab.textContent = isle === "SEA" ? "바다 한가운데로는 못 갑니다." : "길이 없어 놓아 줍니다. 날개를 얻으면 바다를 건넙니다.";
+      return;
+    }
+    order = { x: x, y: y, ttl: 600 };
+    pop.forEach(function (p) { p.arrived = false; });
+    if (reducedMotion) { for (var t = 0; t < 60; t++) tick(); draw(); }
+  });
   var io2 = null;
   if (reducedMotion) {
     for (var t = 0; t < 40; t++) tick();

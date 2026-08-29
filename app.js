@@ -81,6 +81,7 @@
     var info = el("div", "feat__info");
     var kicker = el("p", "feat__kicker", g.kicker);
     kicker.style.color = g.color;
+    if (g.status === "paused") kicker.appendChild(el("span", "feat__status", "개발 보류"));
     info.appendChild(kicker);
     info.appendChild(el("h1", "feat__title", g.title));
     info.appendChild(el("p", "feat__line", g.line));
@@ -180,6 +181,8 @@
       var wip = el("span", "badge badge--wip", "앞서 해보기");
       wip.style.background = g.color;
       media.appendChild(wip);
+    } else if (g.status === "paused") {
+      media.appendChild(el("span", "badge badge--paused", "개발 보류"));
     } else if (g.first) {
       var first = el("span", "badge badge--first", "입문 추천");
       first.style.color = g.color;

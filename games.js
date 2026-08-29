@@ -13,7 +13,8 @@
      color     이 게임의 색. 홈 글로우·버튼·점 인디케이터에 쓰인다
      year      연도. yearLabel 이 있으면 상세에선 그걸 우선 표시 (연출용)
      meta      카드 태그 칩. 3개까지 보인다
-     status    'live' | 'wip'  (wip 은 "앞서 해보기" 리본)
+     status    'live' | 'wip' | 'paused'  (wip 은 "앞서 해보기", paused 는 "개발 보류" 리본.
+               paused 는 폐기가 아니라 보류: 플레이 링크는 살아 있고 카드도 그대로 노출된다)
      note      방문자에게 미리 알려야 할 주의. 없으면 빈 문자열
      first     true 인 카드에 "입문 추천" 표가 붙는다. 하나만
      mobile    true = 터치만으로 플레이 가능. 폰에서는 이 게임들이 먼저 정렬된다
@@ -180,31 +181,31 @@ const GAMES = [
     id: "selection-pressure",
     page: "g/selection-pressure/",
     title: "적자생존",
-    kicker: "관전형 진화 로그라이크",
-    line: "직접 조작하지 않는 게임입니다. 라운드 사이에 카드를 고르면 생태계 시뮬레이션이 결과를 보여 줍니다.",
+    kicker: "무리 지휘 진화 로그라이크",
+    line: "한 종을 길러 생태계의 정점에 올리는 게임입니다. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시킵니다.",
     lineLong: "",
     color: "#6FBF8B",
     year: "2026",
     yearLabel: "",
-    meta: ["1인", "TypeScript · PixiJS", "모바일 세로"],
-    status: "wip",
-    note: "",
+    meta: ["1인", "탭 지휘", "모바일 세로"],
+    status: "paused",
+    note: "개발은 2026년 8월 말에 잠시 멈췄습니다. 지금 올라와 있는 판은 그대로 플레이할 수 있습니다.",
     first: false,
     mobile: true,
     img: "assets/selection-pressure.webp",
     imgFeat: "assets/feat/selection-pressure.webp",
     theme: "eco",
-    tag: "관찰 일지 · 갱신됨",
+    tag: "관찰 일지 · 잠시 덮어 둠",
     facts: [
-      { k: "조작", v: "없음 · 관전 + 카드 선택" },
+      { k: "조작", v: "탭 · 더블탭 · 길게 누르기 + 라운드 사이 카드" },
       { k: "스택", v: "TypeScript · PixiJS" },
       { k: "환경", v: "모바일 세로 최적" },
-      { k: "상태", v: "앞서 해보기" }
+      { k: "상태", v: "개발 보류 (2026-08-29)" }
     ],
     shots: [
-      { src: "assets/shots/selection-pressure-watch.webp", cap: "관전: 생태계가 스스로 굴러간다" },
-      { src: "assets/shots/selection-pressure-creature.webp", cap: "개체 관찰" },
-      { src: "assets/shots/selection-pressure-draft.webp", cap: "라운드 사이, 카드를 고른다" }
+      { src: "assets/shots/selection-pressure-command.webp", cap: "탭 한 번, 무리가 그 자리로 간다" },
+      { src: "assets/shots/selection-pressure-boss.webp", cap: "보스: 성난 말벌 떼가 덮친다" },
+      { src: "assets/shots/selection-pressure-draft.webp", cap: "라운드 사이, 카드로 진화한다" }
     ],
     links: {
       play: "https://soomin007.github.io/selection-pressure/",
