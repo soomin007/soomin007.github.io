@@ -81,9 +81,9 @@ const GAMES = [
     yearLabel: "1942 ~ 2026",
     meta: ["1인", "15 스테이지", "엔딩 3종"],
     status: "live",
-    note: "",
+    note: "스마트폰은 지원하지 않습니다. PC에서 플레이해 주세요.",
     first: false,
-    mobile: true,
+    mobile: false,
     img: "assets/enigma.webp",
     imgFeat: "assets/feat/enigma.webp",
     theme: "enigma",
@@ -91,7 +91,7 @@ const GAMES = [
     facts: [
       { k: "인원", v: "1인" },
       { k: "분량", v: "15 스테이지 · 엔딩 3종" },
-      { k: "환경", v: "폰 · PC 모두" },
+      { k: "환경", v: "PC" },
       { k: "상태", v: "라이브" }
     ],
     shots: [
