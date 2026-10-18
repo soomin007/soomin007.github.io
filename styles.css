@@ -202,6 +202,58 @@ a:focus-visible, button:focus-visible {
 }
 .dot[aria-current="true"]::before { width: 22px; /* --dotc 는 JS 가 게임색으로 */ }
 
+/* ---------- 몇 분 있으세요? (timepick.js) ---------- */
+
+.ask {
+  margin-bottom: 26px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  padding: 14px 15px 15px;
+}
+.ask__head {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  margin-bottom: 11px;
+}
+.ask__q { font-size: 15.5px; font-weight: 800; }
+.ask__note { font-size: 12px; color: var(--dim); }
+.ask__opts {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  max-width: 480px;
+}
+.ask__opts button {
+  min-height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #1b1e26;
+  color: var(--ink);
+  font-size: 14.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.ask__opts button:hover { border-color: rgba(255, 255, 255, 0.25); }
+.ask__opts button[aria-pressed="true"] { border-color: var(--ink); background: #262a35; }
+
+/* 추천이 정해지면 고정 "입문 추천" 배지는 내리고 추천 카드에 "지금 추천"을 단다 */
+.grid.has-pick .badge--first { display: none; }
+.badge--now { left: 10px; color: #0b0c0f; background: var(--ink); }
+.gcard.is-pick { border-color: var(--tone40); }
+.gcard__pick {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.04);
+}
+.gcard__tip { font-size: 13px; font-weight: 600; line-height: 1.5; }
+.gcard__tip b { color: var(--mut); font-weight: 500; }
+.gcard__why { margin-top: 3px; font-size: 12px; color: #a09d96; line-height: 1.55; }
+
 /* ---------- 그리드 ---------- */
 
 .rowhead {

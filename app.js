@@ -169,6 +169,7 @@
   games.forEach(function (g) {
     var card = el("a", "gcard");
     card.href = g.page || ("#g/" + g.id);
+    card.dataset.id = g.id; /* timepick.js 가 추천 카드를 찾는 표식 */
     card.style.setProperty("--tone40", hexA(g.color, 0.4));
 
     var media = el("div", "gcard__media");
