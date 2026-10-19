@@ -257,8 +257,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 }
 .tz-btn:disabled { opacity: 0.45; cursor: default; }
 
-/* ---------- 만든 기록 ---------- */
+/* ---------- 개발 일지 ---------- */
 /* 날짜가 붙은 실제 기록만 싣는다 (출처: 원작 노션 · Be the Bee session_logs · git) */
+.log__lead { font-size: 16.5px; color: var(--ink-soft); margin: -8px 0 22px; }
 .log { list-style: none; max-width: 760px; position: relative; }
 .log::before {
   content: "";
@@ -431,10 +432,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
     </div>
   </section>
 
-  <!-- 만든 기록 -->
+  <!-- 개발 일지 -->
   <section class="sec wrap" id="devlog">
     <p class="sec__eyebrow">DEVLOG</p>
-    <h2 class="sec__title">종이 보드게임이 웹 게임이 되기까지</h2>
+    <h2 class="sec__title">개발 일지</h2>
+    <p class="log__lead">종이 보드게임이 웹 게임이 되기까지 남긴 기록입니다.</p>
     <ol class="log">
       <li class="log__item is-paper rev">
         <p class="log__date">2025년 6월</p>
