@@ -91,7 +91,7 @@
 
 ## 캡션 카드 (eTL · 피그잼용 텍스트)
 
-인쇄용 카드: https://soomin007.github.io/midterm/caption.html
+인쇄용 카드: https://soomin007.github.io/midterm/caption.html (PDF: `midterm/caption.pdf`)
 
 ```
 작품명: Be the Bee 만든 기록
