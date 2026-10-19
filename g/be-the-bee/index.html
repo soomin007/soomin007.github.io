@@ -43,8 +43,7 @@
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* 줄바꿈: 제목은 균형(balance), 본문은 고아 단어 방지(pretty) */
-h1, h2, h3 { text-wrap: balance; }
+/* 줄바꿈: 본문은 고아 단어 방지(pretty). 제목에 balance 를 쓰지 않는다 (의미 단위를 끊는다) */
 p, figcaption { text-wrap: pretty; }
 
 html, body { overflow-x: clip; }
@@ -258,6 +257,56 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 }
 .tz-btn:disabled { opacity: 0.45; cursor: default; }
 
+/* ---------- 만든 기록 ---------- */
+/* 날짜가 붙은 실제 기록만 싣는다 (출처: 원작 노션 · Be the Bee session_logs · git) */
+.log { list-style: none; max-width: 660px; position: relative; }
+.log::before {
+  content: "";
+  position: absolute;
+  left: 6px;
+  top: 8px;
+  bottom: 8px;
+  width: 2px;
+  background: var(--line);
+}
+.log__item { position: relative; padding-left: 30px; padding-bottom: 30px; }
+.log__item:last-child { padding-bottom: 0; }
+.log__item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 5px;
+  width: 14px;
+  height: 16px;
+  clip-path: polygon(50% 0, 100% 25%, 100% 75%, 50% 100%, 0 75%, 0 25%);
+  background: var(--honey-hot);
+}
+.log__item.is-paper::before { background: var(--tile-b); }
+.log__date { font-size: 11.5px; font-weight: 900; letter-spacing: 0.08em; color: var(--honey); }
+.log__title { font-size: 17px; font-weight: 900; color: #241a06; margin: 2px 0 8px; line-height: 1.45; }
+.log__body { font-size: 14px; color: var(--ink-soft); line-height: 1.8; }
+.log__body + .log__body { margin-top: 8px; }
+.log__quote {
+  font-size: 13px;
+  font-weight: 700;
+  color: #5a3a14;
+  background: #fff;
+  border-left: 3px solid var(--honey-hot);
+  border-radius: 0 10px 10px 0;
+  padding: 8px 12px;
+  margin-top: 10px;
+}
+.log__end {
+  max-width: 660px;
+  margin-top: 30px;
+  padding-top: 16px;
+  border-top: 1.5px solid var(--line);
+  font-size: 12.5px;
+  color: var(--mut);
+  line-height: 1.8;
+}
+.nw { white-space: nowrap; }
+
 /* ---------- 마무리 ---------- */
 .final { text-align: center; padding: 7vh var(--pad) 6vh; }
 .final__line { font-size: clamp(16px, 4.2vw, 21px); font-weight: 900; color: #241a06; margin-bottom: 24px; }
@@ -300,7 +349,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
       <span class="hero__hex"></span><span class="hero__hex"></span><span class="hero__hex"></span>
     </div>
     <h1 class="hero__title">Be the Bee</h1>
-    <p class="hero__line">같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요.</p>
+    <p class="hero__line">같은 색 꿀벌 5개를 일렬로 연결해 <span class="nw">벌집의 주인이 되세요.</span></p>
     <div class="hero__meta">
       <span>2인</span><span>온라인 대전</span><span>AI 대전</span><span>폰 · PC 모두</span>
     </div>
@@ -314,7 +363,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   <!-- 룰 -->
   <section class="sec wrap">
     <p class="sec__eyebrow">HOW TO PLAY</p>
-    <h2 class="sec__title">타일을 깔아 판을 넓히고, 말 5개를 한 줄로.</h2>
+    <h2 class="sec__title">타일을 깔아 판을 넓히고, <span class="nw">말 5개를 한 줄로.</span></h2>
     <div class="rules">
       <div class="rule rev">
         <img src="../../assets/shots/be-the-bee-turn.webp" alt="" loading="lazy">
@@ -380,6 +429,52 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
       <p class="lab__intro">본편의 ② 턴만 씁니다: 타일 1개를 깔고, 아무 타일 위에 말 1개. 노랑(당신) 선입니다.</p>
       <div id="lab-mount"></div>
     </div>
+  </section>
+
+  <!-- 만든 기록 -->
+  <section class="sec wrap" id="devlog">
+    <p class="sec__eyebrow">DEVLOG</p>
+    <h2 class="sec__title">만든 기록: 종이 보드게임이 <span class="nw">웹 게임이 되기까지.</span></h2>
+    <ol class="log">
+      <li class="log__item is-paper rev">
+        <p class="log__date">2025.06 · 종이판</p>
+        <h3 class="log__title">판이 없는 오목</h3>
+        <p class="log__body">대학 수업 '게임의 이해' 기말 과제로 <span class="nw">세 사람이</span> 만든 종이 보드게임입니다. 주제는 오목을 변형한 2인 게임이었고, 출발점은 제가 낸 <span class="nw">"타일과 말,</span> <span class="nw">두 층에서</span> 모두 오목을 두자"는 안이었습니다.</p>
+        <p class="log__body">처음 컨셉은 넓어지는 인간관계였습니다. 판이 바깥으로 자라는 모양을 살리려 타일을 육각형으로 정했고, <span class="nw">그 육각형이</span> 벌집이 되면서 꿀벌 게임이 됐습니다.</p>
+        <p class="log__quote">플레이테스트에서 들은 말: "차원이 <span class="nw">두 개에서</span> 진행되는 오목"</p>
+      </li>
+      <li class="log__item rev">
+        <p class="log__date">2026.06.21 · 웹으로 옮긴 첫날</p>
+        <h3 class="log__title">설명서의 전략 팁을 AI에게</h3>
+        <p class="log__body">종이판 설명서 끝에는 초보자용 전략 팁 세 개가 있습니다. 플레이테스트에서 "팁이 있으면 좋겠다"는 말을 <span class="nw">여러 번</span> 듣고 넣은 것입니다. 웹으로 옮기면서 <span class="nw">이 세 문장을</span> 그대로 AI의 <span class="nw">판단 기준으로</span> 바꿨습니다.</p>
+        <p class="log__body">그런데 처음 AI는 늘 새 타일 위에만 말을 놓았습니다. 상대 타일을 먼저 차지하는 수를 후보로조차 만들지 않았기 때문입니다. 후보를 넓히자 비로소 <span class="nw">이 게임다운</span> 수를 두기 시작했습니다.</p>
+        <p class="log__quote">"벌집에는 주인이 있지만, 타일에는 주인이 없다!" (설명서 전략 팁)</p>
+      </li>
+      <li class="log__item rev">
+        <p class="log__date">2026.06.21 ~ 06.22</p>
+        <h3 class="log__title">여왕벌은 골라야 나온다</h3>
+        <p class="log__body">여왕벌은 종이판의 확장 규칙입니다. <span class="nw">한 판에 한 번,</span> 상대가 잠근 벌집 위에도 말을 <span class="nw">놓을 수 있습니다.</span> 판을 뒤집을 만큼 강해서 <span class="nw">기본 판에서는</span> 빼고, 익숙해진 사람이 켜는 모드로 옮겼습니다. AI는 여왕벌을 쓰지 않습니다. 모드를 켜면 무엇이 달라지는지 그림으로 먼저 보여 줍니다.</p>
+      </li>
+      <li class="log__item rev">
+        <p class="log__date">2026.06.23</p>
+        <h3 class="log__title">바둑돌에서 꿀벌로</h3>
+        <p class="log__body">종이판 말의 실물 사진에 맞춰 말 모양을 여러 번 바꿨습니다. 입체 원판, 다시 평면, 귀여운 <span class="nw">벌 그림,</span> 3D 벌. <span class="nw">입체 원판과</span> 3D는 그럴듯해 보였지만 <span class="nw">판 위에서</span> 진영이 덜 또렷했습니다. 남은 것은 <span class="nw">몸 색으로</span> 진영을 가르는 <span class="nw">평면 벌 그림입니다.</span></p>
+      </li>
+      <li class="log__item rev">
+        <p class="log__date">2026.06.27 ~ 06.30</p>
+        <h3 class="log__title">AI가 끝내 못 배운 수</h3>
+        <p class="log__body">제가 전문가 AI를 이긴 기보 세 판이 모두 같은 모양이었습니다. 타일 다섯 장으로 벌집을 먼저 잠그고, 잠긴 칸에 말을 채워 막을 수 없는 5목을 만드는 수입니다.</p>
+        <p class="log__body">설명서 팁대로 "잠기기 전에 허리를 끊는" 판단을 AI에 넣었지만, 실제 기보로 <span class="nw">재 보니</span> 효과가 없어 그날 오후 되돌렸습니다. 대가가 열 수 넘게 뒤에 오는 수라 AI가 내다보는 <span class="nw">깊이 밖이었습니다.</span> 반대로 내 벌집을 잠가 이기는 공격 쪽은 <span class="nw">가르칠 수 있었습니다.</span></p>
+        <p class="log__body">방어는 결국 사람에게 돌려줬습니다. 코칭을 '강하게'로 켜면 곧 잠길 줄과 <span class="nw">끊을 칸을</span> 판 위에 표시해 줍니다.</p>
+      </li>
+      <li class="log__item rev">
+        <p class="log__date">2026.07.14 ~ 09.15</p>
+        <h3 class="log__title">아무도 두지 않는 날에도</h3>
+        <p class="log__body">온라인 대전은 무료 데이터베이스 서비스 위에서 돌아갑니다. 일주일 동안 요청이 없으면 서비스가 프로젝트를 재우는데, 그러면 다른 기능은 멀쩡하고 <span class="nw">온라인 대전만</span> 조용히 멈춥니다.</p>
+        <p class="log__body">사흘마다 낡은 방을 정리하는 <span class="nw">자동 작업을</span> 붙였지만 첫 실행 전에 잠들어 직접 깨웠고, 활동이 모자란다는 경고에 <span class="nw">하루 4회로</span> 늘렸습니다. 9월에는 저장소에 60일 동안 커밋이 없으면 <span class="nw">그 자동 작업마저</span> 꺼진다는 알림이 와서, 실행할 때마다 스스로를 다시 켜도록 고쳤습니다.</p>
+      </li>
+    </ol>
+    <p class="log__end">웹 버전 기록 2026.06.21 ~ 09.15 · 커밋 332개<br><span class="nw">원작 보드게임</span> 김수민 · 김재현 · 조주현<br><span class="nw">웹 구현 김수민</span></p>
   </section>
 
   <section class="final">
