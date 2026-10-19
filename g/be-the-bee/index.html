@@ -434,85 +434,87 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   <!-- 만든 기록 -->
   <section class="sec wrap" id="devlog">
     <p class="sec__eyebrow">DEVLOG</p>
-    <h2 class="sec__title">만든 기록: 종이 보드게임이 <span class="nw">웹 게임이 되기까지.</span></h2>
+    <h2 class="sec__title">종이 보드게임이 웹 게임이 되기까지</h2>
     <ol class="log">
       <li class="log__item is-paper rev">
-        <p class="log__date">2025.06 · 종이판</p>
+        <p class="log__date">2025년 6월</p>
         <h3 class="log__title">판이 없는 오목</h3>
-        <p class="log__body">'게임의 이해' 과목 기말 과제로 <span class="nw">세 사람이</span> 만든 종이 보드게임입니다. 주제는 오목을 변형한 2인 게임이었고, 출발점은 <span class="nw">"타일과 말,</span> <span class="nw">두 층에서</span> 모두 오목을 두자"는 제 아이디어였습니다.</p>
-        <p class="log__body">처음 컨셉은 넓어지는 인간관계였습니다. 판이 바깥으로 자라는 모양을 살리려고 타일을 육각형으로 정했고, <span class="nw">그 육각형이</span> 벌집이 되면서 꿀벌 게임이 됐습니다.</p>
-        <p class="log__quote">플레이테스트에서 들은 말: "차원이 <span class="nw">두 개에서</span> 진행되는 오목"</p>
+        <p class="log__body">Be the Bee는 '게임의 이해' 과목 기말 과제로 세 사람이 함께 만든 종이 보드게임입니다. 과제 주제는 오목을 변형한 2인용 게임이었는데, 저는 타일과 말 <span class="nw">두 층에서</span> 동시에 오목을 두자는 아이디어를 냈습니다.</p>
+        <p class="log__body">처음에 잡은 컨셉은 넓어지는 인간관계였습니다. 판이 바깥으로 점점 자라는 모양을 살리려고 타일을 육각형으로 정했고, 육각형 타일에 맞춰 컨셉도 벌집으로 바뀌면서 꿀벌 게임이 됐습니다.</p>
+        <p class="log__quote">플레이테스트에 참여한 한 분은 <span class="nw">이 게임을</span> "차원이 두 개에서 진행되는 오목"이라고 표현했습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.21 · 웹으로 옮긴 첫날</p>
+        <p class="log__date">2026년 6월 21일</p>
         <h3 class="log__title">빈 컴퓨터에서 배포까지 하루</h3>
-        <p class="log__body">웹 버전은 Node.js도 깔려 있지 않은 컴퓨터에서 시작했습니다. 첫날 개발 환경 설치부터 규칙 엔진, 한 화면에서 둘이 번갈아 두는 대전, AI 대전까지 만들어 GitHub Pages에 올렸습니다.</p>
-        <p class="log__body">규칙 엔진은 화면 코드와 떼어 놓았습니다. 나중에 앱으로 감싸더라도 규칙을 다시 짜지 않기 위해서입니다.</p>
+        <p class="log__body">웹 버전은 Node.js조차 <span class="nw">설치되어 있지 않은</span> 컴퓨터에서 시작했습니다. 첫날에 개발 환경을 설치하고, 규칙 엔진과 <span class="nw">한 화면에서</span> <span class="nw">두 사람이</span> 번갈아 두는 대전, AI 대전까지 만든 다음 GitHub Pages에 올렸습니다.</p>
+        <p class="log__body">규칙 엔진은 화면을 그리는 코드와 분리해 두었습니다. 나중에 휴대폰 앱으로 감싸게 되더라도 규칙을 다시 짜지 않아도 되게 하려는 것이었습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.21</p>
+        <p class="log__date">2026년 6월 21일</p>
         <h3 class="log__title">설명서의 전략 팁을 AI에게</h3>
-        <p class="log__body">종이판 설명서 끝에는 초보자용 전략 팁 <span class="nw">세 개가</span> 있습니다. 플레이테스트에서 "팁이 있으면 좋겠다"는 말을 <span class="nw">여러 번</span> 듣고 넣은 것입니다. 웹으로 옮기면서 <span class="nw">이 세 문장을</span> 그대로 AI의 <span class="nw">판단 기준으로</span> 바꿨습니다.</p>
-        <p class="log__body">그런데 처음 AI는 늘 새 타일 위에만 말을 놓았습니다. 상대 타일을 먼저 차지하는 수를 후보로조차 만들지 않았기 때문입니다. 후보를 넓히자 비로소 <span class="nw">이 게임다운</span> 수를 두기 시작했습니다.</p>
-        <p class="log__quote">"벌집에는 주인이 있지만, 타일에는 주인이 없다!" (설명서 전략 팁)</p>
+        <p class="log__body">종이판 설명서 끝부분에는 초보자를 위한 전략 팁이 세 개 있습니다. <span class="nw">플레이테스트 때</span> 팁이 있으면 좋겠다는 말을 <span class="nw">여러 번 듣고</span> 나서 넣은 것입니다. 웹 버전을 만들면서 <span class="nw">이 세 문장을</span> AI가 수를 <span class="nw">고를 때</span> 쓰는 기준으로 그대로 옮겼습니다.</p>
+        <p class="log__body">그런데 처음 만든 AI는 언제나 새로 놓은 타일 위에만 말을 올렸습니다. 상대 타일을 먼저 차지하는 수는 아예 후보로 만들지 않았기 때문입니다. 후보를 넓혀 주고 나서야 AI가 <span class="nw">이 게임다운</span> 수를 두기 시작했습니다.</p>
+        <p class="log__quote">설명서의 두 번째 팁은 "벌집에는 주인이 있지만, 타일에는 주인이 없다!"입니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.21 ~ 06.22</p>
+        <p class="log__date">2026년 6월 21일 ~ 22일</p>
         <h3 class="log__title">여왕벌은 골라야 나온다</h3>
-        <p class="log__body">여왕벌은 종이판의 확장 규칙입니다. <span class="nw">한 판에 한 번,</span> 상대가 잠근 벌집 위에도 말을 <span class="nw">놓을 수 있습니다.</span> 판을 뒤집을 만큼 강해서 <span class="nw">기본 판에서는</span> 빼고, 익숙해진 사람이 직접 켜는 모드로 옮겼습니다.</p>
-        <p class="log__body">AI는 여왕벌을 쓰지 않도록 했고, 모드를 켜면 무엇이 달라지는지 그림 설명이 먼저 뜨도록 바꿨습니다.</p>
+        <p class="log__body">여왕벌은 종이판에서 확장 규칙으로 넣었던 말입니다. 한 판에 한 번, 상대가 이미 잠근 벌집 위에도 <span class="nw">놓을 수 있습니다.</span> 판을 뒤집을 만큼 강한 규칙이라서 기본 대전에서는 빼고, 게임에 익숙해진 사람이 직접 켜는 모드로 옮겼습니다.</p>
+        <p class="log__body">AI는 여왕벌을 쓰지 않도록 했습니다. 그리고 여왕벌 모드를 켜면 무엇이 달라지는지 그림 설명이 먼저 뜨도록 바꿨습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.22</p>
+        <p class="log__date">2026년 6월 22일</p>
         <h3 class="log__title">이길 자리를 두고 엉뚱한 곳에</h3>
-        <p class="log__body">AI가 바로 이길 수 있는 칸을 두고 다른 곳에 두는 일이 있었습니다. 판이 붐비면 AI는 살펴볼 후보를 24개로 줄이는데, 한쪽이 막힌 4목을 완성하는 칸이 <span class="nw">그 목록에서</span> 빠지곤 했습니다.</p>
-        <p class="log__body">이기는 칸과 막아야 하는 칸은 <span class="nw">후보 수와</span> 상관없이 먼저 확인하도록 고쳤습니다.</p>
+        <p class="log__body">AI가 바로 이길 수 있는 칸을 두고 엉뚱한 곳에 말을 놓는 일이 있었습니다. 판이 붐비면 AI는 살펴볼 후보를 24개로 줄이는데, 한쪽이 막힌 4목을 완성하는 칸이 <span class="nw">이 목록에서</span> 빠지곤 했던 것입니다.</p>
+        <p class="log__body">그래서 이기는 칸과 꼭 막아야 하는 칸은 후보 개수와 상관없이 가장 먼저 확인하도록 고쳤습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.22</p>
+        <p class="log__date">2026년 6월 22일</p>
         <h3 class="log__title">보관함과 공유 코드</h3>
-        <p class="log__body">한 판만 저장하던 기능을 최대 12판까지 담는 보관함으로 늘렸습니다. 판 전체를 문자열 하나로 바꾸는 공유 코드도 붙여서, 코드만 건네면 다른 사람이 같은 판을 그대로 <span class="nw">불러올 수 있습니다.</span></p>
-        <p class="log__body">다음 날, 이 코드로 받은 판을 앱 안에서 분석하는 기능이 붙었습니다.</p>
+        <p class="log__body">한 판만 저장할 수 있던 기능을 최대 12판까지 담아 두는 보관함으로 늘렸습니다. 판 전체를 문자열 하나로 바꿔 주는 공유 코드도 붙였는데, <span class="nw">이 코드를</span> 건네받은 사람은 같은 판을 그대로 <span class="nw">불러올 수 있습니다.</span></p>
+        <p class="log__body">다음 날에는 이렇게 받은 판을 앱 안에서 분석하는 기능을 붙였습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.23</p>
+        <p class="log__date">2026년 6월 23일</p>
         <h3 class="log__title">바둑돌에서 꿀벌로</h3>
-        <p class="log__body">종이판 말의 실물 사진에 맞춰 말 모양을 <span class="nw">여러 번</span> 바꿨습니다. 입체 원판, 다시 평면, 귀여운 <span class="nw">벌 그림,</span> 3D 벌. <span class="nw">입체 원판과</span> 3D는 그럴듯해 보였지만 <span class="nw">판 위에서</span> 진영이 <span class="nw">덜 또렷했습니다.</span> 남은 것은 <span class="nw">몸 색으로</span> 진영을 가르는 <span class="nw">평면 벌 그림입니다.</span></p>
+        <p class="log__body">종이판에서 쓰던 말의 실물 사진을 보면서 웹 버전의 말 모양을 하루 동안 <span class="nw">여러 번 바꿨습니다.</span> 입체 원판으로 그렸다가 <span class="nw">다시 평면으로</span> 돌아왔고, 귀여운 벌 그림과 3D 벌도 만들어 봤습니다.</p>
+        <p class="log__body">입체 원판과 3D 벌은 그럴듯해 보였지만, <span class="nw">판 위에 올려</span> 보니 <span class="nw">어느 쪽</span> 말인지가 덜 또렷했습니다. 그래서 벌의 <span class="nw">몸 색으로</span> 진영을 구분하는 평면 그림을 최종으로 골랐습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.23</p>
+        <p class="log__date">2026년 6월 23일</p>
         <h3 class="log__title">전문가 난이도와 한 수 해설</h3>
-        <p class="log__body">어려움보다 한 단계 위인 전문가 난이도를 새로 만들었습니다. <span class="nw">두 번 실력이</span> <span class="nw">뒷걸음질 친 끝에,</span> 후보를 <span class="nw">더 넓게</span> 보고 <span class="nw">한 칸 떨어진</span> 4목까지 읽는 방식으로 정했습니다.</p>
-        <p class="log__body">같은 날, 한 수가 왜 좋았는지 또는 무엇을 놓쳤는지 알려 주는 해설도 넣었습니다. 끝난 판을 <span class="nw">다시 볼 때도,</span> 공유 코드로 받은 <span class="nw">판을 볼 때도</span> 같은 해설이 붙습니다.</p>
+        <p class="log__body">어려움보다 한 단계 높은 전문가 난이도를 새로 만들었습니다. 만드는 도중에 실력이 오히려 떨어지는 일을 <span class="nw">두 번 겪었고,</span> 결국 후보를 더 넓게 살피면서 <span class="nw">한 칸 떨어진</span> 4목까지 읽는 방식으로 정했습니다.</p>
+        <p class="log__body">같은 날, 한 수를 두면 그 수가 왜 좋았는지 또는 무엇을 놓쳤는지 알려 주는 해설도 넣었습니다. 끝난 판을 다시 <span class="nw">볼 때나</span> 공유 코드로 받은 판을 볼 때도 같은 해설이 붙습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.24 ~ 06.25</p>
+        <p class="log__date">2026년 6월 24일 ~ 25일</p>
         <h3 class="log__title">계획에 없던 온라인 대전</h3>
-        <p class="log__body">처음 계획에서 빠져 있던 온라인 대전을 하루 만에 붙였습니다. 초대 링크를 보내면 상대가 같은 방에 들어오고, 선공 · 후공 · 동전 던지기 중에서 순서를 정합니다.</p>
-        <p class="log__body">다음 날에는 상대가 동의하면 한 수를 <span class="nw">무를 수 있는</span> 온라인 무르기를 넣었습니다.</p>
+        <p class="log__body">처음 계획에는 온라인 대전이 없었는데, 하루 만에 붙였습니다. 초대 링크를 보내면 상대가 같은 방에 들어오고, 선공과 후공을 직접 고르거나 동전 던지기로 순서를 <span class="nw">정할 수 있습니다.</span></p>
+        <p class="log__body">다음 날에는 상대가 동의하면 <span class="nw">한 수를 무를 수 있는</span> 기능도 넣었습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.27 ~ 06.30</p>
+        <p class="log__date">2026년 6월 27일 ~ 30일</p>
         <h3 class="log__title">AI가 끝내 못 배운 수</h3>
-        <p class="log__body">제가 전문가 AI를 이긴 기보 세 판이 모두 같은 모양이었습니다. 타일 다섯 장으로 벌집을 먼저 잠그고, 잠긴 칸에 말을 채워 <span class="nw">막을 수 없는</span> 5목을 만드는 수입니다.</p>
-        <p class="log__body">막으려면 벌집이 잠기기 전에 허리를 끊어야 하는데, 그 대가는 <span class="nw">열 수 넘게</span> 뒤에 옵니다. AI의 <span class="nw">판단 기준을 고쳐</span> 봤지만 실제 기보에서는 효과가 없어 그날 오후 되돌렸습니다. 반대로 내 벌집을 잠가 이기는 공격 쪽은 <span class="nw">가르칠 수 있었습니다.</span></p>
-        <p class="log__body">전문가 AI의 탐색 방식을 몬테카를로 트리 탐색으로 바꾸자, 한 수에 약 5초를 쓰면서 이전 전문가 AI를 5승 1패로 이겼고 짧은 줄은 미리 끊었습니다. <span class="nw">긴 줄은</span> 여전히 놓쳤습니다. 대국 결과로 학습시킨 평가 모델은 그 수를 일부 잡아냈지만 전체 실력이 떨어져서 넣지 않았습니다.</p>
-        <p class="log__body">남은 방어는 사람에게 돌려줬습니다. 코칭을 '강하게'로 켜면 곧 잠길 줄과 <span class="nw">끊을 칸을</span> <span class="nw">판 위에</span> 표시합니다.</p>
+        <p class="log__body">제가 전문가 AI를 이긴 판이 <span class="nw">세 판 있었는데,</span> 세 판 모두 같은 방식으로 이겼습니다. 타일 다섯 장으로 벌집을 먼저 잠그고, 잠긴 칸에 말을 채워서 상대가 <span class="nw">막을 수 없는</span> 5목을 만드는 방식입니다.</p>
+        <p class="log__body">이 수를 막으려면 벌집이 잠기기 전에 미리 허리를 끊어야 합니다. 하지만 그렇게 <span class="nw">한 대가는</span> 열 수도 <span class="nw">더 지나서야</span> 돌아옵니다. 처음에는 AI가 수를 고르는 기준을 고쳐 봤는데, 실제 기보에 적용해 보니 효과가 없어서 그날 오후에 되돌렸습니다. 반대로 자기 벌집을 잠가서 이기는 공격 쪽은 AI에게 <span class="nw">가르칠 수 있었습니다.</span></p>
+        <p class="log__body">다음으로 전문가 AI의 탐색 방식을 몬테카를로 트리 탐색으로 바꿨습니다. <span class="nw">새 AI는</span> 한 수에 <span class="nw">5초 정도를</span> 쓰면서 이전 전문가 AI를 <span class="nw">5승 1패로</span> 이겼고, 짧은 줄은 미리 <span class="nw">끊어 냈습니다.</span> 하지만 긴 줄은 여전히 놓쳤습니다. 대국 결과로 학습시킨 평가 모델도 써 봤는데, <span class="nw">그 수를</span> 일부 잡아내긴 했지만 전체 실력이 떨어져서 넣지 않았습니다.</p>
+        <p class="log__body">결국 이 방어는 사람에게 맡기기로 했습니다. 코칭을 '강하게'로 <span class="nw">켜 두면,</span> 곧 잠길 줄과 <span class="nw">끊어야 할</span> 칸을 <span class="nw">판 위에 표시해</span> 줍니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.06.27 ~ 06.28</p>
+        <p class="log__date">2026년 6월 27일 ~ 28일</p>
         <h3 class="log__title">벌집은 색이 아니라 모양으로</h3>
-        <p class="log__body">완성된 벌집이 판 위에서 눈에 띄도록 여러 차례 다시 그렸습니다. 벌집 칸을 밝게 칠하면 오히려 노랑과 갈색 진영이 헷갈렸습니다.</p>
-        <p class="log__body">그래서 색은 그대로 두고, 칸마다 안쪽 명암과 테두리, 반짝이는 빛점을 넣어 입체 셀처럼 보이게 했습니다.</p>
+        <p class="log__body">완성된 벌집이 판 위에서 <span class="nw">잘 보이도록</span> <span class="nw">여러 번 다시</span> 그렸습니다. 처음에는 벌집 칸을 밝게 칠했는데, 그러자 오히려 노랑과 갈색 진영이 헷갈렸습니다.</p>
+        <p class="log__body">그래서 색은 그대로 두고, 칸마다 안쪽 명암과 테두리, 반짝이는 빛점을 넣어서 입체 셀처럼 보이게 했습니다.</p>
       </li>
       <li class="log__item rev">
-        <p class="log__date">2026.07.14 ~ 09.15</p>
+        <p class="log__date">2026년 7월 14일 ~ 9월 15일</p>
         <h3 class="log__title">아무도 두지 않는 날에도</h3>
-        <p class="log__body">온라인 대전은 무료 데이터베이스 서비스 위에서 돌아갑니다. 일주일 동안 요청이 없으면 서비스가 프로젝트를 재우는데, 그러면 다른 기능은 멀쩡하고 <span class="nw">온라인 대전만</span> 조용히 멈춥니다.</p>
-        <p class="log__body">사흘마다 낡은 방을 정리하는 <span class="nw">자동 작업을</span> 붙였지만 첫 실행 전에 서비스가 잠들어 직접 깨웠고, 활동이 모자란다는 경고를 받고 <span class="nw">하루 4회로</span> 늘렸습니다. 9월에는 저장소에 60일 동안 커밋이 없으면 <span class="nw">그 자동 작업마저</span> 꺼진다는 알림이 와서, 실행할 때마다 스스로를 다시 켜도록 고쳤습니다.</p>
+        <p class="log__body">온라인 대전은 무료 데이터베이스 서비스를 써서 돌아갑니다. <span class="nw">이 서비스는</span> 일주일 동안 요청이 없으면 프로젝트를 재우는데, 그렇게 되면 다른 기능은 멀쩡한데 온라인 대전만 조용히 멈춥니다.</p>
+        <p class="log__body">그래서 사흘마다 낡은 방을 정리하는 자동 작업을 붙였습니다. 그런데 첫 실행이 돌기도 전에 서비스가 잠들어 직접 깨워야 했고, <span class="nw">그 뒤에</span> 활동이 부족하다는 경고를 받고 실행 횟수를 하루 <span class="nw">네 번으로</span> 늘렸습니다.</p>
+        <p class="log__body">9월에는 저장소에 60일 동안 커밋이 없으면 <span class="nw">이 자동 작업마저</span> 꺼진다는 알림이 왔습니다. 그래서 자동 작업이 실행될 때마다 스스로를 다시 켜도록 고쳤습니다.</p>
       </li>
     </ol>
-    <p class="log__end">웹 버전 기록 2026.06.21 ~ 09.15 <span class="nw">· 커밋 332개</span><br><span class="nw">원작 보드게임</span> 김수민 · 김재현 · 조주현<br><span class="nw">웹 구현 김수민</span></p>
+    <p class="log__end">웹 버전은 2026년 6월 21일부터 <span class="nw">9월 15일까지</span> 만들었고, 그동안 커밋이 332개 쌓였습니다. 원작 보드게임은 김수민, 김재현, 조주현이 함께 만들었고, 웹 버전은 김수민이 만들었습니다.</p>
   </section>
 
   <section class="final">
