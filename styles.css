@@ -37,6 +37,7 @@ body {
 
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
+.nw { white-space: nowrap; }
 button { font-family: inherit; }
 
 a:focus-visible, button:focus-visible {
@@ -253,6 +254,27 @@ a:focus-visible, button:focus-visible {
 .gcard__tip { font-size: 13px; font-weight: 600; line-height: 1.5; }
 .gcard__tip b { color: var(--mut); font-weight: 500; }
 .gcard__why { margin-top: 3px; font-size: 12px; color: #a09d96; line-height: 1.55; }
+
+/* ---------- 섬 지도 입구 ---------- */
+
+.isle {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  margin-bottom: 26px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--card);
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.isle:hover { border-color: rgba(255, 255, 255, 0.16); background: #171a21; }
+.isle__art { flex: none; width: 220px; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; }
+.isle__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+.isle__kicker { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: #8fd0a0; }
+.isle__title { font-size: 17px; font-weight: 800; color: var(--ink); }
+.isle__line { font-size: 13px; line-height: 1.55; color: var(--mut); }
+.isle__go { flex: none; padding-right: 6px; font-size: 13px; font-weight: 700; color: #f0b429; white-space: nowrap; }
 
 /* ---------- 그리드 ---------- */
 
@@ -533,6 +555,10 @@ a:focus-visible, button:focus-visible {
   .feat__nav { display: none; } /* 폰에선 스와이프·점으로 */
   .bar__eyebrow { display: none; }
   .grid { grid-template-columns: 1fr; }
+  /* 섬 입구는 그림을 위로, 글을 아래로 */
+  .isle { flex-direction: column; align-items: stretch; gap: 10px; }
+  .isle__art { width: 100%; aspect-ratio: 16 / 7; object-position: center 45%; }
+  .isle__go { align-self: flex-end; }
 }
 @media (max-width: 359px) {
   /* 초협폭(폴드 커버 등)은 한 단계 더 */
