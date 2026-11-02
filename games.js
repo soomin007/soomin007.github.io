@@ -212,5 +212,41 @@ const GAMES = [
       code: "https://github.com/soomin007/selection-pressure",
       itch: ""
     }
+  },
+  {
+    id: "outlet-villains",
+    page: "",
+    title: "충전이 필요해!",
+    kicker: "카페 물건 밀기 퍼즐",
+    line: "배터리가 떨어져 가는 카페 청소 로봇이, 콘센트를 독차지한 손님을 한 명씩 떠나보내는 짧은 퍼즐 게임입니다.",
+    lineLong: "카페 바닥을 한 칸씩 움직이며 의자나 진동벨 같은 물건을 밀어서, 콘센트를 차지한 손님이 스스로 플러그를 뽑고 떠나게 만듭니다. 되돌리기와 처음부터는 언제든 할 수 있고, 실패해도 벌칙이 없습니다.",
+    color: "#F2412F",
+    year: "2026",
+    yearLabel: "",
+    meta: ["1인", "되돌리기 자유", "그림체 2종"],
+    status: "live",
+    note: "",
+    first: false,
+    mobile: false,
+    img: "assets/outlet-villains.webp",
+    imgFeat: "assets/feat/outlet-villains.webp",
+    theme: "",
+    tag: "",
+    facts: [
+      { k: "조작", v: "방향키(WASD) · Z 되돌리기 · R 처음부터" },
+      { k: "그림체", v: "흑백 · 컬러 카툰" },
+      { k: "만든 계기", v: "시리어스 게임 수업 활동" },
+      { k: "상태", v: "라이브" }
+    ],
+    shots: [
+      { src: "assets/shots/outlet-villains-cafe.webp", cap: "카공 손님으로 가득한 카페" },
+      { src: "assets/shots/outlet-villains-unplug.webp", cap: "충전 독의 플러그를 뽑고 콘센트를 차지한 손님" },
+      { src: "assets/shots/outlet-villains-dock.webp", cap: "배터리가 떨어져 가는 청소 로봇" }
+    ],
+    links: {
+      play: "https://soomin007.github.io/outlet-villains/",
+      code: "https://github.com/soomin007/outlet-villains",
+      itch: ""
+    }
   }
 ];
