@@ -225,7 +225,7 @@ const GAMES = [
     yearLabel: "",
     meta: ["1인", "되돌리기 자유", "그림체 2종"],
     status: "live",
-    note: "",
+    note: "스마트폰은 지원하지 않습니다. PC에서 플레이해 주세요.",
     first: false,
     mobile: false,
     img: "assets/outlet-villains.webp",
@@ -234,6 +234,7 @@ const GAMES = [
     tag: "",
     facts: [
       { k: "조작", v: "방향키(WASD) · Z 되돌리기 · R 처음부터" },
+      { k: "환경", v: "PC" },
       { k: "그림체", v: "흑백 · 컬러 카툰" },
       { k: "만든 계기", v: "시리어스 게임 수업 활동" },
       { k: "상태", v: "라이브" }
