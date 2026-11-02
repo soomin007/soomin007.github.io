@@ -266,9 +266,10 @@ const rand = seeded(7);
 const PHASE = (() => {
   const p = PARAMS.get('time');
   if (['day', 'dusk', 'night'].includes(p)) return p;
+  // 시간 경계는 See you on the other side 의 웹 로딩 화면과 같게 둔다 (낮 8~17시, 저녁 5~8시와 17~20시)
   const h = new Date().getHours();
-  if (h >= 7 && h < 17) return 'day';
-  if ((h >= 17 && h < 20) || (h >= 5 && h < 7)) return 'dusk';
+  if (h >= 8 && h < 17) return 'day';
+  if ((h >= 17 && h < 20) || (h >= 5 && h < 8)) return 'dusk';
   return 'night';
 })();
 const NIGHT = PHASE === 'night';
