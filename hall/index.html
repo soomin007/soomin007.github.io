@@ -1,0 +1,1010 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>전시관 스케치</title>
+<link rel="icon" type="image/png" href="../icon.png">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
+<style>
+  :root {
+    --bg: #0b0c0f;
+    --ink: #ece8df;
+    --sub: #c9c4ba;
+    --dim: #8f8b84;
+    --line: rgba(255, 255, 255, .09);
+    --pad: 20px;
+    --accent: #F0B429;
+    --on-accent: #16130b;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; height: 100%; overflow: hidden;
+    background: var(--bg); color: var(--ink);
+    font-family: "Pretendard Variable", Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    word-break: keep-all;
+  }
+  [hidden] { display: none !important; }
+  .nw { white-space: nowrap; }
+
+  .stage { position: fixed; inset: 0; display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+  .stage.is-drag { cursor: grabbing; }
+  .stage.is-hot { cursor: pointer; }
+
+  /* 위쪽 줄: 이름과 목록으로 돌아가는 길 */
+  .top {
+    position: fixed; top: 0; left: 0; right: 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-top: max(14px, env(safe-area-inset-top)); padding-left: var(--pad); padding-right: var(--pad);
+    pointer-events: none;
+  }
+  .top > * { pointer-events: auto; }
+  .brand { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
+  .brand span {
+    margin-left: 8px; padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px;
+    font-size: 11px; font-weight: 500; color: var(--dim); vertical-align: 2px;
+  }
+  .top a { font-size: 13px; color: var(--dim); text-decoration: none; }
+  .top a:hover { color: var(--ink); }
+
+  /* 아래쪽: 입구 안내와 부스 카드 */
+  .dock {
+    position: fixed; left: 0; right: 0; bottom: 0;
+    padding-left: var(--pad); padding-right: var(--pad); padding-bottom: max(16px, env(safe-area-inset-bottom));
+    pointer-events: none;
+  }
+  .dock > * { pointer-events: auto; }
+  .hint { margin: 0 0 10px; font-size: 13px; line-height: 1.5; color: var(--dim); }
+  .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chip {
+    flex: none; display: inline-flex; align-items: center; gap: 8px;
+    padding: 9px 14px; border: 1px solid var(--line); border-radius: 99px;
+    background: rgba(255, 255, 255, .04); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer;
+  }
+  .chip i { width: 7px; height: 7px; border-radius: 50%; }
+  .chip:hover { background: rgba(255, 255, 255, .08); }
+
+  .card {
+    max-width: 460px;
+    padding-top: 16px; padding-bottom: 16px; padding-left: 18px; padding-right: 18px;
+    border: 1px solid var(--line); border-radius: 16px;
+    background: rgba(15, 16, 20, .86); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  }
+  .card__kicker { margin: 0; font-size: 12px; font-weight: 600; color: var(--accent); }
+  .card__title { margin: 4px 0 6px; font-size: 20px; line-height: 1.3; letter-spacing: -.01em; }
+  .card__line { margin: 0; font-size: 14px; line-height: 1.6; color: var(--sub); }
+  .card__note { margin: 8px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--dim); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .tag { padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; color: var(--dim); }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .btn {
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px;
+    background: rgba(255, 255, 255, .05); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer;
+  }
+  .btn:hover { background: rgba(255, 255, 255, .1); }
+  .btn--play { border-color: transparent; background: var(--accent); color: var(--on-accent); font-weight: 700; }
+  .btn--play:hover { background: var(--accent); filter: brightness(1.08); }
+  .btn[disabled] { opacity: .45; cursor: not-allowed; filter: none; }
+
+  /* 플레이: 게임이 화면 전체를 채운다. 돌아가기 줄은 게임 화면 위에 따로 두어 게임 UI를 가리지 않는다 */
+  .play {
+    position: fixed; inset: 0; display: flex; flex-direction: column;
+    background: #000; opacity: 0; transition: opacity .35s ease;
+  }
+  .play.is-on { opacity: 1; }
+  .play__bar {
+    flex: none; display: flex; align-items: center; gap: 12px;
+    padding-top: max(8px, env(safe-area-inset-top)); padding-bottom: 8px;
+    padding-left: var(--pad); padding-right: var(--pad);
+    border-bottom: 1px solid var(--line); background: var(--bg);
+  }
+  .play__back {
+    flex: none; padding: 7px 12px; border: 1px solid rgba(255, 255, 255, .18); border-radius: 99px;
+    background: rgba(255, 255, 255, .06); color: #fff; font: inherit; font-size: 12.5px; cursor: pointer;
+  }
+  .play__title { margin: 0; overflow: hidden; font-size: 13px; color: var(--dim); white-space: nowrap; text-overflow: ellipsis; }
+  .play iframe { flex: 1; width: 100%; border: 0; }
+
+  /* 개발 일지 */
+  .sheet { position: fixed; inset: 0; display: flex; align-items: flex-end; justify-content: center; background: rgba(5, 6, 8, .72); }
+  .sheet__panel {
+    width: 100%; max-width: 680px; max-height: 86dvh; overflow-y: auto; overscroll-behavior: contain;
+    padding-left: var(--pad); padding-right: var(--pad); padding-bottom: max(28px, env(safe-area-inset-bottom));
+    border: 1px solid var(--line); border-radius: 18px 18px 0 0; background: #121318;
+  }
+  .sheet__head {
+    position: sticky; top: 0; z-index: 1;
+    display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+    padding-top: 20px; padding-bottom: 12px; background: #121318;
+  }
+  .sheet__eyebrow { margin: 0; font-size: 11px; letter-spacing: .14em; color: var(--accent); }
+  .sheet__title { margin: 4px 0 0; font-size: 20px; }
+  .sheet__lead { margin: 6px 0 0; font-size: 13.5px; line-height: 1.5; color: var(--dim); }
+  .log { margin: 0; padding: 0; list-style: none; }
+  .log li { padding-top: 18px; padding-bottom: 18px; border-top: 1px solid var(--line); scroll-margin-top: 110px; }
+  .log__date { margin: 0; font-size: 12.5px; color: var(--dim); }
+  .log__title { margin: 4px 0 8px; font-size: 17px; }
+  .log__body { margin: 0 0 8px; font-size: 15px; line-height: 1.75; color: var(--sub); }
+  .log__quote { margin: 4px 0 0; padding-left: 12px; border-left: 2px solid var(--accent); font-size: 14.5px; line-height: 1.7; color: var(--ink); }
+  @media (min-width: 760px) {
+    .sheet { align-items: center; }
+    .sheet__panel { border-radius: 18px; }
+  }
+
+  .loading {
+    position: fixed; inset: 0; display: grid; place-items: center;
+    background: var(--bg); color: var(--dim); font-size: 14px; transition: opacity .6s ease;
+  }
+  .loading.is-done { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<canvas class="stage" id="stage" aria-label="게임 전시관 3D 화면"></canvas>
+
+<header class="top">
+  <p class="brand">soomin007 전시관<span>스케치</span></p>
+  <a href="../">목록으로 보기</a>
+</header>
+
+<div class="dock" id="dock">
+  <div id="entry">
+    <p class="hint" id="hint"></p>
+    <div class="chips" id="chips"></div>
+  </div>
+  <section class="card" id="card" hidden>
+    <p class="card__kicker" id="cKicker"></p>
+    <h2 class="card__title" id="cTitle"></h2>
+    <p class="card__line" id="cLine"></p>
+    <p class="card__note" id="cNote" hidden></p>
+    <div class="tags" id="cTags"></div>
+    <div class="row">
+      <button class="btn btn--play" id="bPlay" type="button">플레이</button>
+      <button class="btn" id="bLog" type="button" hidden>개발 일지</button>
+      <button class="btn" id="bPrev" type="button">이전</button>
+      <button class="btn" id="bNext" type="button">다음</button>
+      <button class="btn" id="bBack" type="button">입구로</button>
+    </div>
+  </section>
+</div>
+
+<div class="play" id="play" hidden>
+  <div class="play__bar">
+    <button class="play__back" id="bExit" type="button">전시관으로 돌아가기</button>
+    <p class="play__title" id="pTitle"></p>
+  </div>
+</div>
+
+<div class="sheet" id="sheet" hidden>
+  <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="sTitle">
+    <div class="sheet__head">
+      <div>
+        <p class="sheet__eyebrow">DEVLOG</p>
+        <h2 class="sheet__title" id="sTitle"></h2>
+        <p class="sheet__lead" id="sLead"></p>
+      </div>
+      <button class="btn" id="sClose" type="button">닫기</button>
+    </div>
+    <ol class="log" id="sList"></ol>
+  </div>
+</div>
+
+<div class="loading" id="loading">전시관을 준비하고 있습니다</div>
+
+<!-- 게임 목록은 허브와 같은 파일을 쓴다 (전역 GAMES) -->
+<script src="../games.js"></script>
+<script type="importmap">
+{ "imports": { "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js" } }
+</script>
+<script type="module">
+import * as THREE from 'three';
+
+/* ============================================================
+   전시관 스케치 (허브에 넣기 전에 모양을 보는 용도)
+
+   - 부스를 누르면 카메라가 그 앞으로 간다. 목록 칩으로 바로 갈 수도 있다
+   - 부스 화면은 캡슐 이미지와 스크린샷을 번갈아 보여 준다
+     (오락실 기계의 데모 화면 자리. 실제 판에서는 게임 영상으로 바꾼다)
+   - 플레이를 누르면 화면 속으로 들어가 게임이 화면 전체를 채우고,
+     그동안 3D 무대는 그리기를 멈춘다
+   - 개발 일지는 소개 페이지의 #devlog 를 읽어 와 부스 옆 보드에 건다
+   ============================================================ */
+
+const ROOT = '../';
+// 개발 일지가 있는 게임과 그 일지가 실린 페이지
+const DEVLOG = { 'be-the-bee': ROOT + 'g/be-the-bee/index.html' };
+// 게임 세계에서 가져온 바닥 표식 모양 (없으면 네모)
+const MARK = { 'be-the-bee': 'hex' };
+const FONT = '"Pretendard Variable", Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
+const TOUCH = matchMedia('(pointer: coarse)').matches;
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const R = 9;           // 부스가 둘러선 원의 반지름(m)
+const GAP = 0.45;      // 부스 사이 틈
+const SCREEN_W = 2.6;
+const SCREEN_H = 1.4625;
+const SCREEN_Y = 2.12; // 화면 가운데 높이
+const HOLD = 3.2;      // 한 장면을 보여 주는 시간(초)
+const FADE = 0.9;      // 다음 장면으로 넘어가는 시간(초)
+
+const $ = id => document.getElementById(id);
+const canvas = $('stage');
+const dock = $('dock'), entry = $('entry'), card = $('card');
+const playEl = $('play'), sheet = $('sheet'), loading = $('loading');
+
+// ---------- 무대 ----------
+
+const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+renderer.toneMapping = THREE.ACESFilmicToneMapping;
+
+const scene = new THREE.Scene();
+const BG = new THREE.Color('#0b0c0f');
+scene.background = BG;
+scene.fog = new THREE.Fog(BG, 15, 38);
+
+const camera = new THREE.PerspectiveCamera(45, 1, 0.1, 100);
+const UP = new THREE.Vector3(0, 1, 0);
+
+scene.add(new THREE.HemisphereLight(0x9aa0b4, 0x0b0c0f, 0.5));
+
+const floor = new THREE.Mesh(
+  new THREE.CircleGeometry(30, 72),
+  new THREE.MeshStandardMaterial({ color: 0x16171c, roughness: 0.9 })
+);
+floor.rotation.x = -Math.PI / 2;
+scene.add(floor);
+
+// 부스 뒤를 감싸는 반원 벽
+const wall = new THREE.Mesh(
+  new THREE.CylinderGeometry(R + 2.5, R + 2.5, 7, 72, 1, true, Math.PI - 1.45, 2.9),
+  new THREE.MeshStandardMaterial({ color: 0x111217, roughness: 1, side: THREE.BackSide })
+);
+wall.position.y = 3.5;
+scene.add(wall);
+
+// ---------- 글씨를 그린 텍스처 ----------
+
+function canvasTexture(w, h, draw) {
+  const c = document.createElement('canvas');
+  c.width = w;
+  c.height = h;
+  draw(c.getContext('2d'), w, h);
+  const tex = new THREE.CanvasTexture(c);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  tex.anisotropy = 4;
+  return tex;
+}
+
+// 폭에 맞을 때까지 글씨를 줄인다
+function fitFont(ctx, text, weight, size, maxW) {
+  for (let s = size; s >= 14; s -= 2) {
+    ctx.font = `${weight} ${s}px ${FONT}`;
+    if (ctx.measureText(text).width <= maxW) return;
+  }
+}
+
+// 띄어쓰기 단위로 줄을 나눈다
+function wrap(ctx, text, maxW, maxLines) {
+  const lines = [];
+  let line = '';
+  for (const word of text.split(' ')) {
+    const test = line ? line + ' ' + word : word;
+    if (ctx.measureText(test).width <= maxW || !line) { line = test; continue; }
+    lines.push(line);
+    line = word;
+  }
+  if (line) lines.push(line);
+  if (lines.length > maxLines) {
+    lines.length = maxLines;
+    lines[maxLines - 1] += '…';
+  }
+  return lines;
+}
+
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.roundRect(x, y, w, h, r);
+}
+
+function plaqueTexture(g) {
+  return canvasTexture(1040, 224, (ctx, w) => {
+    fitFont(ctx, g.title, 700, 76, w - 40);
+    ctx.fillStyle = '#efeae0';
+    ctx.fillText(g.title, 20, 96);
+    ctx.font = `600 34px ${FONT}`;
+    ctx.fillStyle = g.color;
+    ctx.fillText([g.kicker, g.mobile ? '폰 · PC' : 'PC 전용'].join('   ·   '), 22, 164);
+  });
+}
+
+function tapeTexture(text) {
+  return canvasTexture(600, 104, (ctx, w, h) => {
+    ctx.fillStyle = 'rgba(217, 194, 122, .94)';
+    ctx.fillRect(0, 0, w, h);
+    ctx.fillStyle = '#1a170e';
+    ctx.font = `800 52px ${FONT}`;
+    ctx.textAlign = 'center';
+    ctx.fillText(text, w / 2, 70);
+  });
+}
+
+// 개발 일지 보드. 일지를 읽어 오기 전에는 빈 카드만 그린다
+const BOARD = { w: 1180, h: 1000, pad: 40, head: 170, cols: 3, rows: 4, gap: 18 };
+
+function boardCell(n) {
+  const { w, h, pad, head, cols, rows, gap } = BOARD;
+  const cw = (w - pad * 2 - gap * (cols - 1)) / cols;
+  const ch = (h - head - pad - gap * (rows - 1)) / rows;
+  return { x: pad + (n % cols) * (cw + gap), y: head + Math.floor(n / cols) * (ch + gap), w: cw, h: ch };
+}
+
+function drawBoard(ctx, entries) {
+  const { w, h, pad, cols, rows } = BOARD;
+  ctx.clearRect(0, 0, w, h);
+  roundRect(ctx, 2, 2, w - 4, h - 4, 26);
+  ctx.fillStyle = 'rgba(24, 20, 12, .95)';
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(240, 180, 41, .5)';
+  ctx.lineWidth = 3;
+  ctx.stroke();
+  ctx.fillStyle = '#F0B429';
+  ctx.font = `700 26px ${FONT}`;
+  ctx.fillText('DEVLOG', pad, pad + 34);
+  ctx.fillStyle = '#efeae0';
+  ctx.font = `700 54px ${FONT}`;
+  ctx.fillText('개발 일지', pad, pad + 100);
+  for (let n = 0; n < cols * rows; n++) {
+    const c = boardCell(n);
+    roundRect(ctx, c.x, c.y, c.w, c.h, 14);
+    ctx.fillStyle = 'rgba(255, 255, 255, .06)';
+    ctx.fill();
+    ctx.fillStyle = 'rgba(240, 180, 41, .8)';
+    ctx.fillRect(c.x, c.y + 16, 5, c.h - 32);
+    const e = entries[n];
+    if (!e) continue;
+    ctx.fillStyle = '#a19b8e';
+    ctx.font = `500 24px ${FONT}`;
+    ctx.fillText(e.date, c.x + 24, c.y + 46);
+    ctx.fillStyle = '#efeae0';
+    ctx.font = `700 32px ${FONT}`;
+    wrap(ctx, e.title, c.w - 44, 2).forEach((ln, j) => ctx.fillText(ln, c.x + 24, c.y + 96 + j * 42));
+  }
+}
+
+// 보드 위 누른 자리(uv)가 몇 번째 카드인지
+function boardCardAt(uv) {
+  const x = uv.x * BOARD.w, y = (1 - uv.y) * BOARD.h;
+  for (let n = 0; n < BOARD.cols * BOARD.rows; n++) {
+    const c = boardCell(n);
+    if (x >= c.x && x <= c.x + c.w && y >= c.y && y <= c.y + c.h) return n;
+  }
+  return 0;
+}
+
+// ---------- 부스 화면: 두 장면을 섞어 보여 주는 재질 ----------
+
+function screenMaterial() {
+  return new THREE.ShaderMaterial({
+    uniforms: {
+      mapA: { value: null }, mapB: { value: null },
+      scaleA: { value: new THREE.Vector2(1, 1) }, scaleB: { value: new THREE.Vector2(1, 1) },
+      zoomA: { value: 1 }, blend: { value: 0 }, ready: { value: 0 }
+    },
+    vertexShader: `
+      varying vec2 vUv;
+      void main() {
+        vUv = uv;
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+      }`,
+    fragmentShader: `
+      uniform sampler2D mapA, mapB;
+      uniform vec2 scaleA, scaleB;
+      uniform float zoomA, blend, ready;
+      varying vec2 vUv;
+      vec3 cover(sampler2D map, vec2 s, float z) {
+        return texture2D(map, (vUv - 0.5) * s * z + 0.5).rgb;
+      }
+      void main() {
+        vec3 c = mix(cover(mapA, scaleA, zoomA), cover(mapB, scaleB, 1.0), blend) * ready;
+        vec2 d = vUv - 0.5;
+        c *= 1.0 - dot(d, d) * 0.5;
+        gl_FragColor = vec4(c, 1.0);
+        #include <colorspace_fragment>
+      }`,
+    toneMapped: false
+  });
+}
+
+// 그림 비율이 화면과 달라도 늘리지 않고 잘라서 채운다
+const SCREEN_ASPECT = SCREEN_W / SCREEN_H;
+function coverScale(tex, out) {
+  const ta = tex.image.width / tex.image.height;
+  if (ta > SCREEN_ASPECT) out.set(SCREEN_ASPECT / ta, 1);
+  else out.set(1, ta / SCREEN_ASPECT);
+}
+
+// ---------- 부스 ----------
+
+const manager = new THREE.LoadingManager();
+const loader = new THREE.TextureLoader(manager);
+const booths = [];
+const pickables = [];
+
+function makeBooth(g, index, angle) {
+  const hasLog = Boolean(DEVLOG[g.id]);
+  const W = hasLog ? 5.7 : 3.1;
+  const sx = hasLog ? -1.35 : 0; // 화면 가운데의 가로 위치
+  const color = new THREE.Color(g.color);
+  const group = new THREE.Group();
+  group.position.set(Math.sin(angle) * R, 0, -Math.cos(angle) * R);
+  scene.add(group);
+  group.lookAt(0, 0, 3);
+
+  const b = { g, index, angle, group, W, sx, hasLog, imgs: [], cur: 0, timer: (index * 0.9) % HOLD, entries: null, lead: '' };
+  const pickable = (mesh, data = { kind: 'booth', index }) => {
+    mesh.userData = data;
+    pickables.push(mesh);
+    group.add(mesh);
+    return mesh;
+  };
+
+  // 뒤판: 게임 색을 아주 어둡게 섞었다
+  const panel = pickable(new THREE.Mesh(
+    new THREE.BoxGeometry(W, 3.3, 0.16),
+    new THREE.MeshStandardMaterial({ color: color.clone().lerp(new THREE.Color('#0d0e12'), 0.84), roughness: 0.8 })
+  ));
+  panel.position.y = 1.65;
+
+  // 윗선: 게임 색으로 빛나는 줄
+  const strip = new THREE.Mesh(new THREE.BoxGeometry(W, 0.045, 0.05), new THREE.MeshBasicMaterial({ color }));
+  strip.position.set(0, 3.28, 0.09);
+  group.add(strip);
+
+  const bezel = pickable(new THREE.Mesh(
+    new THREE.BoxGeometry(SCREEN_W + 0.12, SCREEN_H + 0.12, 0.06),
+    new THREE.MeshStandardMaterial({ color: 0x050506, roughness: 0.5 })
+  ));
+  bezel.position.set(sx, SCREEN_Y, 0.1);
+
+  b.mat = screenMaterial();
+  b.screen = pickable(new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_W, SCREEN_H), b.mat));
+  b.screen.position.set(sx, SCREEN_Y, 0.135);
+
+  const plaque = pickable(new THREE.Mesh(
+    new THREE.PlaneGeometry(SCREEN_W, SCREEN_W * 224 / 1040),
+    new THREE.MeshBasicMaterial({ map: plaqueTexture(g), transparent: true })
+  ));
+  plaque.position.set(sx, 0.98, 0.09);
+
+  if (g.status === 'paused') {
+    const tape = new THREE.Mesh(
+      new THREE.PlaneGeometry(1.5, 0.26),
+      new THREE.MeshBasicMaterial({ map: tapeTexture('개발 보류'), transparent: true })
+    );
+    tape.position.set(sx + SCREEN_W / 2 - 0.42, SCREEN_Y + SCREEN_H / 2 - 0.1, 0.16);
+    tape.rotation.z = -0.32;
+    group.add(tape);
+  }
+
+  // 바닥 표식: 부스 앞에 서는 자리
+  const markMat = new THREE.MeshStandardMaterial({
+    color: color.clone().multiplyScalar(0.35), emissive: color, emissiveIntensity: 0.18, roughness: 0.6
+  });
+  const mark = pickable(MARK[g.id] === 'hex'
+    ? new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.03, 6), markMat)
+    : new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.03, 0.6), markMat));
+  mark.position.set(sx, 0.015, 1.3);
+
+  const spot = new THREE.SpotLight(new THREE.Color('#ffffff').lerp(color, 0.35), 55, 0, 0.62, 0.75, 2);
+  spot.position.set(0, 5.6, 3.4);
+  spot.target.position.set(0, 1.4, 0);
+  group.add(spot, spot.target);
+
+  if (hasLog) {
+    const c = document.createElement('canvas');
+    c.width = BOARD.w;
+    c.height = BOARD.h;
+    drawBoard(c.getContext('2d'), []);
+    b.boardCanvas = c;
+    b.boardTex = new THREE.CanvasTexture(c);
+    b.boardTex.colorSpace = THREE.SRGBColorSpace;
+    b.boardTex.anisotropy = 4;
+    const board = pickable(new THREE.Mesh(
+      new THREE.PlaneGeometry(2.3, 2.3 * BOARD.h / BOARD.w),
+      new THREE.MeshBasicMaterial({ map: b.boardTex, transparent: true })
+    ), { kind: 'log', index });
+    board.position.set(1.5, 2.0, 0.09);
+  }
+
+  // 화면에 돌릴 그림: 캡슐 이미지와 스크린샷
+  const paths = [g.img, ...(g.shots || []).map(s => s.src)].filter(Boolean);
+  paths.forEach((p, k) => loader.load(ROOT + p, tex => {
+    tex.colorSpace = THREE.SRGBColorSpace;
+    tex.anisotropy = 4;
+    b.imgs[k] = tex;
+  }));
+
+  booths.push(b);
+  return b;
+}
+
+function tickBooth(b, dt) {
+  const list = b.imgs.filter(Boolean);
+  if (!list.length) return;
+  const u = b.mat.uniforms;
+  u.ready.value = Math.min(1, u.ready.value + dt * 2);
+  b.timer += dt;
+  if (b.timer >= HOLD + FADE) {
+    b.timer -= HOLD + FADE;
+    b.cur = (b.cur + 1) % list.length;
+  }
+  const a = list[b.cur % list.length];
+  const next = list[(b.cur + 1) % list.length];
+  u.mapA.value = a;
+  u.mapB.value = next;
+  coverScale(a, u.scaleA.value);
+  coverScale(next, u.scaleB.value);
+  u.blend.value = list.length > 1 ? THREE.MathUtils.smoothstep(b.timer, HOLD, HOLD + FADE) : 0;
+  u.zoomA.value = 1 - 0.06 * (b.timer / (HOLD + FADE));
+}
+
+// 이름판 글씨가 기본 글꼴로 그려지지 않게, 쓸 글자의 글꼴을 먼저 받는다 (최대 2.5초)
+const SAMPLE = GAMES.map(g => g.title + g.kicker).join('') + '폰 PC 전용 개발 보류 SOOMIN007 DEVLOG 개발 일지';
+await Promise.race([
+  Promise.all(['500', '600', '700', '800'].map(w => document.fonts.load(`${w} 40px "Pretendard Variable"`, SAMPLE))),
+  new Promise(r => setTimeout(r, 2500))
+]).catch(() => {});
+
+// 입문 추천 게임을 가운데에, 나머지는 games.js 순서대로 양옆에 둔다
+const first = GAMES.find(g => g.first) || GAMES[0];
+const rest = GAMES.filter(g => g !== first);
+const mid = Math.floor(rest.length / 2);
+const ORDER = [...rest.slice(0, mid), first, ...rest.slice(mid)];
+
+// 부스 폭에 맞춰 각도를 벌린 뒤, 가운데 부스가 정면에 오게 맞춘다
+const widths = ORDER.map(g => (DEVLOG[g.id] ? 5.7 : 3.1));
+const angles = [0];
+for (let i = 1; i < ORDER.length; i++) {
+  const chord = widths[i - 1] / 2 + widths[i] / 2 + GAP;
+  angles.push(angles[i - 1] + 2 * Math.asin(chord / (2 * R)));
+}
+const shift = angles[mid];
+ORDER.forEach((g, i) => makeBooth(g, i, angles[i] - shift));
+
+// 세로 화면에서는 부스들이 바라보는 자리(0, 0, 3)에 서서 고개만 돌린다. 부스마다 정면이 되는 각도
+const PAN_Z = 3;
+const PAN_YAWS = booths.map(b => Math.atan2(-b.group.position.x, PAN_Z - b.group.position.z));
+const PAN_LIMIT = Math.max(...PAN_YAWS.map(Math.abs)) + 0.05;
+
+// 벽 위의 이름
+const title = new THREE.Mesh(
+  new THREE.PlaneGeometry(7, 1),
+  new THREE.MeshBasicMaterial({
+    transparent: true,
+    map: canvasTexture(1400, 200, (ctx, w) => {
+      ctx.fillStyle = 'rgba(236, 232, 223, .55)';
+      ctx.font = `700 120px ${FONT}`;
+      ctx.letterSpacing = '24px';
+      ctx.textAlign = 'center';
+      ctx.fillText('SOOMIN007', w / 2, 150);
+    })
+  })
+);
+title.position.set(0, 5.1, -(R + 2.3));
+scene.add(title);
+
+scene.updateMatrixWorld(true);
+
+// 가장 바깥 부스의 바깥 모서리. 입구 시점이 모든 부스를 담는 거리를 구할 때 쓴다
+const EDGE = (() => {
+  let best = new THREE.Vector3();
+  for (const b of booths) {
+    for (const sgn of [-1, 1]) {
+      const p = b.group.localToWorld(new THREE.Vector3(sgn * b.W / 2, 0, 0));
+      if (Math.abs(p.x) > Math.abs(best.x)) best = p;
+    }
+  }
+  return { x: Math.abs(best.x), z: best.z };
+})();
+
+// ---------- 시점 ----------
+
+let baseFov = 45;            // 부스 앞에서 쓰는 화각. 화면 비율로 정한다
+let uiTarget = 0, uiCur = 0; // 아래쪽 카드가 가리는 높이(px)
+let panorama = false;        // 세로 화면: 방 가운데 서서 둘러보기
+const state = { mode: 'overview', i: -1, yaw: 0, yawCur: 0 };
+const pose = { pos: new THREE.Vector3(), tgt: new THREE.Vector3(), fov: 45 };
+let tween = null;
+
+function setPose(p) {
+  pose.pos.copy(p.pos);
+  pose.tgt.copy(p.tgt);
+  pose.fov = p.fov;
+}
+
+// 카드가 가리지 않는 영역의 세로, 가로 시야(탄젠트)
+function tangents(ui, fov) {
+  const t = Math.tan(THREE.MathUtils.degToRad(fov) / 2);
+  return { v: t * (innerHeight - ui) / (innerHeight + ui), h: t * innerWidth / (innerHeight + ui) };
+}
+
+// 카메라가 바라보는 점이 카드 위 빈 영역의 가운데에 오도록 화면을 위로 민다
+function applyView() {
+  const W = innerWidth, H = innerHeight, u = Math.round(uiCur);
+  camera.fov = pose.fov;
+  camera.aspect = W / (H + u);
+  camera.setViewOffset(W, H + u, 0, u, W, H);
+  camera.updateProjectionMatrix();
+}
+
+function yawMax() {
+  return panorama ? PAN_LIMIT : 0.3;
+}
+
+// 손을 떼면 가장 가까운 부스 정면으로 맞춘다
+function snapYaw() {
+  state.yaw = PAN_YAWS.reduce((best, y) => (Math.abs(y - state.yaw) < Math.abs(best - state.yaw) ? y : best), 0);
+}
+
+// 입구 시점. 모든 부스가 한 화면에 들어오는 화각을 구하고,
+// 그 화각이 지나치게 넓어지는 화면(세로 폰)에서는 방 가운데 서서 둘러보게 한다
+const ENTRY_Z = 6.2;
+function overviewPose() {
+  const W = innerWidth, H = innerHeight, u = uiTarget;
+  const tH = EDGE.x / ((ENTRY_Z - EDGE.z) * 0.94);
+  const need = THREE.MathUtils.radToDeg(2 * Math.atan(tH * (H + u) / W));
+  panorama = need > 68;
+  const fov = panorama ? baseFov : Math.max(need, 40);
+  const pos = panorama ? new THREE.Vector3(0, 1.7, PAN_Z) : new THREE.Vector3(0, 2.9, ENTRY_Z);
+  const look = new THREE.Vector3(0, panorama ? 1.75 : 1.5, -R).sub(pos).applyAxisAngle(UP, state.yawCur);
+  return { pos, tgt: pos.clone().add(look), fov };
+}
+
+function boothPose(i, ui = uiTarget) {
+  const b = booths[i];
+  const t = tangents(ui, baseFov);
+  const narrow = innerWidth / (innerHeight - ui) < 1.1;
+  // 좁은 화면은 게임 화면과 이름판만, 넓은 화면은 부스 전체를 담는다
+  const fw = narrow ? SCREEN_W + 0.5 : b.W + 1.4;
+  const fh = narrow ? 2.15 : 3.7;
+  const fx = narrow ? b.sx : 0;
+  const d = Math.max(fh / 2 / t.v, fw / 2 / t.h);
+  return {
+    pos: b.group.localToWorld(new THREE.Vector3(fx, 1.9, 0.1 + d)),
+    tgt: b.group.localToWorld(new THREE.Vector3(fx, 1.8, 0.1)),
+    fov: baseFov
+  };
+}
+
+// 게임 화면이 창 전체를 덮는 거리
+function enterPose(i) {
+  const b = booths[i];
+  const t = tangents(0, baseFov);
+  const d = 0.97 * Math.min(SCREEN_H / 2 / t.v, SCREEN_W / 2 / t.h);
+  return {
+    pos: b.group.localToWorld(new THREE.Vector3(b.sx, SCREEN_Y, 0.135 + d)),
+    tgt: b.group.localToWorld(new THREE.Vector3(b.sx, SCREEN_Y, 0.135)),
+    fov: baseFov
+  };
+}
+
+const ease = k => (k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2);
+
+function moveTo(p, dur, done) {
+  tween = { a: { pos: pose.pos.clone(), tgt: pose.tgt.clone(), fov: pose.fov }, b: p, k: 0, dur: REDUCE ? 0.01 : dur, done };
+}
+
+function stepTween(dt) {
+  if (!tween) return;
+  tween.k = Math.min(1, tween.k + dt / tween.dur);
+  const e = ease(tween.k);
+  pose.pos.lerpVectors(tween.a.pos, tween.b.pos, e);
+  pose.tgt.lerpVectors(tween.a.tgt, tween.b.tgt, e);
+  pose.fov = THREE.MathUtils.lerp(tween.a.fov, tween.b.fov, e);
+  if (tween.k === 1) {
+    const done = tween.done;
+    tween = null;
+    if (done) done();
+  }
+}
+
+// ---------- 화면 글 ----------
+
+function setAccent(hex) {
+  const c = new THREE.Color(hex); // 선형 값이라 그대로 상대 휘도를 구할 수 있다
+  const lum = 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+  document.documentElement.style.setProperty('--accent', hex);
+  document.documentElement.style.setProperty('--on-accent', lum > 0.179 ? '#16130b' : '#ffffff');
+}
+
+function canPlay(g) {
+  return !(TOUCH && !g.mobile);
+}
+
+function measureUI() {
+  uiTarget = Math.max(0, innerHeight - dock.getBoundingClientRect().top) + 6;
+}
+
+function updateHint() {
+  $('hint').innerHTML = panorama
+    ? '옆으로 밀어 <span class="nw">둘러보고,</span> 부스를 누르면 <span class="nw">그 앞으로 갑니다.</span>'
+    : '부스를 누르면 <span class="nw">그 앞으로 갑니다.</span> 끌어서 <span class="nw">둘러볼 수도 있습니다.</span>';
+}
+
+function showEntry() {
+  card.hidden = true;
+  entry.hidden = false;
+  setAccent('#F0B429');
+  measureUI();
+}
+
+function showCard(i) {
+  const g = booths[i].g;
+  setAccent(g.color);
+  $('cKicker').textContent = g.kicker;
+  $('cTitle').textContent = g.title;
+  $('cLine').textContent = g.line;
+  $('cNote').textContent = g.note || '';
+  $('cNote').hidden = !g.note;
+  const tags = (g.meta || []).slice(0, 3);
+  if (g.status === 'paused') tags.unshift('개발 보류');
+  if (g.first) tags.unshift('입문 추천');
+  $('cTags').replaceChildren(...tags.map(t => Object.assign(document.createElement('span'), { className: 'tag', textContent: t })));
+  const ok = canPlay(g);
+  $('bPlay').disabled = !ok;
+  $('bPlay').textContent = ok ? '플레이' : 'PC 전용';
+  $('bLog').hidden = !booths[i].hasLog;
+  entry.hidden = true;
+  card.hidden = false;
+  measureUI();
+}
+
+ORDER.forEach((g, i) => {
+  const chip = document.createElement('button');
+  chip.className = 'chip';
+  chip.type = 'button';
+  const dot = document.createElement('i');
+  dot.style.background = g.color;
+  chip.append(dot, g.title);
+  chip.addEventListener('click', () => focusBooth(i));
+  $('chips').append(chip);
+});
+
+// ---------- 움직임 ----------
+
+function focusBooth(i) {
+  if (state.mode === 'entering' || state.mode === 'playing') return;
+  state.mode = 'booth';
+  state.i = i;
+  showCard(i);
+  moveTo(boothPose(i), 1.15);
+}
+
+function toOverview() {
+  state.mode = 'overview';
+  state.i = -1;
+  showEntry();
+  moveTo(overviewPose(), 1.0);
+}
+
+function step(dir) {
+  const n = booths.length;
+  focusBooth(state.mode === 'booth' ? (state.i + dir + n) % n : mid);
+}
+
+function enterGame() {
+  if (state.mode !== 'booth') return;
+  const b = booths[state.i];
+  if (!canPlay(b.g)) return;
+  state.mode = 'entering';
+  card.hidden = true;
+  uiTarget = 0;
+  moveTo(enterPose(state.i), 0.9, () => {
+    state.mode = 'playing';
+    const frame = document.createElement('iframe');
+    frame.src = b.g.links.play;
+    frame.title = b.g.title;
+    frame.allow = 'autoplay; fullscreen; gamepad; clipboard-write; cross-origin-isolated';
+    frame.addEventListener('load', () => frame.focus());
+    $('pTitle').textContent = b.g.title;
+    playEl.append(frame);
+    playEl.hidden = false;
+    requestAnimationFrame(() => playEl.classList.add('is-on'));
+    // 게임이 화면을 다 덮으면 3D는 그리기를 멈춘다
+    setTimeout(() => { if (state.mode === 'playing') renderer.setAnimationLoop(null); }, 400);
+  });
+}
+
+function exitGame() {
+  if (state.mode !== 'playing') return;
+  const frame = playEl.querySelector('iframe');
+  playEl.classList.remove('is-on');
+  clock.getDelta();
+  renderer.setAnimationLoop(loop);
+  setTimeout(() => {
+    if (frame) {
+      frame.src = 'about:blank';
+      frame.remove();
+    }
+    playEl.hidden = true;
+  }, 360);
+  state.mode = 'booth';
+  showCard(state.i);
+  moveTo(boothPose(state.i), 0.9);
+}
+
+// ---------- 개발 일지 ----------
+
+const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
+
+async function loadDevlog(b) {
+  if (b.entries) return b.entries;
+  const html = await fetch(DEVLOG[b.g.id]).then(r => r.text());
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  b.lead = doc.querySelector('#devlog .log__lead')?.textContent.trim() || '';
+  b.entries = [...doc.querySelectorAll('#devlog .log__item')].map(li => ({
+    date: li.querySelector('.log__date')?.textContent.trim() || '',
+    title: li.querySelector('.log__title')?.textContent.trim() || '',
+    html: [...li.querySelectorAll('.log__body, .log__quote')].map(p => p.outerHTML).join('')
+  }));
+  // 보드에 쓸 글자의 글꼴을 먼저 받아 둔다
+  const sample = b.entries.map(e => e.date + e.title).join('');
+  await Promise.race([
+    Promise.all([document.fonts.load(`700 32px "Pretendard Variable"`, sample), document.fonts.load(`500 24px "Pretendard Variable"`, sample)]),
+    new Promise(r => setTimeout(r, 2500))
+  ]).catch(() => {});
+  drawBoard(b.boardCanvas.getContext('2d'), b.entries);
+  b.boardTex.needsUpdate = true;
+  return b.entries;
+}
+
+async function openLog(i, k = 0) {
+  const b = booths[i];
+  const entries = await loadDevlog(b).catch(() => null);
+  if (!entries) return;
+  $('sTitle').textContent = `${b.g.title} 개발 일지`;
+  $('sLead').textContent = b.lead;
+  $('sList').innerHTML = entries.map((e, n) =>
+    `<li id="log-${n}"><p class="log__date">${esc(e.date)}</p><h3 class="log__title">${esc(e.title)}</h3>${e.html}</li>`).join('');
+  sheet.hidden = false;
+  sheet.querySelector('.sheet__panel').scrollTop = 0;
+  if (k > 0) $(`log-${k}`)?.scrollIntoView({ block: 'start' });
+}
+
+function closeLog() {
+  sheet.hidden = true;
+}
+
+// ---------- 입력 ----------
+
+const ray = new THREE.Raycaster();
+const ndc = new THREE.Vector2();
+
+function hitAt(e) {
+  ndc.set((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1);
+  ray.setFromCamera(ndc, camera);
+  return ray.intersectObjects(pickables, false)[0] || null;
+}
+
+function pick(e) {
+  if (state.mode === 'entering' || state.mode === 'playing') return;
+  const hit = hitAt(e);
+  if (!hit) return;
+  const d = hit.object.userData;
+  const here = state.mode === 'booth' && state.i === d.index;
+  if (d.kind === 'log') {
+    if (here) openLog(d.index, boardCardAt(hit.uv));
+    else focusBooth(d.index);
+  } else if (here && hit.object === booths[d.index].screen) {
+    enterGame();
+  } else if (!here) {
+    focusBooth(d.index);
+  }
+}
+
+let press = null;
+canvas.addEventListener('pointerdown', e => {
+  press = { x: e.clientX, y: e.clientY, yaw: state.yaw, moved: false };
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener('pointermove', e => {
+  if (!press) {
+    if (e.pointerType === 'mouse') canvas.classList.toggle('is-hot', Boolean(hitAt(e)));
+    return;
+  }
+  const dx = e.clientX - press.x;
+  if (Math.abs(dx) > 6 || Math.abs(e.clientY - press.y) > 6) press.moved = true;
+  if (press.moved && state.mode === 'overview') {
+    const speed = panorama ? 0.006 : 0.003;
+    state.yaw = THREE.MathUtils.clamp(press.yaw + dx * speed, -yawMax(), yawMax());
+    canvas.classList.add('is-drag');
+  }
+});
+canvas.addEventListener('pointerup', e => {
+  if (press && !press.moved) pick(e);
+  else if (press && panorama && state.mode === 'overview') snapYaw();
+  press = null;
+  canvas.classList.remove('is-drag');
+});
+canvas.addEventListener('pointercancel', () => {
+  press = null;
+  canvas.classList.remove('is-drag');
+});
+
+$('bPlay').addEventListener('click', enterGame);
+$('bLog').addEventListener('click', () => openLog(state.i, 0));
+$('bPrev').addEventListener('click', () => step(-1));
+$('bNext').addEventListener('click', () => step(1));
+$('bBack').addEventListener('click', toOverview);
+$('bExit').addEventListener('click', exitGame);
+$('sClose').addEventListener('click', closeLog);
+sheet.addEventListener('click', e => { if (e.target === sheet) closeLog(); });
+
+addEventListener('keydown', e => {
+  if (!sheet.hidden) {
+    if (e.key === 'Escape') closeLog();
+    return;
+  }
+  if (state.mode === 'entering' || state.mode === 'playing') return;
+  if (e.key === 'ArrowRight') step(1);
+  else if (e.key === 'ArrowLeft') step(-1);
+  else if (e.key === 'Enter' && state.mode === 'booth' && document.activeElement === document.body) enterGame();
+  else if (e.key === 'Escape' && state.mode === 'booth') toOverview();
+});
+
+// ---------- 그리기 ----------
+
+const clock = new THREE.Clock();
+
+function loop() {
+  const raw = clock.getDelta();
+  const dt = Math.min(raw, 0.05);
+  // 카메라 이동은 실제로 흐른 시간으로 잰다. 프레임이 밀려도 이동이 늘어지지 않는다
+  stepTween(Math.min(raw, 0.5));
+  state.yawCur += (state.yaw - state.yawCur) * Math.min(1, dt * 10);
+  if (!tween && state.mode === 'overview') setPose(overviewPose());
+  uiCur += (uiTarget - uiCur) * Math.min(1, dt * 7);
+  applyView();
+  camera.position.copy(pose.pos);
+  camera.lookAt(pose.tgt);
+  for (const b of booths) tickBooth(b, dt);
+  renderer.render(scene, camera);
+}
+
+function resize() {
+  renderer.setSize(innerWidth, innerHeight, false);
+  baseFov = THREE.MathUtils.clamp(THREE.MathUtils.radToDeg(2 * Math.atan(0.62 / (innerWidth / innerHeight))), 40, 60);
+  measureUI();
+  overviewPose(); // panorama 여부를 먼저 정한다
+  state.yaw = THREE.MathUtils.clamp(state.yaw, -yawMax(), yawMax());
+  updateHint();
+  if (state.mode === 'booth' && !tween) setPose(boothPose(state.i));
+}
+addEventListener('resize', resize);
+
+document.addEventListener('visibilitychange', () => {
+  if (state.mode === 'playing') return;
+  if (document.hidden) renderer.setAnimationLoop(null);
+  else {
+    clock.getDelta();
+    renderer.setAnimationLoop(loop);
+  }
+});
+
+// 그림을 다 받으면 준비 화면을 걷는다 (늦어도 6초 뒤에는 걷는다)
+manager.onLoad = () => loading.classList.add('is-done');
+setTimeout(() => loading.classList.add('is-done'), 6000);
+
+resize();
+uiCur = uiTarget;
+setPose(overviewPose());
+renderer.setAnimationLoop(loop);
+
+// 일지는 미리 읽어 보드에 채워 둔다
+booths.filter(b => b.hasLog).forEach(b => loadDevlog(b).catch(() => {}));
+</script>
+</body>
+</html>
