@@ -1679,10 +1679,23 @@ function arrive() {
   }
 }
 
+// 화면 전체 보기. 브라우저마다 이름이 달라서 둘 다 시도하고, 거절되면 조용히 넘어간다
+function fullscreen(on) {
+  try {
+    const d = document, el = d.documentElement;
+    const p = on
+      ? (el.requestFullscreen || el.webkitRequestFullscreen)?.call(el)
+      : (d.fullscreenElement || d.webkitFullscreenElement) && (d.exitFullscreen || d.webkitExitFullscreen)?.call(d);
+    p?.catch?.(() => {});
+  } catch (e) { /* 전체 화면을 못 써도 창 크기로 플레이할 수 있다 */ }
+}
+
 function enterGame() {
   if (state.mode !== 'region') return;
   const reg = regions[state.i];
   if (!canPlay(reg.g)) return;
+  // PC는 화면 전체로 바꾼다. 창이 좁거나 세로로 길어도 게임이 모니터 비율 그대로 열린다 (누른 순간에만 허락된다)
+  if (!TOUCH) fullscreen(true);
   state.mode = 'entering';
   sfx.enter();
   stopPreview();
@@ -1692,6 +1705,13 @@ function enterGame() {
   want.target.copy(reg.entrance);
   want.dist = 1.4;
   setTimeout(() => {
+    // 폰과 태블릿은 게임을 원래 주소에서 연다. 화면 방향과 전체 화면은 게임이 스스로 맞추고,
+    // 뒤로 가기를 누르면 주소의 #땅이름 으로 이 땅 앞에 다시 선다
+    if (TOUCH) {
+      history.replaceState(null, '', '#' + reg.g.id);
+      location.href = reg.g.links.play;
+      return;
+    }
     state.mode = 'playing';
     // 게임에도 소리가 있으니 섬의 소리는 잠시 멈춘다
     if (sound.ctx) sound.ctx.suspend();
@@ -1711,6 +1731,7 @@ function enterGame() {
 
 function exitGame() {
   if (state.mode !== 'playing') return;
+  fullscreen(false);
   const frame = playEl.querySelector('iframe');
   playEl.classList.remove('is-on');
   clock.getDelta();
@@ -1881,7 +1902,8 @@ function updateIntro() {
   });
   posts.forEach((post, n) => post.grp.scale.setScalar(Math.max(0.001, easeBack(THREE.MathUtils.clamp((intro - 1.0 - n * 0.04) / 0.3, 0, 1)))));
   const drop = THREE.MathUtils.clamp((intro - 1.3) / 0.35, 0, 1);
-  pawn.position.y = PLAZA_H + (1 - drop * drop) * 4;
+  const base = walk.at === 'plaza' ? PLAZA_H : roadOf(walk.at).at(-1).y;
+  pawn.position.y = base + (1 - drop * drop) * 4;
   pawn.visible = intro > 1.3;
   const settled = intro > 1.25;
   tufts.visible = pebbles.visible = slabs.visible = settled;
@@ -1967,9 +1989,36 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+// 폰에서 게임을 원래 주소로 열었다가 뒤로 돌아오면, 주소의 #땅이름 으로 떠났던 땅 앞에서 다시 시작한다
+const startLand = regions.find(r => location.hash === '#' + r.g.id);
+if (startLand) {
+  walk.at = startLand.g.id;
+  pawn.position.copy(startLand.stop);
+}
+
 showEntry();
 resize();
+if (startLand) {
+  state.mode = 'region';
+  state.i = startLand.i;
+  showCard(state.i);
+  focusRegion(state.i);
+  rig.target.copy(want.target);
+  rig.yaw = want.yaw;
+}
 rig.dist = want.dist * 1.35; // 첫 화면은 조금 먼 데서 섬으로 다가온다
+
+// 뒤로 가기로 페이지가 그대로 되살아난 경우: 게임에 들어가던 상태를 풀고 그 땅 앞으로 돌아온다
+addEventListener('pageshow', e => {
+  if (!e.persisted) return;
+  if (state.mode === 'entering' && state.i >= 0) {
+    state.mode = 'region';
+    showCard(state.i);
+    focusRegion(state.i);
+  }
+  clock.getDelta();
+  renderer.setAnimationLoop(loop);
+});
 updateIntro();
 updateLand();
 updateSea();
