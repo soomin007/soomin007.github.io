@@ -273,16 +273,17 @@ const PHASE = (() => {
 })();
 const NIGHT = PHASE === 'night';
 const LIGHT = {
-  day: { sky: '#9fb0d6', ground: '#1b160f', hemi: 1.1, sun: '#fff1dc', sunI: 3.2, sunPos: [-14, 22, 12], glow: 0.9, lamp: 30, bloom: 0.25 },
+  day: { sky: '#9fb0d6', ground: '#1b160f', hemi: 1.1, sun: '#fff1dc', sunI: 3.2, sunPos: [-14, 22, 12], glow: 0.9, lamp: 30, bloom: 0.18 },
   dusk: { sky: '#d0a596', ground: '#1a120c', hemi: 0.95, sun: '#ffb070', sunI: 3.3, sunPos: [-24, 14, 8], glow: 1.4, lamp: 40, bloom: 0.32 },
-  night: { sky: '#3c4c7e', ground: '#07080c', hemi: 0.5, sun: '#a9c1ff', sunI: 1.1, sunPos: [-10, 20, 10], glow: 2.4, lamp: 50, bloom: 0.45 }
+  night: { sky: '#4a5c92', ground: '#0a0b10', hemi: 0.7, sun: '#b4c8ff', sunI: 1.6, sunPos: [-10, 20, 10], glow: 2.4, lamp: 50, bloom: 0.4 }
 }[PHASE];
 
 // ---------- 무대 ----------
 
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: !FX });
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-renderer.toneMapping = THREE.ACESFilmicToneMapping;
+// ACES 는 색을 바래게 하고 밝은 곳을 눌러서 화면이 뿌옇게 보였다. 원래 색에 가까운 Neutral 을 쓴다
+renderer.toneMapping = THREE.NeutralToneMapping;
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
@@ -290,6 +291,7 @@ const scene = new THREE.Scene();
 const tagScene = new THREE.Scene(); // 이름표는 효과를 거치지 않고 맨 위에 따로 그린다
 const BG = new THREE.Color('#0b0c0f');
 scene.background = BG;
+// 안개는 섬 너머 먼바다만 흐리게 한다. 카메라 거리에 맞춰 매 프레임 옮긴다 (updateRig)
 scene.fog = new THREE.Fog(BG, 42, 86);
 
 const camera = new THREE.PerspectiveCamera(40, 1, 0.1, 200);
@@ -1468,6 +1470,9 @@ function updateRig(dt) {
     rig.target.z + rig.dist * cp * Math.cos(rig.yaw)
   );
   camera.lookAt(rig.target);
+  // 좁은 화면일수록 카메라가 멀리 서므로, 안개가 섬을 덮지 않게 바라보는 점 너머에서 시작한다
+  scene.fog.near = rig.dist + 9;
+  scene.fog.far = rig.dist + 42;
 }
 
 // 카메라를 돌릴 때는 지금 각도에서 가장 짧은 쪽으로 돈다
@@ -1495,7 +1500,8 @@ let composer = null, tiltH = null, tiltV = null;
 if (FX) {
   composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(1, 1, { type: THREE.HalfFloatType, samples: 4 }));
   composer.addPass(new RenderPass(scene, camera));
-  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), LIGHT.bloom, 0.5, 0.86));
+  // 빛 번짐은 창문, 불, 반딧불처럼 스스로 빛나는 것에만 걸리게 문턱을 높게 둔다
+  composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), LIGHT.bloom, 0.4, 0.95));
   // 미니어처처럼 초점 줄 위아래를 흐린다. 초점 줄은 카메라가 바라보는 점에 맞춘다
   tiltH = new ShaderPass(HorizontalTiltShiftShader);
   tiltV = new ShaderPass(VerticalTiltShiftShader);
@@ -1508,8 +1514,9 @@ function updateTilt() {
   if (!tiltH) return;
   const W = innerWidth, H = innerHeight;
   const r = (H + ui.y) / (2 * H);
-  tiltH.uniforms.h.value = 2.2 / W;
-  tiltV.uniforms.v.value = 2.2 / H;
+  // 흐림은 화면 위아래 끝에서만 살짝 느껴질 만큼으로 둔다 (처음 값 2.2는 화면 전체가 뿌옇게 보였다)
+  tiltH.uniforms.h.value = 0.9 / W;
+  tiltV.uniforms.v.value = 0.9 / H;
   tiltH.uniforms.r.value = r;
   tiltV.uniforms.r.value = r;
 }
