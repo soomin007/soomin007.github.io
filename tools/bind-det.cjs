@@ -13,15 +13,21 @@ for (const file of process.argv.slice(2)) {
   if (a < 0 || b < 0) { console.log('main 없음', file); continue; }
   let count = 0;
   let inCode = false;
+  let prevTag = '';
   const mid = src.slice(a, b).split(/(<[^>]+>)/).map(part => {
     if (part.startsWith('<')) {
       if (/^<(script|style)\b/i.test(part)) inCode = true;
       if (/^<\/(script|style)>/i.test(part)) inCode = false;
+      prevTag = part;
       return part;
     }
     if (inCode) return part;
-    // 한 글자 조각에서 두 번 겹쳐 감싸지 않도록 한 번만 돌린다
-    return part.replace(re, (m, pre, det, word) => { count++; return `${pre}<span class="nw">${det} ${word}</span>`; });
+    // 이미 nw 묶음이 바로 이 자리에서 시작하면 다시 감싸지 않는다(두 번 돌려도 결과가 같게)
+    return part.replace(re, (m, pre, det, word, offset) => {
+      if (offset === 0 && prevTag === '<span class="nw">') return m;
+      count++;
+      return `${pre}<span class="nw">${det} ${word}</span>`;
+    });
   }).join('');
   fs.writeFileSync(file, src.slice(0, a) + mid + src.slice(b));
   console.log(`${file}: ${count}곳`);
