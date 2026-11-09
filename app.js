@@ -38,7 +38,7 @@
     return a;
   }
 
-  /* 화살표는 글리프(‹ › ←) 대신 SVG 로 그린다 (known-issues #24) */
+  /* 화살표는 글리프 문자 대신 SVG 로 그린다 (known-issues #24) */
   var ICON = { prev: "M15 5l-7 7 7 7", next: "M9 5l7 7-7 7", back: "M19 12H5M12 5l-7 7 7 7" };
   function icon(name) {
     var ns = "http://www.w3.org/2000/svg";

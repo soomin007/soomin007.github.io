@@ -19,13 +19,14 @@ games.js          게임 데이터 배열. 카드, 캐러셀, 폴백 상세가 �
 app.js            games.js 로 홈을 그리고, 라우팅과 기기별 정렬을 맡는다
 timepick.js       홈의 "몇 분 있으세요?" 질문
 pick/             시간과 기기를 묻고 게임 하나를 권하는 설문 페이지 (첫 시도로 남겨 둠)
-world/            게임마다 땅이 하나씩 있는 육각 타일 섬 지도 (3D 스케치, 검색 제외)
+world/            게임마다 땅이 하나씩 있는 육각 타일 섬 지도 (three.js, 홈의 섬 입구에서 들어온다)
 hall/             부스를 돌아보는 3D 전시관 (섬 지도 전에 만든 첫 스케치, 검색 제외)
 assets/           게임별 카드 이미지 (1232x706 webp)
 assets/feat/      캐러셀 전용 이미지 (1680x800 webp)
 assets/shots/     소개 페이지에 쓰는 스크린샷
 og.png            허브 공유 썸네일 (1200x630)
 icon.png          파비콘 (256x256)
+tools/            배포 전 검사 도구. check-text.cjs 는 폭마다 넘침과 줄 끝을, check-design.cjs 는 AI 디자인 흔적을 찾는다
 known-issues.md   반복해서 빠지기 쉬운 함정 모음. 코드를 고치기 전에 먼저 읽는다
 DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프
 session_logs/     작업 세션마다 남기는 기록
