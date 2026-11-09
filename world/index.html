@@ -69,6 +69,31 @@
   .chip i { width: 7px; height: 7px; border-radius: 50%; }
   .chip:hover { background: rgba(255, 255, 255, .08); }
 
+  /* 땅 이름표와 광장 이름판. 3D 그림 속 텍스처로 그려 줄이면 폰에서 글씨가 뭉개져서,
+     화면 위에 글자로 띄우고 위치만 3D 좌표를 따라가게 한다 (허브 known-issues #27) */
+  .names { position: fixed; inset: 0; overflow: hidden; pointer-events: none; }
+  .name {
+    position: absolute; left: 0; top: 0;
+    padding: 6px 11px 7px; border: 1.5px solid var(--c); border-radius: 10px;
+    background: rgba(11, 12, 15, .88); white-space: nowrap; visibility: hidden;
+  }
+  .name b { display: block; font-size: 15px; font-weight: 700; line-height: 1.3; color: #efeae0; }
+  /* 장르 글씨는 게임 색에 흰색을 섞어 어두운 바탕과 대비 4.5:1 을 넘긴다 (ENIGMA 의 빨강은 그대로 쓰면 3.9:1) */
+  .name span { display: block; margin-top: 1px; font-size: 12px; font-weight: 600; line-height: 1.35; color: var(--c); color: color-mix(in srgb, var(--c) 75%, #fff); }
+  .sign { --c: rgba(240, 180, 41, .9); padding: 10px 18px 11px; border-width: 2px; border-radius: 14px; text-align: center; }
+  .sign b { font-size: 24px; font-weight: 800; letter-spacing: -.01em; }
+  .sign span { margin-top: 2px; font-size: 14px; color: #f0b429; }
+  /* 폰 세로 화면에서는 섬이 작게 보여서, 이름표가 땅을 가리지 않게 이름만 작게 띄운다.
+     장르는 땅을 누르면 나오는 카드에 있다. 광장 이름판은 두 줄을 그대로 둔다 */
+  @media (max-width: 600px) {
+    .name { padding: 4px 9px 5px; border-radius: 8px; }
+    .name b { font-size: 13px; }
+    .name span { display: none; }
+    .sign { padding: 6px 12px 7px; border-radius: 11px; }
+    .sign b { font-size: 17px; }
+    .sign span { display: block; font-size: 12px; }
+  }
+
   .card {
     max-width: 460px;
     padding-top: 14px; padding-bottom: 16px; padding-left: 16px; padding-right: 16px;
@@ -84,9 +109,12 @@
   .card__note { margin: 8px 0 0; font-size: 12.5px; line-height: 1.5; color: var(--dim); }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
   .tag { padding: 2px 8px; border: 1px solid var(--line); border-radius: 99px; font-size: 11px; color: var(--dim); }
-  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  /* 버튼은 두 칸씩 두 줄로 맞춘다. 윗줄은 이 게임(플레이, 개발 일지), 아랫줄은 섬 안 이동(다음 땅, 광장으로).
+     줄바꿈에 맡기면 폰에서 마지막 버튼 하나만 아랫줄로 떨어졌다 (허브 known-issues #28) */
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .row > .btn--play:has(+ [hidden]) { grid-column: 1 / -1; }
   .btn {
-    padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px;
+    padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; white-space: nowrap;
     background: rgba(255, 255, 255, .05); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer;
   }
   .btn:hover { background: rgba(255, 255, 255, .1); }
@@ -149,6 +177,7 @@
 </head>
 <body>
 <canvas class="stage" id="stage" aria-label="게임 섬 지도 3D 화면"></canvas>
+<div class="names" id="names" aria-hidden="true"></div>
 
 <header class="top">
   <p class="brand">soomin007의 게임 섬</p>
@@ -297,7 +326,6 @@ renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 const scene = new THREE.Scene();
-const tagScene = new THREE.Scene(); // 이름표는 효과를 거치지 않고 맨 위에 따로 그린다
 const BG = new THREE.Color('#0b0c0f');
 scene.background = BG;
 // 안개는 섬 너머 먼바다만 흐리게 한다. 카메라 거리에 맞춰 매 프레임 옮긴다 (updateRig)
@@ -338,18 +366,6 @@ function canvasTexture(w, h, draw) {
   tex.colorSpace = THREE.SRGBColorSpace;
   tex.anisotropy = 4;
   return tex;
-}
-
-function fitFont(ctx, text, weight, size, maxW) {
-  for (let s = size; s >= 14; s -= 2) {
-    ctx.font = `${weight} ${s}px ${FONT}`;
-    if (ctx.measureText(text).width <= maxW) return;
-  }
-}
-
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath();
-  ctx.roundRect(x, y, w, h, r);
 }
 
 function stripes(a, b, n = 8) {
@@ -1106,26 +1122,24 @@ function buildPlain(c) {
   return { door, anim: null };
 }
 
-// 이름표: 땅 위에 떠서 늘 카메라를 본다
+// 이름표: 땅 위 한 점을 따라다니는 글자 상자. 3D 그림 속 텍스처로 그리면 폰처럼 카메라가 멀리 서는 화면에서
+// 크게 줄어들어 글씨가 뭉개졌다. 화면 위에 글자로 띄우면 기기 화소대로 또렷하게 그려진다 (허브 known-issues #27)
+const PAD = 20; // 화면 가장자리 여백 (CSS 의 --pad 와 같다)
+const namesEl = $('names');
+function makeTag(title, sub, cls, color) {
+  const el = document.createElement('div');
+  el.className = cls;
+  if (color) el.style.setProperty('--c', color);
+  const b = document.createElement('b');
+  b.textContent = title;
+  const s = document.createElement('span');
+  s.textContent = sub;
+  el.append(b, s);
+  namesEl.append(el);
+  return { el, pos: new THREE.Vector3(), alpha: 0, x: 0, y: 0, w: 0, h: 0, z: 0, on: false };
+}
 function nameTag(g) {
-  const tex = canvasTexture(640, 190, (ctx, w) => {
-    roundRect(ctx, 4, 4, w - 8, 182, 28);
-    ctx.fillStyle = 'rgba(11, 12, 15, .8)';
-    ctx.fill();
-    ctx.strokeStyle = g.color;
-    ctx.lineWidth = 4;
-    ctx.stroke();
-    fitFont(ctx, g.title, 700, 64, w - 64);
-    ctx.fillStyle = '#efeae0';
-    ctx.fillText(g.title, 32, 88);
-    const sub = g.status === 'paused' ? `${g.kicker} (개발 보류)` : g.kicker;
-    fitFont(ctx, sub, 600, 34, w - 64);
-    ctx.fillStyle = g.color;
-    ctx.fillText(sub, 34, 146);
-  });
-  const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true, opacity: 0, toneMapped: false }));
-  s.renderOrder = 10;
-  return s;
+  return makeTag(g.title, g.status === 'paused' ? `${g.kicker} (개발 보류)` : g.kicker, 'name', g.color);
 }
 
 // 이름판 글씨가 기본 글꼴로 그려지지 않게, 쓸 글자의 글꼴을 먼저 받는다 (최대 2.5초)
@@ -1147,10 +1161,7 @@ for (const reg of regions) {
   reg.landmark = c.at(0, MARK_R);
   reg.focus = reg.stop.clone().lerp(reg.landmark, 0.45).setY(0.8);
   reg.tag = nameTag(reg.g);
-  reg.tag.position.set(reg.landmark.x, 5.4, reg.landmark.z);
-  tagScene.add(reg.tag);
-  reg.tag.userData = { kind: 'region', id: reg.g.id };
-  pickables.push(reg.tag);
+  reg.tag.pos.set(reg.landmark.x, 5.4, reg.landmark.z);
 
   const light = new THREE.PointLight(reg.g.color, LIGHT.lamp, 11, 2);
   light.position.set(reg.landmark.x, reg.landmark.y + 3.2, reg.landmark.z);
@@ -1164,32 +1175,61 @@ for (const reg of regions) {
 }
 
 // 광장의 이름돌: 이 섬이 무엇이고 누가 만들었는지 알려 준다.
-// 글씨는 비스듬한 판자에 새기면 읽히지 않아서, 늘 카메라를 보는 큰 이름표로 돌 위에 띄운다
+// 글씨는 비스듬한 판자에 새기면 읽히지 않아서, 땅 이름표처럼 돌 위에 글자로 띄운다
 const PLAZA_STONE = new THREE.Vector3(0, PLAZA_H, -1.25);
 mesh(new THREE.CylinderGeometry(0.55, 0.62, 0.32, 6), mat('#8d877a', { roughness: 0.9 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.16, PLAZA_STONE.z);
 mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 6), mat('#f0b429', { emissive: '#6a4a00', emissiveIntensity: 0.4, roughness: 0.5 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.35, PLAZA_STONE.z);
-const plazaTag = new THREE.Sprite(new THREE.SpriteMaterial({
-  depthTest: false, transparent: true, opacity: 0, toneMapped: false,
-  map: canvasTexture(1000, 300, (ctx, w) => {
-    roundRect(ctx, 6, 6, w - 12, 288, 40);
-    ctx.fillStyle = 'rgba(11, 12, 15, .88)';
-    ctx.fill();
-    ctx.strokeStyle = 'rgba(240, 180, 41, .9)';
-    ctx.lineWidth = 6;
-    ctx.stroke();
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#f4efe4';
-    fitFont(ctx, 'soomin007의 게임 섬', 800, 104, w - 80);
-    ctx.fillText('soomin007의 게임 섬', w / 2, 146);
-    const sub = `직접 만든 게임 ${ORDER.length}개가 땅마다 하나씩 있습니다`;
-    ctx.fillStyle = '#f0b429';
-    fitFont(ctx, sub, 600, 46, w - 90);
-    ctx.fillText(sub, w / 2, 232);
-  })
-}));
-plazaTag.renderOrder = 11;
-plazaTag.position.set(PLAZA_STONE.x, PLAZA_H + 2.5, PLAZA_STONE.z);
-tagScene.add(plazaTag);
+const plazaTag = makeTag('soomin007의 게임 섬', `직접 만든 게임 ${ORDER.length}개가 땅마다 하나씩 있습니다`, 'name sign');
+plazaTag.pos.set(PLAZA_STONE.x, PLAZA_H + 2.5, PLAZA_STONE.z);
+const allTags = [...regions.map(r => r.tag), plazaTag];
+
+// 이름표 크기는 글꼴과 화면 폭에 따라 정해지므로, 처음과 창 크기나 글꼴이 바뀔 때만 잰다
+let topLine = 0;
+function measureTags() {
+  for (const t of allTags) {
+    t.w = t.el.offsetWidth;
+    t.h = t.el.offsetHeight;
+  }
+  topLine = document.querySelector('.top').getBoundingClientRect().bottom + 8;
+}
+measureTags();
+document.fonts.addEventListener('loadingdone', measureTags);
+
+// 이름표를 3D 좌표에서 화면 좌표로 옮긴다. 글씨가 흐려지지 않게 기기 화소에 맞춰 반올림하고,
+// 땅이 화면 안에 있으면 이름표가 가장자리 여백 밖으로 나가지 않게 안쪽으로 민다
+const tp = new THREE.Vector3();
+function placeTag(t, under) {
+  tp.copy(t.pos).project(camera);
+  const show = t.alpha > 0.01 && tp.z < 1;
+  if (show !== t.on) {
+    t.el.style.visibility = show ? 'visible' : 'hidden';
+    t.on = show;
+  }
+  if (!show) return;
+  const W = innerWidth, H = innerHeight, r = devicePixelRatio || 1;
+  const ax = ((tp.x + 1) / 2) * W, ay = ((1 - tp.y) / 2) * H;
+  // 땅이 화면 밖으로 나가면 미는 경계도 함께 밖으로 물러나서, 이름표가 가장자리에 붙어 남지 않는다
+  const lo = PAD + Math.min(0, ax);
+  const hi = Math.max(lo, W - PAD - t.w + Math.max(0, ax - W));
+  t.x = Math.round(Math.min(Math.max(ax - t.w / 2, lo), hi) * r) / r;
+  // 위쪽 머리글(섬 이름, 소리, 목록) 밑으로는 들어가지 않게 내린다. 땅에 다가가면 그 땅 이름표가 머리글과 겹쳤다
+  t.y = Math.round(Math.max(ay - t.h / 2, topLine + Math.min(0, ay)) * r) / r;
+  // 가까운 이름표가 위로 온다. 섬을 돌리다 땅 이름표가 광장 이름판과 겹치면, 누를 수 있는 땅 이름표가 위에 온다
+  t.z = under ? 0 : 1 + Math.round((1 - tp.z) * 50000);
+  t.el.style.transform = `translate(${t.x}px, ${t.y}px)`;
+  t.el.style.opacity = t.alpha.toFixed(3);
+  t.el.style.zIndex = t.z;
+}
+
+// 이름표는 글자 층이라 누름을 받지 않는다(그 위에서 끌어도 섬이 돌도록). 대신 누른 자리가 이름표 위인지 직접 본다
+const inTag = (t, x, y) => t.on && t.alpha > 0.5 && x >= t.x && x <= t.x + t.w && y >= t.y && y <= t.y + t.h;
+function tagAt(x, y) {
+  let best = null;
+  for (const reg of regions) {
+    if (inTag(reg.tag, x, y) && (!best || reg.tag.z > best.tag.z)) best = reg;
+  }
+  return best ? best.g.id : null;
+}
 
 // 개발 일지 기둥: 일지가 있는 게임으로 가는 길 양옆에, 일지 항목 수만큼 세운다.
 // 일지는 소개 페이지에서 읽어 오므로, 다 읽은 뒤에 세운다(아래 loadDevlog 호출)
@@ -1541,10 +1581,6 @@ function updateTilt() {
 function draw() {
   if (composer) composer.render();
   else renderer.render(scene, camera);
-  renderer.autoClear = false;
-  renderer.clearDepth();
-  renderer.render(tagScene, camera);
-  renderer.autoClear = true;
 }
 
 // ---------- 화면 글 ----------
@@ -1818,6 +1854,11 @@ function hitAt(e) {
 
 function pick(e) {
   if (state.mode === 'entering' || state.mode === 'playing') return;
+  const tagId = tagAt(e.clientX, e.clientY);
+  if (tagId) {
+    travel(tagId);
+    return;
+  }
   const hit = hitAt(e);
   if (!hit) return;
   const d = hit.object.userData;
@@ -1836,7 +1877,7 @@ canvas.addEventListener('pointerdown', e => {
 });
 canvas.addEventListener('pointermove', e => {
   if (!press) {
-    if (e.pointerType === 'mouse') canvas.classList.toggle('is-hot', Boolean(hitAt(e)));
+    if (e.pointerType === 'mouse') canvas.classList.toggle('is-hot', Boolean(tagAt(e.clientX, e.clientY) || hitAt(e)));
     return;
   }
   const dx = e.clientX - press.x;
@@ -1917,7 +1958,7 @@ function updateIntro() {
     const k = THREE.MathUtils.clamp((intro - 0.75 - reg.i * 0.1) / 0.45, 0, 1);
     const s = Math.max(0.001, easeBack(k));
     reg.group.traverse(o => { if (o.isMesh && o.userData.s0) o.scale.copy(o.userData.s0).multiplyScalar(s); });
-    reg.tag.material.opacity = THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1);
+    reg.tag.alpha = THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1);
   });
   posts.forEach((post, n) => post.grp.scale.setScalar(Math.max(0.001, easeBack(THREE.MathUtils.clamp((intro - 1.0 - n * 0.04) / 0.3, 0, 1)))));
   const drop = THREE.MathUtils.clamp((intro - 1.3) / 0.35, 0, 1);
@@ -1972,19 +2013,17 @@ function loop() {
   updateRig(raw);
   updateTilt();
   updateLife(dt);
-  // 이름표는 멀리서도 읽히게, 카메라가 멀수록 크게 그린다
-  const tagW = THREE.MathUtils.clamp(rig.dist * 0.13, 2.4, 6);
   for (const reg of regions) {
-    reg.tag.scale.set(tagW, tagW * 190 / 640, 1);
     if (reg.anim) reg.anim(time, dt);
   }
-  // 광장 이름표는 섬 전체를 볼 때만 보인다. 땅에 다가가면 화면을 가리지 않게 사라진다
+  // 광장 이름판은 섬 전체를 볼 때만 보인다. 땅에 다가가면 화면을 가리지 않게 사라진다
   const plazaGoal = (state.mode === 'overview' ? 1 : 0) * (introDone ? 1 : THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1));
-  plazaTag.material.opacity += (plazaGoal - plazaTag.material.opacity) * Math.min(1, raw * 6);
-  // 폰처럼 카메라가 멀리 서는 화면에서는 이름표를 더 키워서 읽히게 한다
-  const plazaW = THREE.MathUtils.clamp(rig.dist * 0.2, 3.5, 11);
-  plazaTag.scale.set(plazaW, plazaW * 0.3, 1);
+  plazaTag.alpha += (plazaGoal - plazaTag.alpha) * Math.min(1, raw * 6);
   draw();
+  // 이름표는 화면 위 글자라 카메라와 상관없이 늘 같은 크기로 또렷하다. 위치만 이번 프레임의 카메라로 옮긴다
+  camera.updateMatrixWorld();
+  for (const reg of regions) placeTag(reg.tag, false);
+  placeTag(plazaTag, true);
 }
 
 function resize() {
@@ -1995,6 +2034,7 @@ function resize() {
   }
   FOV = innerWidth < innerHeight ? 52 : 40;
   measureUI();
+  measureTags();
   ui.x = ui.tx;
   ui.y = ui.ty;
   if (state.mode === 'overview') focusOverview();
