@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>적자생존 · 무리 지휘 진화 로그라이크</title>
+<title>적자생존</title>
 <meta name="description" content="한 종을 길러 생태계의 정점에 올리는 진화 로그라이크입니다. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시키세요. 개발은 잠시 멈춘 상태이며, 올라온 판은 그대로 플레이할 수 있습니다.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="적자생존 · 무리 지휘 진화 로그라이크">
+<meta property="og:title" content="적자생존">
 <meta property="og:description" content="한 종을 길러 생태계의 정점에 올리세요. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시키세요.">
 <meta property="og:image" content="https://soomin007.github.io/g/selection-pressure/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/selection-pressure/">
@@ -18,21 +18,21 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Jua&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&display=swap">
 
 <style>
 /* ============================================================
    적자생존 전용 페이지. 본편 "3a 포근한 관찰" 팔레트:
-   로비 배경 #12100C · 잉크 #F5EEE1 · 보조 #C6B7A2 · 희미 #8C7C68 ·
-   패널 #221A14 · lime #8FD14F · amber #F5C33B · red #E85C43 ·
-   제목 Jua · 수치 모노. 구성: 관찰 일지 도감.
+   로비 배경 #12100C, 잉크 #F5EEE1, 보조 #C6B7A2, 희미 #9C8C77,
+   패널 #221A14, lime #8FD14F, amber #F5C33B, red #E85C43.
+   제목은 Jua, 수치는 Pretendard 고정폭 숫자(tabular-nums). 구성: 관찰 일지 도감.
    ============================================================ */
 
 :root {
   --bg: #12100C;
   --ink: #F5EEE1;
   --sub: #C6B7A2;
-  --faint: #8C7C68;
+  --faint: #9C8C77; /* 패널 위 대비 4.5:1 이상 */
   --panel: #221A14;
   --line: rgba(245, 235, 220, 0.13);
   --lime: #8FD14F;
@@ -42,14 +42,12 @@
   --blue: #5AB0E2;
   --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
   --disp: "Jua", var(--sans);
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
   --pad: clamp(24px, 6.5vw, 48px);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* 줄바꿈: 제목은 균형(balance), 본문은 고아 단어 방지(pretty) */
-h1, h2, h3 { text-wrap: balance; }
+/* 줄바꿈: 본문은 고아 단어 방지(pretty). 제목에는 balance 를 쓰지 않는다 (의미 단위를 끊는다) */
 p, figcaption { text-wrap: pretty; }
 
 html, body { overflow-x: clip; }
@@ -80,6 +78,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   margin: 0 auto;
 }
 .bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12.5px;
   font-weight: 700;
   border: 1px solid rgba(143, 209, 79, 0.5);
@@ -88,7 +89,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   border-radius: 12px;
   white-space: nowrap;
 }
-.bar__tag { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.14em; }
+.bar__tag { font-size: 13px; color: var(--faint); }
 
 /* ---------- 표지 ---------- */
 .hero { text-align: center; padding: 6vh var(--pad) 7vh; }
@@ -101,7 +102,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   padding: 4px 12px;
   border-radius: 10px;
   margin-bottom: 16px;
-  letter-spacing: 0.06em;
 }
 .hero__title {
   font-family: var(--disp);
@@ -118,10 +118,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   gap: 8px 18px;
   flex-wrap: wrap;
   margin-top: 20px;
-  font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--faint);
-  letter-spacing: 0.1em;
 }
 .hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
 .btn-play {
@@ -145,22 +143,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   padding: 12px 22px;
   border-radius: 14px;
 }
-.hero__free { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.12em; margin-top: 16px; }
+.hero__free { font-size: 13px; color: var(--faint); margin-top: 16px; }
 
 /* ---------- 섹션 공통 ---------- */
 /* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
 .sec { padding-top: 5vh; padding-bottom: 5vh; }
-.sec__label {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.2em;
-  color: var(--lime);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 8px;
-}
-.sec__label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .sec__title { font-family: var(--disp); font-size: clamp(21px, 5vw, 28px); font-weight: 400; color: var(--ink); margin-bottom: 18px; }
 
 .rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
@@ -169,12 +156,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 /* 루프 단계 */
 .loop { display: grid; gap: 10px; }
 @media (min-width: 720px) { .loop { grid-template-columns: repeat(3, 1fr); } }
-.loop__item { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; position: relative; padding-left: 20px; }
-.loop__item::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; }
-.loop__item.is-forage::before { background: var(--lime); }
-.loop__item.is-boss::before { background: var(--red); }
-.loop__item.is-ext::before { background: var(--amber); }
-.loop__k { font-family: var(--disp); font-size: 16px; color: var(--ink); }
+.loop__item { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 14px 16px; }
+/* 단계 색은 왼쪽 띠 대신 이름 앞 작은 칩으로 (허브 known-issues #24) */
+.loop__k::before { content: ""; width: 9px; height: 9px; border-radius: 3px; background: var(--k, var(--sub)); flex: none; }
+.loop__item.is-forage { --k: var(--lime); }
+.loop__item.is-boss { --k: var(--red); }
+.loop__item.is-ext { --k: var(--amber); }
+.loop__k { font-family: var(--disp); font-size: 16px; color: var(--ink); display: flex; align-items: center; gap: 8px; }
 .loop__v { font-size: 12.5px; color: var(--sub); line-height: 1.7; margin-top: 3px; }
 
 /* 표본 도판 (세로 스크린샷) */
@@ -185,7 +173,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   .plate { flex: 0 0 62%; scroll-snap-align: start; }
 }
 .plate { border: 1px solid rgba(143, 209, 79, 0.4); border-radius: 14px; overflow: hidden; background: rgba(143, 209, 79, 0.05); margin: 0; }
-.plate__bar { font-family: var(--mono); font-size: 10px; color: var(--lime); padding: 6px 10px; border-bottom: 1px dashed rgba(143, 209, 79, 0.35); letter-spacing: 0.14em; }
+.plate__bar { font-variant-numeric: tabular-nums; font-size: 10px; color: var(--lime); padding: 6px 10px; border-bottom: 1px dashed rgba(143, 209, 79, 0.35); }
 .plate figcaption { padding: 7px 10px; font-size: 11.5px; color: var(--sub); }
 
 /* 월드 카드 */
@@ -193,7 +181,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 @media (min-width: 640px) { .worlds { grid-template-columns: repeat(2, 1fr); } }
 .world { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 13px 16px; }
 .world__k { font-family: var(--disp); font-size: 15px; color: var(--ink); }
-.world__k i { font-style: normal; font-family: var(--mono); font-size: 10px; color: var(--blue); margin-left: 8px; letter-spacing: 0.1em; }
+.world__k i { font-style: normal; font-variant-numeric: tabular-nums; font-size: 10px; color: var(--blue); margin-left: 8px; }
 .world__v { font-size: 12.5px; color: var(--sub); line-height: 1.7; margin-top: 3px; }
 
 /* 위협 칩 */
@@ -211,11 +199,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
 /* ---------- 관찰 실습 ---------- */
 .lab { border: 1px solid var(--line); border-radius: 18px; padding: clamp(16px, 4vw, 26px); background: rgba(34, 26, 20, 0.5); }
-.sp-world { font-size: 12.5px; color: var(--sub); margin: 0 0 10px; border-left: 3px solid var(--lime); padding-left: 10px; line-height: 1.7; }
+.sp-world { font-size: 12.5px; color: var(--sub); margin: 0 0 10px; background: rgba(143, 209, 79, 0.08); padding: 6px 10px; border-radius: 8px; line-height: 1.7; }
 .sp-canvas { width: 100%; height: 230px; display: block; border-radius: 14px; border: 1px solid var(--line); touch-action: manipulation; cursor: crosshair; }
 .sp-xpwrap { height: 6px; background: rgba(245, 235, 220, 0.12); border-radius: 3px; margin-top: 10px; overflow: hidden; }
 .sp-xp { height: 100%; width: 0%; background: var(--amber); transition: width 0.3s ease; }
-.sp-gen { font-family: var(--mono); font-size: 11.5px; color: var(--lime); margin: 8px 0 0; min-height: 1.3em; }
+.sp-gen { font-variant-numeric: tabular-nums; font-size: 11.5px; color: var(--lime); margin: 8px 0 0; min-height: 1.3em; }
 .sp-draft { margin-top: 12px; }
 .sp-drafthead { font-family: var(--disp); font-size: 17px; color: var(--ink); margin: 0 0 10px; font-weight: 400; }
 .sp-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; margin-bottom: 10px; }
@@ -225,7 +213,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   display: flex;
   flex-direction: column;
   gap: 5px;
-  padding: 12px 12px 12px 16px;
+  padding: 12px 14px;
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -233,15 +221,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   cursor: pointer;
   font-family: inherit;
 }
-.sp-card::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; border-radius: 16px 0 0 16px; background: var(--lime); }
 .sp-card:active { transform: translateY(2px); }
 .sp-card strong { font-family: var(--disp); font-size: 15px; font-weight: 400; color: var(--ink); }
 .sp-carddesc { font-size: 11px; line-height: 1.6; }
-.sp-cardfx { font-family: var(--mono); font-size: 10.5px; color: var(--lime); }
+.sp-cardfx { font-variant-numeric: tabular-nums; font-size: 10.5px; color: var(--lime); }
 .sp-skip { border-radius: 12px; }
 .sp-flash { text-align: center; margin-top: 14px; }
 .sp-pass { font-size: 12.5px; color: var(--ink); margin: 0 0 4px; }
-.sp-big { font-family: var(--disp); font-size: 46px; color: #c9ffb0; letter-spacing: 0.1em; margin: 0 0 8px; }
+.sp-big { font-family: var(--disp); font-size: 46px; color: #c9ffb0; margin: 0 0 8px; }
 .sp-close { font-size: 11.5px; color: var(--faint); margin: 0 0 12px; line-height: 1.7; }
 .tz-btn {
   cursor: pointer;
@@ -267,8 +254,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   padding: 10px 14px;
 }
 
-/* ---------- 지휘 · 범주 ---------- */
-.cmd__k b { font-family: var(--mono); font-size: 10px; font-weight: 500; color: var(--amber); margin-left: 8px; letter-spacing: 0.1em; }
+/* ---------- 지휘와 범주 ---------- */
+.cmd__k b { font-variant-numeric: tabular-nums; font-size: 10px; font-weight: 500; color: var(--amber); margin-left: 8px; }
 .cats { display: grid; gap: 8px; margin-bottom: 14px; }
 @media (min-width: 640px) { .cats { grid-template-columns: repeat(5, 1fr); } }
 .cat { background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 11px 13px; }
@@ -279,7 +266,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 .grow__note strong { color: var(--amber); font-weight: 600; }
 .chip--key { color: #bfe0f3; border-color: rgba(90, 176, 226, 0.4); }
 .chip--rule { color: #f0b9ac; border-color: rgba(232, 92, 67, 0.4); }
-.sp-hint { font-family: var(--mono); font-size: 11px; color: var(--faint); margin: 6px 0 0; min-height: 1.3em; }
+.sp-hint { font-variant-numeric: tabular-nums; font-size: 11px; color: var(--faint); margin: 6px 0 0; min-height: 1.3em; }
 
 /* ---------- 마무리 ---------- */
 .final { text-align: center; padding: 7vh var(--pad) 6vh; }
@@ -293,8 +280,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   margin: 0 auto;
   padding: 18px var(--pad) 26px;
   border-top: 1px solid var(--line);
-  font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--faint);
 }
 .foot a { text-decoration: underline; text-underline-offset: 3px; }
@@ -304,13 +290,15 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   .btn-play, .sp-card { transition: none; }
   .sp-xp { transition: none; }
 }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nw { white-space: nowrap; }
 </style>
 </head>
 <body>
 
 <header class="bar">
-  <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__tag">관찰 일지 · 잠시 덮어 둠</span>
+  <a class="bar__back" href="../../"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>전체 게임</a>
+  <span class="bar__tag">관찰 일지, 잠시 덮어 둠</span>
 </header>
 
 <main>
@@ -320,20 +308,19 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     <p class="hero__line">한 종을 길러 생태계의 정점에 올리세요.</p>
     <p class="hero__hint">탭으로 무리를 이끌고, 라운드마다 닥치는 시련을 넘으세요.</p>
     <div class="hero__meta">
-      <span>1인</span><span>탭 · 더블탭 · 길게 누르기</span><span>모바일 세로 최적</span>
+      <span>1인</span><span>탭, 더블탭, 길게 누르기</span><span>모바일 세로 최적</span>
     </div>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/selection-pressure/">바로 플레이</a>
       <a class="btn-ghost" href="https://github.com/soomin007/selection-pressure" target="_blank" rel="noopener">소스 코드</a>
     </div>
-    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+    <p class="hero__free">설치 없이 <span class="nw">브라우저에서 무료로</span> <span class="nw">플레이할 수 있습니다.</span></p>
     <p class="hero__notice">개발은 2026년 8월 말에 잠시 멈췄습니다. 지금 올라와 있는 판은 그대로 플레이할 수 있습니다.</p>
   </section>
 
   <!-- 루프 -->
   <section class="sec wrap">
-    <div class="sec__label">ONE RUN</div>
-    <h2 class="sec__title">채집, 보스, 그리고 대멸종.</h2>
+    <h2 class="sec__title">한 판은 채집과 보스전, <span class="nw">대멸종으로</span> <span class="nw">흘러갑니다</span></h2>
     <div class="loop">
       <div class="loop__item is-forage rev">
         <p class="loop__k">채집</p>
@@ -352,7 +339,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
   <!-- 지휘 -->
   <section class="sec wrap">
-    <div class="sec__label">COMMAND</div>
     <h2 class="sec__title">한 마리가 아니라 무리를 지휘합니다.</h2>
     <div class="worlds">
       <div class="world rev">
@@ -376,8 +362,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
   <!-- 표본 도판 -->
   <section class="sec wrap">
-    <div class="sec__label">FIELD NOTES</div>
-    <h2 class="sec__title">관찰 기록.</h2>
+    <h2 class="sec__title">관찰 기록</h2>
     <div class="plates" role="list">
       <figure class="plate rev" role="listitem">
         <div class="plate__bar">표본 기록 01</div>
@@ -399,10 +384,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
   <!-- 성장 -->
   <section class="sec wrap">
-    <div class="sec__label">GROWTH</div>
-    <h2 class="sec__title">도장은 방울로, 능력은 카드로.</h2>
+    <h2 class="sec__title">도장은 방울로 올리고, <span class="nw">능력은 카드로</span> <span class="nw">얻습니다</span></h2>
     <div class="cats rev">
-      <div class="cat" style="--c:#E85C43"><p class="cat__k">이빨</p><p class="cat__v">무는 힘과 사냥. 키울수록 풀에서 얻는 것이 줄어듭니다.</p></div>
+      <div class="cat" style="--c:#E85C43"><p class="cat__k">이빨</p><p class="cat__v">무는 힘과 사냥. 키울수록 풀에서 <span class="nw">얻는 것이</span> 줄어듭니다.</p></div>
       <div class="cat" style="--c:#8FD14F"><p class="cat__k">다리</p><p class="cat__v">빠르기와 험한 땅. 키울수록 몸이 가벼워지고 잘 지칩니다.</p></div>
       <div class="cat" style="--c:#5AB0E2"><p class="cat__k">눈</p><p class="cat__v">보는 거리와 어둠. 키울수록 옆과 뒤가 좁아집니다.</p></div>
       <div class="cat" style="--c:#F5C33B"><p class="cat__k">가죽</p><p class="cat__v">버티는 힘과 추위. 키울수록 몸이 커지고 더위에 약해집니다.</p></div>
@@ -425,12 +409,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
       <span class="chip chip--rule">죽지 않는 것</span>
       <span class="chip chip--rule">연어의 귀향</span>
     </div>
-    <p class="chips__note">카드 79장. 열쇠 7종은 없던 능력을 열고, 조건부 특성은 밤·수풀·굶주림처럼 맥락이 맞을 때만 켜지며, 3·4단이 여는 고유 카드 20장에는 효과마다 대가가 붙습니다.</p>
+    <p class="chips__note">카드 79장. 열쇠 7종은 없던 능력을 열고, 조건부 특성은 밤이나 수풀, 굶주림처럼 맥락이 맞을 때만 켜지며, 3단과 4단이 여는 고유 카드 20장에는 효과마다 대가가 붙습니다.</p>
   </section>
 
   <!-- 월드 -->
   <section class="sec wrap">
-    <div class="sec__label">WORLDS</div>
     <h2 class="sec__title">세계가 먼저 정해지고, 종은 그 다음에 고릅니다.</h2>
     <div class="worlds">
       <div class="world rev">
@@ -459,8 +442,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 
   <!-- 관찰 실습 -->
   <section class="sec wrap">
-    <div class="sec__label">PRACTICE</div>
-    <h2 class="sec__title">관찰 실습: 이번 세계는 군도.</h2>
+    <h2 class="sec__title">군도에서 해 보는 <span class="nw">관찰 실습</span></h2>
     <div class="lab rev">
       <p class="sp-world">군도: 잘게 쪼개진 섬과 얕은 바다입니다. 헤엄치거나 날지 못하면 한 섬에 갇힙니다.</p>
       <div id="lab-mount"></div>
@@ -476,7 +458,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
 </main>
 
 <footer class="foot">
-  <span>© 2026 soomin007 · <a href="../../">전체 게임 보기</a></span>
+  <span>© 2026 soomin007</span>
+  <a href="../../">전체 게임 보기</a>
 </footer>
 
 <script>
@@ -513,11 +496,11 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
     }, 1500);
   }
 
-  /* ---------- 관찰 실습 (본편 cards.ts 원문 카드 · 군도 지형) ---------- */
+  /* ---------- 관찰 실습 (본편 cards.ts 원문 카드와 군도 지형) ---------- */
   var CARDS = [
     { name: "커다란 몸", desc: "큰 짐승은 좀처럼 잡아먹히지 않는다. 대신 걸음이 무겁고 많이 먹으며 새끼를 적게 친다.", fx: "몸집 +24", apply: function (p) { p.size = 1.35; p.spd *= 0.85; } },
     { name: "날개", desc: "산과 바다 위를 날아 넘고 산 위의 먹이를 먹는다. 대신 배가 빨리 곯는다.", fx: "비행 해금", apply: function (p) { p.wings = true; } },
-    { name: "초음파", desc: "눈이 멀고 귀가 열린다. 어둠도 수풀도 등 뒤도 막지 못한다.", fx: "반향 +70 · 시야 0", apply: function (p) { p.echo = true; p.spd *= 1.3; } }
+    { name: "초음파", desc: "눈이 멀고 귀가 열린다. 어둠도 수풀도 등 뒤도 막지 못한다.", fx: "반향 +70, 시야 0", apply: function (p) { p.echo = true; p.spd *= 1.3; } }
   ];
 
   var mount = document.getElementById("lab-mount");
@@ -558,7 +541,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   var foods = [];
   var eaten = 0, NEED = 6;
   var paused = false, ended = false, chosen = null;
-  var order = null; /* 탭 명령 {x, y, ttl} · 본편의 「이동」 축소판 */
+  var order = null; /* 탭 명령 {x, y, ttl}. 본편 「이동」의 축소판 */
 
   for (var i = 0; i < 12; i++) {
     pop.push({
@@ -642,8 +625,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
       pop.forEach(function (p) {
         if (p.wings || islandOf(order.x) === islandOf(p.x)) { canGo++; if (p.arrived) went++; }
       });
-      ordLab.textContent = "「이동」 · 따르는 중 " + went + "/" + canGo +
-        (canGo < pop.length ? " · 바다 건너 " + (pop.length - canGo) + "마리는 못 갑니다" : "");
+      ordLab.textContent = "「이동」 따르는 중 " + went + "/" + canGo +
+        (canGo < pop.length ? ", 바다 건너 " + (pop.length - canGo) + "마리는 못 갑니다" : "");
       if (order.ttl <= 0 || went === canGo) {
         order = null;
         ordLab.textContent = "무리 도착. 다시 탭하면 또 갑니다.";
@@ -731,7 +714,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
   function openDraft() {
     paused = true;
     draft.hidden = false;
-    xpLab.textContent = "시뮬 정지 · 형질을 고르세요. 고른 게 몸에 보입니다.";
+    xpLab.textContent = "시뮬레이션이 멈췄습니다. 형질을 고르면 몸에 바로 보입니다.";
   }
 
   CARDS.forEach(function (card) {
@@ -764,7 +747,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--lime); outline-
       flash.appendChild(el("p", "sp-pass", "위협을 넘겼습니다"));
       flash.appendChild(el("p", "sp-big", "생존"));
       flash.appendChild(el("p", "sp-close",
-        "본편은 채집·보스·대멸종의 6단계를 시대 5개 동안 되풀이하고, 카드 79장과 다섯 범주의 도장으로 종을 키웁니다."));
+        "본편은 채집, 보스, 대멸종으로 이어지는 6단계를 시대 5개 동안 되풀이하고, 카드 79장과 다섯 범주의 도장으로 종을 키웁니다."));
       var again = el("button", "tz-btn", "새 혈통으로 시작");
       again.type = "button";
       again.addEventListener("click", function () {

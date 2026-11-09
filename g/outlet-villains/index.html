@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>충전이 필요해! · 카페 물건 밀기 퍼즐</title>
+<title>충전이 필요해!</title>
 <meta name="description" content="배터리가 떨어져 가는 카페 청소 로봇이, 콘센트를 독차지한 손님을 한 명씩 떠나보내는 짧은 퍼즐 게임입니다. 설치 없이 브라우저에서.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="충전이 필요해! · 카페 물건 밀기 퍼즐">
+<meta property="og:title" content="충전이 필요해!">
 <meta property="og:description" content="배터리가 떨어져 가는 카페 청소 로봇이, 콘센트를 독차지한 손님을 한 명씩 떠나보내는 짧은 퍼즐 게임입니다.">
 <meta property="og:image" content="https://soomin007.github.io/g/outlet-villains/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/outlet-villains/">
@@ -21,7 +21,7 @@
 /* ============================================================
    충전이 필요해! 전용 페이지. 게임 바탕(#1d1b19)과 같은 짙은 숯색 위에
    흑백 그림과 빨간 로봇(#F2412F)만 색으로 남긴다.
-   구성: 제목 화면 → 하는 법 → 장면들 → 개발 일지(magic-straw 시절은 회색 점).
+   구성: 제목 화면, 하는 법, 장면들, 개발 일지(magic-straw 시절은 회색 점) 순서.
    ============================================================ */
 
 :root {
@@ -74,7 +74,10 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
   padding-right: var(--pad);
   font-size: 14px;
 }
-.bar__back { font-weight: 700; color: var(--ink-soft); }
+.bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; font-weight: 700; color: var(--ink-soft); }
 .bar__back:hover { color: var(--ink); }
 .bar__tag { color: var(--mut); font-size: 12.5px; text-align: right; }
 
@@ -98,13 +101,12 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
   transition: transform 0.15s ease;
 }
 .btn-play:hover { transform: translateY(-2px); }
-.hero__free { font-size: 12.5px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; margin-top: 14px; }
+.hero__free { font-size: 13px; font-weight: 600; color: var(--mut); margin-top: 14px; }
 .hero__note { font-size: 14px; color: var(--mut); margin-top: 6px; }
 
 /* ---------- 섹션 ---------- */
 .sec { padding-top: 7vh; padding-bottom: 2vh; }
-.sec__eyebrow { font-size: 12.5px; font-weight: 800; letter-spacing: 0.16em; color: var(--red); }
-.sec__title { font-size: clamp(23px, 4vw, 30px); font-weight: 900; line-height: 1.35; margin: 6px 0 16px; }
+.sec__title { font-size: clamp(23px, 4vw, 30px); font-weight: 900; line-height: 1.35; margin: 0 0 16px; }
 .sec__body { font-size: 16.5px; color: var(--ink-soft); max-width: 760px; }
 .sec__body + .sec__body { margin-top: 10px; }
 
@@ -139,7 +141,7 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
   background: var(--red);
 }
 .log__item.is-old::before { background: var(--old); }
-.log__date { font-size: 13px; font-weight: 800; letter-spacing: 0.06em; color: var(--red); }
+.log__date { font-size: 13px; font-weight: 800; color: var(--red); }
 .log__item.is-old .log__date { color: var(--mut); }
 .log__title { font-size: 20px; font-weight: 900; margin: 2px 0 8px; line-height: 1.45; }
 .log__body { font-size: 16.5px; color: var(--ink-soft); line-height: 1.8; }
@@ -149,8 +151,8 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
   font-weight: 700;
   color: var(--ink);
   background: var(--card);
-  border-left: 3px solid var(--red);
-  border-radius: 0 10px 10px 0;
+  border: 1px solid rgba(242, 65, 47, 0.4);
+  border-radius: 10px;
   padding: 8px 12px;
   margin-top: 10px;
 }
@@ -187,13 +189,14 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
 @media (max-width: 720px) {
   .shots { grid-template-columns: 1fr; }
 }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 </style>
 </head>
 <body>
 
 <header class="bar">
-  <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__tag">카페 물건 밀기 퍼즐 · PC</span>
+  <a class="bar__back" href="../../"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>전체 게임</a>
+  <span class="bar__tag">카페 물건 밀기 퍼즐</span>
 </header>
 
 <main>
@@ -205,19 +208,17 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/outlet-villains/">바로 플레이</a>
     </div>
-    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+    <p class="hero__free">설치 없이 <span class="nw">브라우저에서 무료로</span> <span class="nw">플레이할 수 있습니다.</span></p>
     <p class="hero__note">스마트폰은 지원하지 않습니다. <span class="nw">PC에서 플레이해 주세요.</span></p>
   </section>
 
   <section class="sec wrap">
-    <p class="sec__eyebrow">HOW TO PLAY</p>
-    <h2 class="sec__title">한 칸씩 걸으며 <span class="nw">물건을 밉니다.</span></h2>
+    <h2 class="sec__title">하는 법</h2>
     <p class="sec__body">방향키나 WASD로 카페 바닥을 한 칸씩 걷고, 의자나 진동벨 같은 물건을 밀어서 콘센트를 차지한 손님이 <span class="nw">스스로 플러그를</span> <span class="nw">뽑고 떠나게</span> 만듭니다. 음료를 주문한 손님에게 음료를 밀어 주거나 젖은 바닥을 닦는 일도 <span class="nw">길을 여는</span> <span class="nw">방법이 됩니다.</span></p>
     <p class="sec__body">Z로 한 걸음 되돌리고 R로 처음부터 다시 할 수 있으며, <span class="nw">실패해도 벌칙은</span> 없습니다.</p>
   </section>
 
   <section class="sec wrap">
-    <p class="sec__eyebrow">SCENES</p>
     <h2 class="sec__title">장면들</h2>
     <div class="shots">
       <figure><img src="../../assets/shots/outlet-villains-cafe.webp" alt="" width="1232" height="706" loading="lazy"><figcaption>카공 손님으로 가득한 카페</figcaption></figure>
@@ -227,7 +228,6 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
   </section>
 
   <section class="sec wrap" id="devlog">
-    <p class="sec__eyebrow">DEVLOG</p>
     <h2 class="sec__title">개발 일지</h2>
     <p class="log__lead">마법 빨대 카페 퍼즐에서 시작해 지금의 게임이 되기까지 남긴 기록입니다. 회색 점은 처음 저장소(magic-straw) 시절입니다.</p>
     <ol class="log">
@@ -345,7 +345,8 @@ a:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; border-rad
 </main>
 
 <footer class="foot">
-  <span>© 2026 soomin007 · <a href="../../">전체 게임 보기</a></span>
+  <span>© 2026 soomin007</span>
+  <a href="../../">전체 게임 보기</a>
 </footer>
 
 </body>

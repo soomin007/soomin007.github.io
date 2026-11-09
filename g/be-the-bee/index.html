@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Be the Bee · 2인 육각 보드게임</title>
+<title>Be the Bee</title>
 <meta name="description" content="같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요. 온라인 대전과 AI 대전. 설치 없이 브라우저에서.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Be the Bee · 2인 육각 보드게임">
+<meta property="og:title" content="Be the Bee">
 <meta property="og:description" content="같은 색 꿀벌 5개를 일렬로 연결해 벌집의 주인이 되세요. 온라인 대전과 AI 대전.">
 <meta property="og:image" content="https://soomin007.github.io/g/be-the-bee/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/be-the-bee/">
@@ -15,16 +15,15 @@
 <link rel="canonical" href="https://soomin007.github.io/g/be-the-bee/">
 
 <link rel="icon" type="image/png" href="../../icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 
 <style>
 /* ============================================================
    Be the Bee 전용 페이지. 이 게임만은 밝다: 본편 honey 테마 그대로
-   (배경 #fdf8ec→#f4ead0 · 잉크 #2b2b2b · 꿀 #d2a230/#F0B429
-   · 노랑 타일 #ffd400 · 갈색 타일 #97581d).
-   구성: 보드게임 상자 뒷면. 한 줄 목표 → 룰 3장 → 모드 → 연습 대국.
+   (배경 #fdf8ec 에서 #f4ead0, 잉크 #2b2b2b, 꿀 #d2a230 과 #F0B429,
+   노랑 타일 #ffd400, 갈색 타일 #97581d).
+   구성: 보드게임 상자 뒷면. 한 줄 목표, 룰 3장, 모드, 연습 대국 순서.
+   섹션 위에 영어 꼬리표를 얹지 않는다 (허브 known-issues #24).
    ============================================================ */
 
 :root {
@@ -75,6 +74,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   margin: 0 auto;
 }
 .bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 14px;
   font-weight: 800;
   border: 2px solid var(--ink);
@@ -84,7 +86,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   box-shadow: 0 3px 0 var(--ink);
   white-space: nowrap;
 }
-.bar__tag { font-size: 12.5px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; }
+.bar__tag { font-size: 13px; font-weight: 700; color: var(--mut); }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
 
 /* ---------- 표지 ---------- */
 .hero { text-align: center; padding: 6vh var(--pad) 7vh; position: relative; overflow: hidden; }
@@ -153,13 +157,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   border-radius: 26px;
   background: #fff;
 }
-.hero__free { font-size: 12.5px; font-weight: 700; color: var(--mut); letter-spacing: 0.1em; margin-top: 16px; }
+.hero__free { font-size: 13px; font-weight: 600; color: var(--mut); margin-top: 16px; }
 
 /* ---------- 섹션 공통 ---------- */
 /* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
 .sec { padding-top: 5vh; padding-bottom: 5vh; }
-.sec__eyebrow { font-size: 13px; font-weight: 900; letter-spacing: 0.16em; color: var(--honey); margin-bottom: 6px; }
 .sec__title { font-size: clamp(22px, 5vw, 32px); font-weight: 900; letter-spacing: -0.02em; margin-bottom: 18px; color: #241a06; }
+.sec__lead { font-size: 16.5px; color: var(--ink-soft); margin: -8px 0 22px; }
 
 .rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
 .rev.rev-in { opacity: 1; transform: none; }
@@ -176,7 +180,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 }
 .rule img { border-bottom: 2px solid var(--line); }
 .rule__body { padding: 14px 16px 16px; }
-.rule__no { font-size: 12px; font-weight: 900; color: var(--honey); letter-spacing: 0.12em; }
 .rule__name { font-size: 18.5px; font-weight: 900; margin: 2px 0 6px; color: #241a06; }
 .rule__desc { font-size: 15px; color: var(--ink-soft); line-height: 1.75; }
 
@@ -258,7 +261,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 .tz-btn:disabled { opacity: 0.45; cursor: default; }
 
 /* ---------- 개발 일지 ---------- */
-/* 날짜가 붙은 실제 기록만 싣는다 (출처: 원작 노션 · Be the Bee session_logs · git) */
+/* 날짜가 붙은 실제 기록만 싣는다 (출처: 원작 노션, Be the Bee session_logs, git) */
 .log__lead { font-size: 16.5px; color: var(--ink-soft); margin: -8px 0 22px; }
 .log { list-style: none; max-width: 760px; position: relative; }
 .log::before {
@@ -283,7 +286,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   background: var(--honey-hot);
 }
 .log__item.is-paper::before { background: var(--tile-b); }
-.log__date { font-size: 13px; font-weight: 900; letter-spacing: 0.08em; color: var(--honey); }
+.log__date { font-size: 13.5px; font-weight: 800; color: var(--honey); }
 .log__title { font-size: 20px; font-weight: 900; color: #241a06; margin: 2px 0 8px; line-height: 1.45; }
 .log__body { font-size: 16.5px; color: var(--ink-soft); line-height: 1.8; }
 .log__body + .log__body { margin-top: 8px; }
@@ -292,8 +295,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   font-weight: 700;
   color: #5a3a14;
   background: #fff;
-  border-left: 3px solid var(--honey-hot);
-  border-radius: 0 10px 10px 0;
+  border: 1.5px solid #ecd9a8;
+  border-radius: 10px;
   padding: 8px 12px;
   margin-top: 10px;
 }
@@ -339,8 +342,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 <body>
 
 <header class="bar">
-  <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__tag">2인 추상전략 · 온라인 · AI</span>
+  <a class="bar__back" href="../../"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>전체 게임</a>
+  <span class="bar__tag">2인 추상전략 보드게임</span>
 </header>
 
 <main>
@@ -352,24 +355,23 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
     <h1 class="hero__title">Be the Bee</h1>
     <p class="hero__line">같은 색 꿀벌 5개를 일렬로 연결해 <span class="nw">벌집의 주인이 되세요.</span></p>
     <div class="hero__meta">
-      <span>2인</span><span>온라인 대전</span><span>AI 대전</span><span>폰 · PC 모두</span>
+      <span>2인</span><span>온라인 대전</span><span>AI 대전</span><span>폰과 PC 모두</span>
     </div>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/be-the-bee/">바로 플레이</a>
       <a class="btn-ghost" href="https://github.com/soomin007/be-the-bee" target="_blank" rel="noopener">소스 코드</a>
     </div>
-    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+    <p class="hero__free">설치 없이 <span class="nw">브라우저에서 무료로</span> <span class="nw">플레이할 수 있습니다.</span></p>
   </section>
 
   <!-- 룰 -->
   <section class="sec wrap">
-    <p class="sec__eyebrow">HOW TO PLAY</p>
-    <h2 class="sec__title">타일을 깔아 판을 넓히고, <span class="nw">말 5개를 한 줄로.</span></h2>
+    <h2 class="sec__title">하는 법</h2>
+    <p class="sec__lead">타일을 깔아 판을 넓히고, <span class="nw">내 말 5개를</span> <span class="nw">한 줄로 이으면</span> 이깁니다.</p>
     <div class="rules">
       <div class="rule rev">
         <img src="../../assets/shots/be-the-bee-turn.webp" alt="" loading="lazy">
         <div class="rule__body">
-          <p class="rule__no">RULE 1</p>
           <p class="rule__name">보드가 자란다</p>
           <p class="rule__desc">고정 보드가 없습니다. 타일 2장에서 시작해, 서로 타일을 이어 붙이며 판이 커집니다.</p>
         </div>
@@ -377,7 +379,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
       <div class="rule rev">
         <img src="../../assets/shots/be-the-bee-goal.webp" alt="" loading="lazy">
         <div class="rule__body">
-          <p class="rule__no">RULE 2</p>
           <p class="rule__name">승리는 오직 말 5목</p>
           <p class="rule__desc">"말 5개를 한 줄로 이으면 승리예요." 타일 쌓기에 끌려다니면 집니다. 말은 타일 위에만 <span class="nw">놓을 수 있습니다.</span></p>
         </div>
@@ -385,7 +386,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
       <div class="rule rev">
         <img src="../../assets/shots/be-the-bee-hivelock.webp" alt="" loading="lazy">
         <div class="rule__body">
-          <p class="rule__no">RULE 3</p>
           <p class="rule__name">벌집은 잠긴다</p>
           <p class="rule__desc">타일 5장이 한 줄이 되면 벌집이 됩니다. 완성된 벌집 타일 위에는 주인만 새 말을 <span class="nw">놓을 수 있습니다.</span></p>
         </div>
@@ -395,8 +395,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 
   <!-- 턴 구조 -->
   <section class="sec wrap">
-    <p class="sec__eyebrow">YOUR TURN</p>
-    <h2 class="sec__title">한 턴에 둘 중 하나.</h2>
+    <h2 class="sec__title">한 턴에 하는 일</h2>
+    <p class="sec__lead">자기 차례에는 <span class="nw">둘 중 하나를</span> 고릅니다.</p>
     <div class="turns">
       <div class="turn rev">
         <p class="turn__k">① 타일 2개</p>
@@ -411,11 +411,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 
   <!-- 모드 -->
   <section class="sec wrap">
-    <p class="sec__eyebrow">MODES</p>
-    <h2 class="sec__title">상대가 없어도, 상대가 세도.</h2>
+    <h2 class="sec__title">모드</h2>
     <div class="modes rev">
       <span class="mode">온라인 대전</span>
-      <span class="mode">AI 대전 · 난이도 4단계</span>
+      <span class="mode">AI 대전 (난이도 4단계)</span>
       <span class="mode">여왕벌 모드</span>
       <span class="mode">무한 모드</span>
     </div>
@@ -424,17 +423,15 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 
   <!-- 연습 대국 -->
   <section class="sec wrap">
-    <p class="sec__eyebrow">PRACTICE</p>
-    <h2 class="sec__title">연습 대국: 갈색 AI와 한 판.</h2>
+    <h2 class="sec__title">연습 대국</h2>
     <div class="lab rev">
-      <p class="lab__intro">본편의 ② 턴만 씁니다: 타일 1개를 깔고, 아무 타일 위에 말 1개. 노랑(당신) 선입니다.</p>
+      <p class="lab__intro">갈색 AI와 한 판 둘 수 있습니다. 본편의 ② 방식만 써서, 타일 1개를 깔고 <span class="nw">아무 타일 위에</span> <span class="nw">말 1개를</span> 올립니다. 노랑이 당신이고 <span class="nw">먼저 둡니다.</span></p>
       <div id="lab-mount"></div>
     </div>
   </section>
 
   <!-- 개발 일지 -->
   <section class="sec wrap" id="devlog">
-    <p class="sec__eyebrow">DEVLOG</p>
     <h2 class="sec__title">개발 일지</h2>
     <p class="log__lead">종이 보드게임이 웹 게임이 되기까지 남긴 기록입니다.</p>
     <ol class="log">
@@ -449,7 +446,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
         <p class="log__date">2026년 6월 21일</p>
         <h3 class="log__title">빈 컴퓨터에서 배포까지 하루</h3>
         <p class="log__body">웹 버전은 Node.js조차 <span class="nw">설치되어 있지 않은</span> 컴퓨터에서 시작했습니다. 첫날에 개발 환경을 설치하고, 규칙 엔진과 <span class="nw">한 화면에서</span> <span class="nw">두 사람이</span> 번갈아 두는 대전, AI 대전까지 만든 다음 GitHub Pages에 올렸습니다.</p>
-        <p class="log__body">규칙 엔진은 화면을 그리는 코드와 분리해 두었습니다. 나중에 휴대폰 앱으로 감싸게 되더라도 규칙을 다시 짜지 않아도 되게 하려는 것이었습니다.</p>
+        <p class="log__body">규칙 엔진은 화면을 그리는 코드와 <span class="nw">분리해 두었습니다</span>. 나중에 휴대폰 앱으로 감싸게 되더라도 규칙을 다시 짜지 않아도 되게 <span class="nw">하려는 것이었습니다</span>.</p>
       </li>
       <li class="log__item rev">
         <p class="log__date">2026년 6월 21일</p>
@@ -473,8 +470,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
       <li class="log__item rev">
         <p class="log__date">2026년 6월 22일</p>
         <h3 class="log__title">보관함과 공유 코드</h3>
-        <p class="log__body">한 판만 저장할 수 있던 기능을 최대 12판까지 담아 두는 보관함으로 늘렸습니다. 판 전체를 문자열 하나로 바꿔 주는 공유 코드도 만들었는데, <span class="nw">이 코드를</span> 건네받은 사람은 같은 판을 그대로 <span class="nw">불러올 수 있습니다.</span></p>
-        <p class="log__body">다음 날에는 이렇게 받은 판을 앱 안에서 분석할 수 있게 했습니다.</p>
+        <p class="log__body">한 판만 저장할 수 있던 기능을 최대 12판까지 담아 두는 보관함으로 늘렸습니다. 판 전체를 문자열 하나로 <span class="nw">바꿔 주는</span> 공유 코드도 만들었는데, <span class="nw">이 코드를</span> 건네받은 사람은 같은 판을 그대로 <span class="nw">불러올 수 있습니다.</span></p>
+        <p class="log__body">다음 날에는 이렇게 받은 판을 앱 안에서 <span class="nw">분석할 수 있게</span> 했습니다.</p>
       </li>
       <li class="log__item rev">
         <p class="log__date">2026년 6월 23일</p>
@@ -486,7 +483,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
         <p class="log__date">2026년 6월 23일</p>
         <h3 class="log__title">전문가 난이도와 한 수 해설</h3>
         <p class="log__body">어려움보다 한 단계 높은 전문가 난이도를 새로 만들었습니다. 만드는 도중에 실력이 오히려 떨어지는 일을 <span class="nw">두 번 겪었고,</span> 결국 후보를 더 넓게 살피면서 <span class="nw">한 칸 떨어진</span> 4목까지 읽는 방식으로 정했습니다.</p>
-        <p class="log__body">같은 날, 한 수를 두면 그 수가 왜 좋았는지 또는 무엇을 놓쳤는지 알려 주는 해설도 넣었습니다. 끝난 판을 다시 <span class="nw">볼 때나</span> 공유 코드로 받은 판을 볼 때도 같은 해설이 나옵니다.</p>
+        <p class="log__body">같은 날, 한 수를 두면 그 수가 왜 좋았는지 또는 무엇을 놓쳤는지 <span class="nw">알려 주는</span> 해설도 넣었습니다. 끝난 판을 다시 <span class="nw">볼 때나</span> 공유 코드로 받은 판을 <span class="nw">볼 때도</span> 같은 해설이 나옵니다.</p>
       </li>
       <li class="log__item rev">
         <p class="log__date">2026년 6월 24일 ~ 25일</p>
@@ -498,7 +495,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
         <p class="log__date">2026년 6월 27일 ~ 30일</p>
         <h3 class="log__title">AI가 끝내 못 배운 수</h3>
         <p class="log__body">제가 전문가 AI를 이긴 판이 <span class="nw">세 판 있었는데,</span> 세 판 모두 같은 방식으로 이겼습니다. 타일 다섯 장으로 벌집을 먼저 잠그고, 잠긴 칸에 말을 채워서 상대가 <span class="nw">막을 수 없는</span> 5목을 만드는 방식입니다.</p>
-        <p class="log__body">이 수를 막으려면 벌집이 잠기기 전에 미리 허리를 끊어야 합니다. 하지만 그렇게 <span class="nw">한 대가는</span> 열 수도 <span class="nw">더 지나서야</span> 돌아옵니다. 처음에는 AI가 수를 고르는 기준을 고쳐 봤는데, 실제 기보에 적용해 보니 효과가 없어서 그날 오후에 되돌렸습니다. 반대로 자기 벌집을 잠가서 이기는 공격 쪽은 AI에게 <span class="nw">가르칠 수 있었습니다.</span></p>
+        <p class="log__body">이 수를 막으려면 벌집이 잠기기 전에 미리 허리를 끊어야 합니다. 하지만 그렇게 <span class="nw">한 대가는</span> 열 수도 <span class="nw">더 지나서야</span> 돌아옵니다. 처음에는 AI가 수를 고르는 기준을 <span class="nw">고쳐 봤는데</span>, 실제 기보에 적용해 보니 효과가 없어서 그날 오후에 되돌렸습니다. 반대로 자기 벌집을 잠가서 이기는 공격 쪽은 AI에게 <span class="nw">가르칠 수 있었습니다.</span></p>
         <p class="log__body">다음으로 전문가 AI의 탐색 방식을 몬테카를로 트리 탐색으로 바꿨습니다. <span class="nw">새 AI는</span> 한 수에 <span class="nw">5초 정도를</span> 쓰면서 이전 전문가 AI를 <span class="nw">5승 1패로</span> 이겼고, 짧은 줄은 미리 <span class="nw">끊어 냈습니다.</span> 하지만 긴 줄은 여전히 놓쳤습니다. 대국 결과로 학습시킨 평가 모델도 써 봤는데, <span class="nw">그 수를</span> 일부 잡아내긴 했지만 전체 실력이 떨어져서 넣지 않았습니다.</p>
         <p class="log__body">결국 이 방어는 사람에게 맡기기로 했습니다. 코칭을 '강하게'로 <span class="nw">켜 두면,</span> 곧 잠길 줄과 <span class="nw">끊어야 할</span> 칸을 <span class="nw">판 위에 표시해</span> 줍니다.</p>
       </li>
@@ -528,7 +525,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
 </main>
 
 <footer class="foot">
-  <span>© 2026 soomin007 · <a href="../../">전체 게임 보기</a></span>
+  <span>© 2026 soomin007</span>
+  <a href="../../">전체 게임 보기</a>
 </footer>
 
 <script>
@@ -784,8 +782,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
   function endTurnToPlayer() {
     phase = emptyAdjacent().length ? "tile" : "piece";
     status.textContent = phase === "tile"
-      ? "노랑 차례 · 타일을 놓을 빈 칸을 클릭하세요."
-      : "노랑 차례 · 말을 놓을 타일을 클릭하세요.";
+      ? "노랑 차례입니다. 타일을 놓을 빈 칸을 클릭하세요."
+      : "노랑 차례입니다. 말을 놓을 타일을 클릭하세요.";
     paint();
   }
 
@@ -797,7 +795,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid #e0a92a; outline-offs
     endTurnToPlayer();
   });
 
-  status.textContent = "노랑 차례 · 타일을 놓을 빈 칸을 클릭하세요. (선플레이어 첫 턴)";
+  status.textContent = "노랑 차례입니다. 타일을 놓을 빈 칸을 클릭하세요. (선플레이어 첫 턴)";
   paint();
 })();
 </script>

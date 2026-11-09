@@ -3,11 +3,11 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ENIGMA · 1942 암호 해독 퍼즐</title>
+<title>ENIGMA</title>
 <meta name="description" content="1942년 블레츨리 파크. 실제 2차대전 암호 다섯 가지를 직접 해독하는 퍼즐 게임입니다. 15개 스테이지, 3가지 엔딩. 설치 없이 브라우저에서.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="ENIGMA · 1942 암호 해독 퍼즐">
+<meta property="og:title" content="ENIGMA">
 <meta property="og:description" content="실제 2차대전 암호 다섯 가지를 직접 해독합니다. 15개 스테이지, 3가지 엔딩. 설치 없이 브라우저에서.">
 <meta property="og:image" content="https://soomin007.github.io/g/enigma/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/enigma/">
@@ -18,15 +18,15 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+KR:wght@400;600&family=Special+Elite&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&display=swap">
 
 <style>
 /* ============================================================
    ENIGMA 전용 소개 페이지. 본편(1_Enigma)의 실제 팔레트를 쓴다:
-   배경 #0A0D17 · 패널 #11131F · 골드 #EDDE66 · 스탬프 #B82929
-   · 보더 #2E3352 · 본문 #D1CCB2 · 성공 그린 #61E094
-   구성: 기밀문서 철. 문서 №1 브리핑(종이) → №2 작전 절차 →
-   №3 암호 목록 → №4 열람자 실습(시저 해독기) → 결재(CTA)
+   배경 #0A0D17, 패널 #11131F, 골드 #EDDE66, 스탬프 #B82929,
+   보더 #2E3352, 본문 #D1CCB2, 성공 그린 #61E094.
+   구성: 기밀문서 철. 착임 브리핑(종이), 작전 절차, 수록 암호, 직접 풀어 보기(시저 해독기), 마지막 CTA 순서.
+   글꼴은 명조와 Pretendard 만 쓴다. 타자기체와 고정폭 글꼴은 쓰지 않는다 (허브 known-issues #24).
    ============================================================ */
 
 :root {
@@ -39,22 +39,19 @@
   --border-gold: #807026;
   --ink: #D1CCB2;
   --muted: #a0a0bf;
-  --faint: #666685;
+  --faint: #8484a6; /* 배경 위 대비 4.5:1 이상 */
   --green: #61E094;
   --paper: #f3ecd9;
   --paper-ink: #2a241b;
   --paper-mut: #6b5f43;
   --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
   --serif: "Noto Serif KR", serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
-  --type: "Special Elite", "IBM Plex Mono", monospace;
   --pad: clamp(24px, 6.5vw, 48px); /* 좌우 여백: 폰에서도 최소 24px 확보 */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* 줄바꿈: 제목은 균형(balance), 본문은 고아 단어 방지(pretty) */
-h1, h2, h3 { text-wrap: balance; }
+/* 줄바꿈: 본문은 고아 단어 방지(pretty). 제목에는 balance 를 쓰지 않는다 (의미 단위를 끊는다) */
 p, figcaption { text-wrap: pretty; }
 
 html, body { overflow-x: clip; }
@@ -91,45 +88,30 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   margin: 0 auto;
 }
 .bar__back {
-  font-family: var(--type);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--serif);
   font-size: 12px;
-  letter-spacing: 0.08em;
   border: 1.5px solid rgba(209, 204, 178, 0.5);
   padding: 7px 14px;
   white-space: nowrap;
 }
-.bar__no { font-family: var(--type); font-size: 11px; color: var(--faint); letter-spacing: 0.14em; text-align: right; }
 
 /* ---------- 표지 ---------- */
 .hero { text-align: center; padding: 7vh var(--pad) 8vh; position: relative; }
-.hero__stamp {
-  display: inline-block;
-  font-family: var(--type);
-  font-size: clamp(10px, 2.6vw, 13px);
-  color: var(--red-lit);
-  border: 2.5px solid var(--red-lit);
-  padding: 6px 16px;
-  letter-spacing: 0.22em;
-  transform: rotate(-3deg);
-  margin-bottom: 26px;
-  opacity: 0.95;
-}
 .hero__title {
-  font-family: var(--type);
-  font-size: clamp(56px, 15vw, 130px);
-  font-weight: 400;
-  letter-spacing: 0.08em;
+  font-family: var(--serif);
+  font-size: clamp(52px, 14vw, 116px);
+  font-weight: 700;
   line-height: 1;
   color: #efe6d2;
-  animation: typeIn 1.1s steps(6, end) both;
 }
-.hero__title::after { content: "▍"; color: var(--red-lit); animation: caret 1s steps(1) infinite; }
 .hero__sub {
-  font-family: var(--type);
-  font-size: clamp(11px, 3vw, 14px);
+  font-family: var(--serif);
+  font-size: clamp(14.5px, 3.6vw, 17px);
   color: var(--muted);
-  letter-spacing: 0.18em;
-  margin-top: 18px;
+  margin-top: 20px;
 }
 .hero__meta {
   display: flex;
@@ -137,10 +119,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   gap: 8px 18px;
   flex-wrap: wrap;
   margin-top: 22px;
-  font-family: var(--mono);
-  font-size: 11px;
+  font-size: 12.5px;
   color: var(--muted);
-  letter-spacing: 0.1em;
 }
 .hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 34px; }
 .btn-play {
@@ -150,7 +130,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   font-weight: 800;
   font-size: 15.5px;
   padding: 14px 34px;
-  letter-spacing: 0.04em;
   box-shadow: 0 16px 38px -14px rgba(184, 41, 41, 0.6);
   transition: transform 0.15s ease;
 }
@@ -162,21 +141,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   font-size: 13.5px;
   padding: 12px 22px;
 }
-.hero__free { font-family: var(--type); font-size: 11px; color: var(--faint); letter-spacing: 0.1em; margin-top: 16px; }
+.hero__free { font-size: 13px; color: var(--faint); margin-top: 16px; }
 
 /* ---------- 문서 공통 ---------- */
 .doc { padding-top: 5vh; padding-bottom: 5vh; } /* 좌우는 .wrap 의 --pad 를 그대로 쓴다 */
-.doc__label {
-  font-family: var(--type);
-  font-size: 12px;
-  color: var(--faint);
-  letter-spacing: 0.2em;
+.doc__title {
+  font-family: var(--serif);
+  font-size: clamp(18px, 4.4vw, 22px);
+  font-weight: 600;
+  color: #e8e2cd;
   margin-bottom: 16px;
   display: flex;
   align-items: center;
   gap: 14px;
 }
-.doc__label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.doc__title::after { content: ""; flex: 1; height: 1px; background: var(--border); }
 
 /* 등장 연출 */
 .rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
@@ -203,10 +182,9 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   transform: rotate(-2deg);
 }
 .sheet__head {
-  font-family: var(--type);
-  font-size: 11.5px;
+  font-family: var(--serif);
+  font-size: 13px;
   color: var(--paper-mut);
-  letter-spacing: 0.16em;
   border-bottom: 1.5px solid rgba(42, 36, 27, 0.5);
   padding-bottom: 10px;
   margin-bottom: 18px;
@@ -217,7 +195,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .sheet p { font-family: var(--serif); font-size: 15.5px; line-height: 2; }
 .sheet p + p { margin-top: 10px; }
-.sheet .say { padding-left: 14px; border-left: 3px solid rgba(184, 41, 41, 0.5); }
+.sheet .say { padding-left: 16px; color: #3a2f22; }
 .sheet .aside { font-size: 13px; color: var(--paper-mut); margin-top: 18px; font-family: var(--sans); }
 
 /* 검열 해제 연출: 검은 바가 걷히며 원문이 드러난다 */
@@ -244,7 +222,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   flex-direction: column;
   gap: 10px;
 }
-.step__no { font-family: var(--type); font-size: 12px; color: var(--gold); letter-spacing: 0.14em; }
 .step img { border: 1px solid var(--border); }
 .step__name { font-size: 14.5px; font-weight: 700; color: #e8e2cd; }
 .step__desc { font-size: 12.5px; color: var(--muted); line-height: 1.7; }
@@ -257,15 +234,13 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   align-items: baseline;
   gap: 10px;
   padding: 13px 16px;
-  font-family: var(--mono);
-  font-size: clamp(11px, 2.9vw, 13px);
-  letter-spacing: 0.04em;
+  font-size: clamp(13px, 3.4vw, 14.5px);
   border-bottom: 1px solid var(--border);
   flex-wrap: wrap;
 }
 .ch:last-child { border-bottom: 0; }
 .ch__title { color: var(--ink); }
-.ch__title b { color: var(--gold); font-weight: 600; }
+.ch__title b { color: var(--gold); font-weight: 600; margin-right: 8px; }
 .ch__cipher { color: var(--muted); white-space: nowrap; }
 .ch--bonus .ch__title b { color: var(--red-lit); }
 .chapters__note { font-size: 12px; color: var(--faint); margin-top: 10px; }
@@ -273,12 +248,12 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 /* ---------- 문서 №4: 열람자 실습 (시저 해독기) ---------- */
 .lab { border: 1.5px dashed rgba(209, 204, 178, 0.35); padding: clamp(16px, 4vw, 26px); }
 .lab__intro { font-size: 13.5px; color: var(--muted); margin-bottom: 14px; }
-.ez-head { font-family: var(--mono); font-size: 11px; color: var(--faint); letter-spacing: 0.06em; margin-bottom: 4px; }
-.ez-label { font-family: var(--mono); font-size: 10px; color: var(--faint); letter-spacing: 0.14em; margin: 12px 0 4px; }
+.ez-head { font-size: 13px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.ez-label { font-variant-numeric: tabular-nums; font-size: 12px; color: var(--faint); margin: 12px 0 4px; }
 .ez-cipher, .ez-out {
-  font-family: var(--type);
+  font-family: var(--serif);
+  font-weight: 600;
   font-size: clamp(20px, 5vw, 30px);
-  letter-spacing: 0.1em;
   margin: 2px 0 12px;
   overflow-wrap: anywhere;
 }
@@ -286,15 +261,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .ez-out { color: var(--faint); margin-bottom: 0; }
 .ez-out.is-solved { color: var(--green); text-shadow: 0 0 18px rgba(97, 224, 148, 0.4); }
 .ez-dialrow { display: flex; align-items: center; gap: 12px; max-width: 420px; }
-.ez-diallab { font-family: var(--mono); font-size: 11.5px; color: var(--ink); min-width: 74px; white-space: nowrap; }
+.ez-diallab { font-variant-numeric: tabular-nums; font-size: 13px; color: var(--ink); min-width: 74px; white-space: nowrap; }
 .ez-dial { flex: 1; accent-color: var(--gold); }
 .ez-dirrow { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
 .ez-btn {
   border: 1px solid var(--border);
   color: var(--ink);
   background: var(--panel);
-  font-family: var(--mono);
-  font-size: 11.5px;
+  font-size: 13px;
   padding: 10px 16px;
   cursor: pointer;
 }
@@ -304,7 +278,7 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .ez-table { margin: 14px 0 2px; overflow-x: auto; }
 .ez-row { display: flex; gap: 1px; }
 .ez-row + .ez-row { margin-top: 2px; }
-.ez-ch { font-family: var(--mono); font-size: 10px; color: var(--faint); flex: 0 0 12px; text-align: center; }
+.ez-ch { font-size: 11px; color: var(--faint); flex: 0 0 12px; text-align: center; }
 .ez-ch.is-used { color: var(--gold); font-weight: 700; }
 .ez-report { margin-top: 16px; border-top: 1px dashed var(--border); padding-top: 14px; }
 .ez-q { font-size: 13.5px; color: var(--ink); margin: 8px 0 10px; }
@@ -312,34 +286,24 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 .ez-feedback { font-size: 12px; color: #d05555; margin: 10px 0 0; min-height: 1.2em; }
 .ez-done { display: flex; gap: 16px; align-items: flex-start; margin-top: 14px; flex-wrap: wrap; }
 .ez-stamp {
-  font-family: var(--type);
+  font-family: var(--serif);
+  font-weight: 700;
   font-size: 15px;
   color: var(--red-lit);
-  border: 2.5px solid var(--red-lit);
+  border: 2px solid var(--red-lit);
   padding: 5px 12px;
-  transform: rotate(-4deg);
-  letter-spacing: 0.2em;
+  transform: rotate(-2deg);
   white-space: nowrap;
 }
 .ez-donecol { display: flex; flex-direction: column; gap: 5px; }
-.ez-stars { color: var(--gold); letter-spacing: 0.3em; font-size: 13px; }
+.ez-stars { display: flex; gap: 4px; color: var(--gold); }
+.ez-stars svg { width: 16px; height: 16px; fill: currentColor; }
 .ez-doneline { font-size: 13px; color: var(--ink); }
-.ez-next { font-size: 11.5px; color: var(--faint); line-height: 1.6; }
+.ez-next { font-size: 12.5px; color: var(--faint); line-height: 1.6; }
 
 /* ---------- 결재 (마지막 CTA) ---------- */
 .final { text-align: center; padding: 8vh var(--pad) 6vh; }
 .final__line { font-family: var(--serif); font-size: clamp(16px, 4vw, 20px); color: #e8e2cd; margin-bottom: 26px; }
-.final__facts {
-  display: flex;
-  justify-content: center;
-  gap: 8px 20px;
-  flex-wrap: wrap;
-  font-family: var(--mono);
-  font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.1em;
-  margin-bottom: 28px;
-}
 
 .foot {
   display: flex;
@@ -355,31 +319,27 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 }
 .foot a { text-decoration: underline; text-underline-offset: 3px; }
 
-@keyframes typeIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 -2% 0 0); } }
-@keyframes caret { 0%, 55% { opacity: 1; } 56%, 100% { opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero__title { animation: none; }
-  .hero__title::after { animation: none; }
   .btn-play { transition: none; }
   .rev { transition: none; opacity: 1; transform: var(--revt, none); }
   .rd i { transition: none; transform: scaleX(0); }
 }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nw { white-space: nowrap; }
 </style>
 </head>
 <body>
 
 <header class="bar">
-  <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__no">문서 № E-1942-05 · 복호화 완료</span>
+  <a class="bar__back" href="../../"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>전체 게임</a>
 </header>
 
 <main>
   <!-- 표지 -->
   <section class="hero">
-    <div class="hero__stamp">◆ TOP SECRET · BLETCHLEY PARK · EYES ONLY ◆</div>
     <h1 class="hero__title">ENIGMA</h1>
-    <p class="hero__sub">블레츨리 파크 · 암호 해독가 훈련 시뮬레이터 · 1942</p>
+    <p class="hero__sub">1942년 블레츨리 파크에서 <span class="nw">암호 해독가가 되어</span> <span class="nw">실제 2차대전 암호를</span> 풉니다.</p>
     <div class="hero__meta">
       <span>1인</span><span>15 스테이지</span><span>엔딩 3종</span><span>PC</span>
     </div>
@@ -387,14 +347,14 @@ a:focus-visible, button:focus-visible, input:focus-visible {
       <a class="btn-play" href="https://soomin007.github.io/Enigma/">바로 플레이</a>
       <a class="btn-ghost" href="https://soominsnu.itch.io/enigma" target="_blank" rel="noopener">itch.io</a>
     </div>
-    <p class="hero__free">무료 · 브라우저 · 설치 없음</p>
+    <p class="hero__free">설치 없이 <span class="nw">브라우저에서 무료로</span> <span class="nw">플레이할 수 있습니다.</span></p>
   </section>
 
   <!-- 문서 1: 브리핑 (게임 프롤로그 원문) -->
   <section class="doc wrap">
-    <div class="doc__label">문서 №1 · 착임 브리핑</div>
+    <h2 class="doc__title">착임 브리핑</h2>
     <div class="sheet rev">
-      <div class="sheet__head"><span>MOST SECRET</span><span>ROOM 7, HUT ANNEX</span></div>
+      <div class="sheet__head"><span>극비</span><span>분석동 7호실</span></div>
       <p>1942년 11월 1일, 오전 06:12.<br>블레츨리 파크, 분석동 7호실.</p>
       <p class="say">해리슨: "신참이군. 앉아."</p>
       <p class="say">"오늘 새벽에 독일 놈들 신호 하나를 포착했어. 가장 기초적인 방식이야.
@@ -406,46 +366,43 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   <!-- 문서 2: 작전 절차 (게임 작업 지시서 원문 + 실제 화면) -->
   <section class="doc wrap">
-    <div class="doc__label">문서 №2 · 작전 절차</div>
+    <h2 class="doc__title">작전 절차</h2>
     <div class="steps">
       <div class="step rev">
-        <span class="step__no">STEP 1</span>
         <img src="../../assets/shots/enigma-radio.webp" alt="" loading="lazy">
-        <span class="step__name">무선 수신기</span>
-        <span class="step__desc">다이얼을 조정해 적군 신호를 포착합니다. 동조가 맞으면 SIGNAL LOCKED.</span>
+        <span class="step__name">1. 무선 수신기</span>
+        <span class="step__desc">다이얼을 조정해 적군 신호를 포착합니다. 동조가 맞으면 화면에 SIGNAL LOCKED가 뜹니다.</span>
       </div>
       <div class="step rev">
-        <span class="step__no">STEP 2</span>
         <img src="../../assets/shots/enigma-evidence.webp" alt="" loading="lazy">
-        <span class="step__name">단서 보드</span>
+        <span class="step__name">2. 단서 보드</span>
         <span class="step__desc">압수된 문서와 사진을 검토합니다. 열쇠는 늘 단서 안에 있습니다.</span>
       </div>
       <div class="step rev">
-        <span class="step__no">STEP 3</span>
         <img src="../../assets/shots/enigma-decoder.webp" alt="" loading="lazy">
-        <span class="step__name">암호 해독기</span>
-        <span class="step__desc">이동값을 추정해 해독하고, 보고서를 제출합니다. 오답이면 재검토 요망.</span>
+        <span class="step__name">3. 암호 해독기</span>
+        <span class="step__desc">이동값을 추정해 해독하고, 보고서를 제출합니다. 틀리면 "재검토 요망"이 뜹니다.</span>
       </div>
     </div>
   </section>
 
   <!-- 문서 3: 암호 목록 (실제 챕터 구성) -->
   <section class="doc wrap">
-    <div class="doc__label">문서 №3 · 수록 암호</div>
+    <h2 class="doc__title">수록 암호</h2>
     <div class="chapters rev">
-      <div class="ch"><span class="ch__title">[ <b>CHAPTER 0</b> · 첫 교신 ]</span><span class="ch__cipher">시저 암호</span></div>
-      <div class="ch"><span class="ch__title">[ <b>CHAPTER 1</b> · 붉은 장미 ]</span><span class="ch__cipher">비즈네르 암호</span></div>
-      <div class="ch"><span class="ch__title">[ <b>CHAPTER 2</b> · 유령 네트워크 ]</span><span class="ch__cipher">단일 치환</span></div>
-      <div class="ch"><span class="ch__title">[ <b>CHAPTER 3</b> · ENIGMA ]</span><span class="ch__cipher">에니그마 머신</span></div>
-      <div class="ch"><span class="ch__title">[ <b>CHAPTER 4</b> · 최후의 암호 ]</span><span class="ch__cipher">플레이페어</span></div>
-      <div class="ch ch--bonus"><span class="ch__title">[ <b>BONUS</b> · 배신자의 암호 ]</span><span class="ch__cipher">복합 암호</span></div>
+      <div class="ch"><span class="ch__title"><b>CHAPTER 0</b>첫 교신</span><span class="ch__cipher">시저 암호</span></div>
+      <div class="ch"><span class="ch__title"><b>CHAPTER 1</b>붉은 장미</span><span class="ch__cipher">비즈네르 암호</span></div>
+      <div class="ch"><span class="ch__title"><b>CHAPTER 2</b>유령 네트워크</span><span class="ch__cipher">단일 치환</span></div>
+      <div class="ch"><span class="ch__title"><b>CHAPTER 3</b>ENIGMA</span><span class="ch__cipher">에니그마 머신</span></div>
+      <div class="ch"><span class="ch__title"><b>CHAPTER 4</b>최후의 암호</span><span class="ch__cipher">플레이페어</span></div>
+      <div class="ch ch--bonus"><span class="ch__title"><b>BONUS</b>배신자의 암호</span><span class="ch__cipher">복합 암호</span></div>
     </div>
     <p class="chapters__note">챕터마다 3개 레벨, 총 15 스테이지. 성적에 따라 엔딩이 갈립니다.</p>
   </section>
 
   <!-- 문서 4: 열람자 실습 (실제 첫 퍼즐) -->
   <section class="doc wrap">
-    <div class="doc__label">문서 №4 · 열람자 실습</div>
+    <h2 class="doc__title">직접 풀어 보기</h2>
     <div class="lab rev">
       <p class="lab__intro">본편 첫 스테이지의 감청문입니다. 회전자를 돌려 직접 해독해 보십시오.</p>
       <div id="lab-mount"></div>
@@ -455,9 +412,6 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   <!-- 결재 -->
   <section class="final">
     <p class="final__line">"완벽한 해독. 블레츨리 파크가 당신을 주목합니다."</p>
-    <div class="final__facts">
-      <span>무료</span><span>브라우저</span><span>설치 없음</span><span>한국어</span>
-    </div>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/Enigma/">바로 플레이</a>
       <a class="btn-ghost" href="https://github.com/soomin007/Enigma" target="_blank" rel="noopener">소스 코드</a>
@@ -466,7 +420,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 </main>
 
 <footer class="foot">
-  <span>© 2026 soomin007 · <a href="../../">전체 게임 보기</a></span>
+  <span>© 2026 soomin007</span>
+  <a href="../../">전체 게임 보기</a>
 </footer>
 
 <script>
@@ -520,8 +475,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   }
 
   var mount = document.getElementById("lab-mount");
-  mount.appendChild(el("div", "ez-head", "[ 시저 암호 해독기 · CAESAR CIPHER ]"));
-  mount.appendChild(el("div", "ez-label", "감청 신호 · 437.5 kHz · SIGNAL LOCKED"));
+  mount.appendChild(el("div", "ez-head", "시저 암호 해독기"));
+  mount.appendChild(el("div", "ez-label", "감청 신호 437.5 kHz, SIGNAL LOCKED"));
   mount.appendChild(el("p", "ez-cipher", CIPHER));
 
   var dialRow = el("div", "ez-dialrow");
@@ -535,8 +490,8 @@ a:focus-visible, button:focus-visible, input:focus-visible {
   mount.appendChild(dialRow);
 
   var dirRow = el("div", "ez-dirrow");
-  var btnR = el("button", "ez-btn", "▶ 앞으로 이동 (Right)");
-  var btnL = el("button", "ez-btn", "◀ 뒤로 이동 (Left)");
+  var btnR = el("button", "ez-btn", "앞으로 이동");
+  var btnL = el("button", "ez-btn", "뒤로 이동");
   btnR.type = "button"; btnL.type = "button";
   dirRow.appendChild(btnR);
   dirRow.appendChild(btnL);
@@ -565,16 +520,21 @@ a:focus-visible, button:focus-visible, input:focus-visible {
 
   var report = el("div", "ez-report");
   report.hidden = true;
-  report.appendChild(el("div", "ez-head", "[ 보고서 작성 ] 수집한 정보를 바탕으로 아래 질문에 답하십시오."));
-  report.appendChild(el("p", "ez-q", "적군의 공격 시각은 언제입니까?"));
+  report.appendChild(el("div", "ez-head", "보고서 작성"));
+  report.appendChild(el("p", "ez-q", "수집한 정보를 바탕으로 답하십시오. 적군의 공격 시각은 언제입니까?"));
   var optRow = el("div", "ez-opts");
   var feedback = el("p", "ez-feedback", "");
   feedback.setAttribute("aria-live", "polite");
   var done = el("div", "ez-done");
   done.hidden = true;
-  done.appendChild(el("span", "ez-stamp", "DECODED"));
+  done.appendChild(el("span", "ez-stamp", "해독 완료"));
   var doneCol = el("div", "ez-donecol");
-  doneCol.appendChild(el("span", "ez-stars", "★ ★ ★"));
+  var stars = el("span", "ez-stars");
+  stars.setAttribute("aria-label", "별 3개");
+  for (var si = 0; si < 3; si++) {
+    stars.insertAdjacentHTML("beforeend", '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.8l2.8 5.9 6.4.8-4.7 4.4 1.2 6.4L12 17.2l-5.7 3.1 1.2-6.4-4.7-4.4 6.4-.8z"/></svg>');
+  }
+  doneCol.appendChild(stars);
   doneCol.appendChild(el("span", "ez-doneline", "완벽한 해독. 블레츨리 파크가 당신을 주목합니다."));
   doneCol.appendChild(el("span", "ez-next", "본편은 라디오 감청과 단서 보드를 거쳐 여기까지 옵니다. 나머지 14개 스테이지가 기다립니다."));
   done.appendChild(doneCol);

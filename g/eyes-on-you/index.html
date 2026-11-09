@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Eyes on You · 횡스크롤 로그라이트</title>
-<meta name="description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 마지막에 VEIL의 정체가 드러납니다. 엔딩 4종. PC · 키보드 권장.">
+<title>Eyes on You</title>
+<meta name="description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 마지막에 VEIL의 정체가 드러납니다. 엔딩은 4종이고, 키보드가 있는 PC를 권장합니다.">
 
 <meta property="og:type" content="website">
-<meta property="og:title" content="Eyes on You · 횡스크롤 로그라이트">
-<meta property="og:description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 엔딩 4종. PC · 키보드 권장.">
+<meta property="og:title" content="Eyes on You">
+<meta property="og:description" content="AI 파트너 VEIL의 조언을 따르거나 무시하며 임무를 수행합니다. 엔딩은 4종이고, 키보드가 있는 PC를 권장합니다.">
 <meta property="og:image" content="https://soomin007.github.io/g/eyes-on-you/og.png">
 <meta property="og:url" content="https://soomin007.github.io/g/eyes-on-you/">
 <meta name="twitter:card" content="summary_large_image">
@@ -18,12 +18,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap">
 
 <style>
 /* ============================================================
-   Eyes on You 전용 페이지. 본편 팔레트: 배경 #0F121A · 스테이지
-   #1F1F24 · HUD #E6E6E6 · 보조 #A6B8D1 · VEIL 시안 #75DBFF ·
+   Eyes on You 전용 페이지. 본편 팔레트: 배경 #0F121A, 스테이지
+   #1F1F24, HUD #E6E6E6, 보조 #A6B8D1, VEIL 시안 #75DBFF,
    자막 pill #080D17 82% / #CCEBFF. 폰트는 본편처럼 Pretendard.
    구성: 보안 관제 브리핑. VEIL 이 페이지 방문자를 "요원"으로 브리핑한다.
    ============================================================ */
@@ -39,14 +38,12 @@
   --pill-ink: #CCEBFF;
   --line: rgba(117, 219, 255, 0.28);
   --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
   --pad: clamp(24px, 6.5vw, 48px);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* 줄바꿈: 제목은 균형(balance), 본문은 고아 단어 방지(pretty) */
-h1, h2, h3 { text-wrap: balance; }
+/* 줄바꿈: 본문은 고아 단어 방지(pretty). 제목에는 balance 를 쓰지 않는다 (의미 단위를 끊는다) */
 p, figcaption { text-wrap: pretty; }
 
 html, body { overflow-x: clip; }
@@ -78,18 +75,19 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   padding: 18px var(--pad);
   max-width: 880px;
   margin: 0 auto;
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
 }
 .bar__back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
-  letter-spacing: 0.1em;
   border: 1px solid var(--line);
   background: rgba(117, 219, 255, 0.06);
   color: #9fd4ee;
   padding: 8px 16px;
   white-space: nowrap;
 }
-.bar__id { font-size: 10.5px; color: var(--dim); letter-spacing: 0.18em; text-align: right; }
 
 /* ---------- 표지: VEIL 브리핑 ---------- */
 .hero { text-align: center; padding: 6vh var(--pad) 7vh; }
@@ -130,10 +128,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   gap: 8px 18px;
   flex-wrap: wrap;
   margin-top: 22px;
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   font-size: 11px;
   color: var(--dim);
-  letter-spacing: 0.12em;
 }
 .hero__cta { display: flex; justify-content: center; align-items: center; gap: 14px; flex-wrap: wrap; margin-top: 30px; }
 .btn-play {
@@ -143,7 +140,6 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   font-weight: 800;
   font-size: 15px;
   padding: 14px 32px;
-  letter-spacing: 0.04em;
   box-shadow: 0 0 34px -6px rgba(91, 141, 239, 0.7);
   transition: transform 0.15s ease;
 }
@@ -169,7 +165,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   border: 1px solid var(--line);
   background: rgba(8, 13, 23, 0.6);
   padding: clamp(18px, 4vw, 28px);
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   font-size: clamp(12px, 3vw, 13.5px);
   line-height: 2;
   color: var(--hud);
@@ -179,18 +175,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 /* ---------- 섹션 공통 ---------- */
 /* 주의: padding 단축 속성은 .wrap 의 좌우 여백을 지운다. 반드시 축 분리 */
 .sec { padding-top: 5vh; padding-bottom: 5vh; }
-.sec__label {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.22em;
-  color: var(--veil);
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  margin-bottom: 8px;
-}
-.sec__label::after { content: ""; flex: 1; height: 1px; background: var(--line); }
 .sec__title { font-size: clamp(19px, 4.6vw, 26px); font-weight: 800; color: #e8f0ff; margin-bottom: 18px; }
+.sec__lead { font-size: 15px; color: var(--sub); margin: -8px 0 18px; }
+/* 녹화 중 표시: 글리프 대신 작은 원 */
+.cam__rec::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: currentColor; margin-right: 5px; vertical-align: 1px; }
 
 .rev { opacity: 0; transform: translateY(16px); transition: opacity 0.55s ease, transform 0.55s ease; }
 .rev.rev-in { opacity: 1; transform: none; }
@@ -203,9 +191,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   display: flex;
   justify-content: space-between;
   padding: 6px 10px;
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   font-size: 10px;
-  letter-spacing: 0.14em;
   color: #9fd4ee;
   border-bottom: 1px solid var(--line);
 }
@@ -228,14 +215,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   padding: 13px 15px;
 }
 .route__name { font-size: 14px; font-weight: 700; color: #e8f0ff; }
-.route__rr { font-family: var(--mono); font-size: 10.5px; color: var(--dim); letter-spacing: 0.1em; margin: 2px 0 4px; }
+.route__rr { font-variant-numeric: tabular-nums; font-size: 10.5px; color: var(--dim); margin: 2px 0 4px; }
 .route__desc { font-size: 12px; color: var(--sub); line-height: 1.7; }
 .routes__note { font-size: 12.5px; color: var(--dim); margin-top: 12px; }
 
 /* 신뢰 시스템 */
 .trust { display: grid; gap: 12px; }
 @media (min-width: 720px) { .trust { grid-template-columns: repeat(3, 1fr); } }
-.trust__item { border-left: 3px solid var(--veil); background: rgba(8, 13, 23, 0.5); padding: 13px 15px; }
+.trust__item { border: 1px solid rgba(117, 219, 255, 0.35); background: rgba(8, 13, 23, 0.5); padding: 13px 15px; }
 .trust__k { font-size: 14px; font-weight: 700; color: #e8f0ff; }
 .trust__v { font-size: 12.5px; color: var(--sub); line-height: 1.75; margin-top: 4px; }
 .trust__v b { color: var(--veil); font-weight: 600; }
@@ -256,7 +243,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   animation: blink 4s infinite;
 }
 .ey-pupil { width: 10px; height: 10px; border-radius: 50%; background: var(--veil); }
-.ey-hud { font-family: var(--mono); font-size: 11px; color: var(--hud); letter-spacing: 0.08em; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.ey-hud { font-variant-numeric: tabular-nums; font-size: 11px; color: var(--hud); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .ey-subs { display: flex; flex-direction: column; gap: 6px; min-height: 34px; margin-bottom: 12px; align-items: flex-start; }
 .ey-sub {
   margin: 0;
@@ -283,13 +270,13 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 }
 .ey-card.is-rec { border-color: var(--veil); box-shadow: 0 0 22px -8px rgba(117, 219, 255, 0.45); }
 .ey-card:disabled { opacity: 0.55; cursor: default; }
-.ey-recbadge { font-size: 10px; color: var(--veil); letter-spacing: 0.14em; }
+.ey-recbadge { font-size: 10px; color: var(--veil); }
 .ey-card strong { font-size: 14.5px; color: #e8f0ff; }
-.ey-rr { font-family: var(--mono); font-size: 10.5px; color: var(--dim); letter-spacing: 0.1em; }
+.ey-rr { font-variant-numeric: tabular-nums; font-size: 10.5px; color: var(--dim); }
 .ey-cardline { font-size: 11.5px; color: var(--sub); line-height: 1.6; }
 .ey-result p { margin: 0 0 8px; }
 .ey-clear { font-size: 12.5px; color: var(--sub); }
-.ey-gauge { font-family: var(--mono); font-size: 13px; color: #99B3CC; letter-spacing: 0.06em; }
+.ey-gauge { font-variant-numeric: tabular-nums; font-size: 13px; color: #99B3CC; }
 .ey-gauge.is-up { color: #8CE6EB; }
 .ey-note { font-size: 11.5px; color: var(--dim); line-height: 1.7; }
 .tz-btn {
@@ -297,7 +284,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   border: 1px solid rgba(91, 141, 239, 0.55);
   color: #9fb9ee;
   background: rgba(91, 141, 239, 0.07);
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   font-size: 12.5px;
   padding: 10px 16px;
 }
@@ -315,7 +302,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   margin: 0 auto;
   padding: 18px var(--pad) 26px;
   border-top: 1px solid rgba(117, 219, 255, 0.12);
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
   font-size: 11.5px;
   color: var(--dim);
 }
@@ -330,13 +317,14 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   .cam__rec { animation: none; }
   .btn-play { transition: none; }
 }
+.ico { width: 16px; height: 16px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.nw { white-space: nowrap; }
 </style>
 </head>
 <body>
 
 <header class="bar">
-  <a class="bar__back" href="../../">← 전체 게임</a>
-  <span class="bar__id">SESSION 7734 · 암호화됨</span>
+  <a class="bar__back" href="../../"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>전체 게임</a>
 </header>
 
 <main>
@@ -356,10 +344,10 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 
   <!-- 임무 브리핑 (본편 원문) -->
   <section class="sec wrap">
-    <div class="sec__label">MISSION BRIEF</div>
+    <h2 class="sec__title">임무 브리핑</h2>
     <div class="brief rev">
-      침투 작전 · 보안 시설 <b>SILO-7</b><br>
-      최종 목표: 시설 심장부 도달 → 데이터 회수 → 탈출<br>
+      침투 작전, 보안 시설 <b>SILO-7</b><br>
+      최종 목표: 시설 심장부 도달, 데이터 회수, 탈출<br>
       도면 없음. 사전 정보 없음.<br>
       현장 지원 AI: <b>VEIL</b>.<br>
       작전명: <b>PALIMPSEST</b>
@@ -368,21 +356,20 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 
   <!-- 감시 화면 -->
   <section class="sec wrap">
-    <div class="sec__label">SURVEILLANCE</div>
-    <h2 class="sec__title">모든 구역이 당신을 보고 있습니다.</h2>
+    <h2 class="sec__title">모든 구역이 <span class="nw">당신을 보고 있습니다</span></h2>
     <div class="cams">
       <figure class="cam rev">
-        <div class="cam__bar"><span>CAM-01</span><span class="cam__rec">● REC</span></div>
+        <div class="cam__bar"><span>CAM-01</span><span class="cam__rec">REC</span></div>
         <img src="../../assets/shots/eyes-on-you-rooftops.webp" alt="" loading="lazy">
         <figcaption>옥상 루트</figcaption>
       </figure>
       <figure class="cam rev">
-        <div class="cam__bar"><span>CAM-02</span><span class="cam__rec">● REC</span></div>
+        <div class="cam__bar"><span>CAM-02</span><span class="cam__rec">REC</span></div>
         <img src="../../assets/shots/eyes-on-you-subway.webp" alt="" loading="lazy">
         <figcaption>지하철 루트</figcaption>
       </figure>
       <figure class="cam rev">
-        <div class="cam__bar"><span>CAM-03</span><span class="cam__rec">● REC</span></div>
+        <div class="cam__bar"><span>CAM-03</span><span class="cam__rec">REC</span></div>
         <img src="../../assets/shots/eyes-on-you-watchtower.webp" alt="" loading="lazy">
         <figcaption>감시탑 루트</figcaption>
       </figure>
@@ -391,27 +378,27 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 
   <!-- 루트 -->
   <section class="sec wrap">
-    <div class="sec__label">ROUTES</div>
-    <h2 class="sec__title">갈림길마다 VEIL 이 하나를 권합니다. 따를지는 당신 몫입니다.</h2>
+    <h2 class="sec__title">갈림길마다 VEIL이 <span class="nw">루트 하나를</span> <span class="nw">권합니다</span></h2>
+    <p class="sec__lead">따를지 말지는 <span class="nw">당신이 정합니다.</span></p>
     <div class="routes">
       <div class="route rev">
         <p class="route__name">외곽 진입로</p>
-        <p class="route__rr">RISK 1 · REWARD 1</p>
+        <p class="route__rr">위험 1, 보상 1</p>
         <p class="route__desc">외벽 정비 통로. 침투가 시작되는 곳입니다.</p>
       </div>
       <div class="route rev">
         <p class="route__name">폐쇄 지하철</p>
-        <p class="route__rr">RISK 2 · REWARD 2</p>
+        <p class="route__rr">위험 2, 보상 2</p>
         <p class="route__desc">좁고 어두운 폐역. 대시로 함정을 넘습니다.</p>
       </div>
       <div class="route rev">
         <p class="route__name">감시탑</p>
-        <p class="route__rr">RISK 3 · REWARD 3</p>
+        <p class="route__rr">위험 3, 보상 3</p>
         <p class="route__desc">관제 구역. 사선에 들어가면 즉시 피격됩니다.</p>
       </div>
       <div class="route rev">
         <p class="route__name">데이터 센터</p>
-        <p class="route__rr">RISK 3 · REWARD 3</p>
+        <p class="route__rr">위험 3, 보상 3</p>
         <p class="route__desc">서버 랙 사이로 드론과 저격이 동시에 옵니다.</p>
       </div>
     </div>
@@ -420,35 +407,33 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 
   <!-- 신뢰 -->
   <section class="sec wrap">
-    <div class="sec__label">TRUST</div>
-    <h2 class="sec__title">VEIL 은 당신의 선택을 전부 기록합니다.</h2>
+    <h2 class="sec__title">VEIL은 당신의 선택을 <span class="nw">전부 기록합니다</span></h2>
     <div class="trust">
       <div class="trust__item rev">
         <p class="trust__k">조언</p>
-        <p class="trust__v">갈림길 추천, 위험 경고, 레벨업 조언. VEIL 은 당신의 실력까지 보고 권합니다.</p>
+        <p class="trust__v">VEIL은 갈림길에서 길을 권하고 위험을 미리 알려 줍니다. 당신의 실력까지 보고 권합니다.</p>
       </div>
       <div class="trust__item rev">
         <p class="trust__k">신뢰</p>
-        <p class="trust__v">추천을 따라 살아남으면 신뢰가 쌓이고, VEIL 의 <b>어투가 변합니다</b>. 무시해도 벌은 없습니다. 관계가 자라지 않을 뿐.</p>
+        <p class="trust__v">추천을 따라 살아남으면 신뢰가 쌓이고, VEIL의 <b>어투가 변합니다</b>. 무시해도 벌은 없고, 관계가 자라지 않을 뿐입니다.</p>
       </div>
       <div class="trust__item rev">
         <p class="trust__k">정체</p>
-        <p class="trust__v">마지막에 VEIL 이 누구였는지 드러납니다. <b>엔딩 4종</b>은 당신의 선택 패턴이 가릅니다.</p>
+        <p class="trust__v">마지막에 VEIL이 누구였는지 드러납니다. <b>엔딩 4종</b>은 당신의 선택 패턴이 가릅니다.</p>
       </div>
     </div>
   </section>
 
   <!-- 시뮬레이션 -->
   <section class="sec wrap">
-    <div class="sec__label">SIMULATION</div>
-    <h2 class="sec__title">첫 갈림길을 미리 겪어 보십시오.</h2>
+    <h2 class="sec__title">첫 갈림길을 <span class="nw">미리 겪어 보십시오</span></h2>
     <div class="lab rev">
       <div id="lab-mount"></div>
     </div>
   </section>
 
   <section class="final">
-    <p class="final__line">"요원이 저를 믿을수록, 제가 더 많이 도와드릴 수 있습니다."</p>
+    <p class="final__line">"요원이 저를 믿을수록, 제가 더 많이 <span class="nw">도와드릴 수 있습니다</span>."</p>
     <div class="hero__cta">
       <a class="btn-play" href="https://soomin007.github.io/EyesOnYou/">바로 플레이</a>
     </div>
@@ -456,7 +441,8 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
 </main>
 
 <footer class="foot">
-  <span>© 2026 soomin007 · <a href="../../">전체 게임 보기</a></span>
+  <span>© 2026 soomin007</span>
+  <a href="../../">전체 게임 보기</a>
 </footer>
 
 <script>
@@ -498,7 +484,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   function typeInto(container, text, cls, thenFn) {
     var line = el("p", cls || "sub-pill");
     container.appendChild(line);
-    var full = "VEIL ▸ " + text;
+    var full = "VEIL: " + text;
     if (reducedMotion) {
       line.textContent = full;
       if (thenFn) later(thenFn, 200);
@@ -543,7 +529,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   var eye = el("span", "ey-eye");
   eye.appendChild(el("span", "ey-pupil"));
   head.appendChild(eye);
-  head.appendChild(el("span", "ey-hud", "STAGE 1/7 · 루트 선택   HP ♥♥♥   VEIL ○○○○○"));
+  head.appendChild(el("span", "ey-hud", "스테이지 1/7, 루트 선택"));
   mount.appendChild(head);
 
   var sub = el("div", "ey-subs");
@@ -558,7 +544,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
   function say(text, thenFn) {
     var line = el("p", "ey-sub");
     sub.appendChild(line);
-    var full = "VEIL ▸ " + text;
+    var full = "VEIL: " + text;
     if (reducedMotion) {
       line.textContent = full;
       if (thenFn) later(thenFn, 200);
@@ -581,9 +567,9 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
     ROUTES.forEach(function (rt) {
       var c = el("button", "ey-card" + (rt.rec ? " is-rec" : ""));
       c.type = "button";
-      if (rt.rec) c.appendChild(el("span", "ey-recbadge", "★ 베일 추천"));
+      if (rt.rec) c.appendChild(el("span", "ey-recbadge", "베일 추천"));
       c.appendChild(el("strong", null, rt.name));
-      c.appendChild(el("span", "ey-rr", "위험 " + rt.risk + " · 보상 " + rt.reward));
+      c.appendChild(el("span", "ey-rr", "위험 " + rt.risk + ", 보상 " + rt.reward));
       c.appendChild(el("span", "ey-cardline", rt.line));
       c.addEventListener("click", function () { choose(rt); });
       cardRow.appendChild(c);
@@ -597,7 +583,7 @@ a:focus-visible, button:focus-visible { outline: 2px solid var(--veil); outline-
       var trust = followed ? 2 : 0;
       result.appendChild(el("p", "ey-clear", "…구간 통과. 데이터 링크 유지 중."));
       var gauge = el("p", "ey-gauge",
-        "VEIL 신뢰 +" + trust + "   " + (followed ? "●○○○○" : "○○○○○"));
+        "VEIL 신뢰 +" + trust);
       if (followed) gauge.classList.add("is-up");
       result.appendChild(gauge);
       result.appendChild(el("p", "ey-note",
