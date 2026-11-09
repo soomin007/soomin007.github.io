@@ -4,8 +4,8 @@
 //   NODE_PATH="<Be the Bee 저장소>/node_modules" node tools/check-text.cjs http://localhost:8130/g/outlet-villains/
 // 폭을 뒤에 적으면 그 폭만 본다(기본 320, 360, 390, 1440).
 //
-// (3)은 다음 줄이 의존 명사나 보조 용언("수", "것", "두면", "봤습니다")이나 단위("명", "개", "가지")로
-// 시작하는 자리를 고른다. "보이지"처럼 낱말을 잘못 짚는 경우가 있으니, 걸린 줄은 사람이 보고 판단해서
+// (3)은 다음 줄이 의존 명사나 보조 용언("수", "것", "두면", "보기", "봤습니다")이나 단위("명", "개", "가지")로
+// 시작하는 자리와, 앞 줄이 관형사 하나("이", "두", "모든")로 끝나는 자리를 고른다. "보이지"처럼 낱말을 잘못 짚는 경우가 있으니, 걸린 줄은 사람이 보고 판단해서
 // 끊기면 안 되는 묶음만 <span class="nw"> 로 감싼다 (전역 CLAUDE.md 글쓰기 규칙, known-issues #1).
 const { chromium } = require('playwright');
 
@@ -24,7 +24,9 @@ if (!url) {
     await page.goto(url + (url.includes('?') ? '&' : '?') + 'v=' + Date.now());
     await page.waitForTimeout(1200);
     const r = await page.evaluate(() => {
-      const startBad = /^(수|것|때|줄|뿐|듯|만큼|적|중|데|있|없|두|뒀|놓|놨|버|보|봤|주|줬|싶|하|되|드리|드립|대|개|명|가지|컷|번|쪽|편|채|졌|져)(\s|[다니습었는은을를이가도요며고게지서면,.]|$)/;
+      const startBad = /^(수|것|때|줄|뿐|듯|만큼|적|중|데|있|없|두|뒀|놓|놨|버|보|봤|주|줬|싶|하|되|드리|드립|대|개|명|가지|컷|번|쪽|편|채|졌|져)(\s|[다니습었는은을를이가도요며고게지서면기,.]|$)/;
+      // 앞 줄이 관형사나 수 관형사 하나로 끝나는 자리 ("이 / 문서에", "두 / 번")
+      const endBad = /(^|\s)(이|그|저|각|몇|한|두|세|네|첫|새|옛|온|모든|이런|그런|저런|어떤|여러)$/;
       const near = [];
       const breaks = [];
       for (const el of document.querySelectorAll('p, h1, h2, h3, figcaption, li > p')) {
@@ -51,7 +53,7 @@ if (!url) {
         lines.sort((a, b) => a.top - b.top);
         for (let k = 0; k + 1 < lines.length; k++) {
           const a = lines[k].text.trim(), b = lines[k + 1].text.trim();
-          if (startBad.test(b)) breaks.push(`${a.slice(-14)} / ${b.slice(0, 14)}`);
+          if (startBad.test(b) || endBad.test(a)) breaks.push(`${a.slice(-14)} / ${b.slice(0, 14)}`);
         }
       }
       return { overflow: document.documentElement.scrollWidth > document.documentElement.clientWidth, near, breaks };
