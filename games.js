@@ -183,14 +183,14 @@ const GAMES = [
     page: "g/selection-pressure/",
     title: "적자생존",
     kicker: "무리 지휘 진화 로그라이크",
-    line: "한 종을 길러 생태계의 정점에 올리는 게임입니다. 탭으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시킵니다.",
+    line: "한 종을 길러 생태계의 정점에 올리는 게임입니다. 경기 전에 적어 둔 지침으로 무리를 이끌고, 라운드 사이에 카드로 종을 진화시킵니다.",
     lineLong: "",
     color: "#6FBF8B",
     year: "2026",
     yearLabel: "",
-    meta: ["1인", "탭 지휘", "모바일 세로"],
+    meta: ["1인", "지침 시트", "PC와 폰"],
     status: "paused",
-    note: "개발은 2026년 8월 말에 잠시 멈췄습니다. 지금 올라와 있는 판은 그대로 플레이할 수 있습니다.",
+    note: "개발은 2026년 9월 12일 이후로 멈춰 있습니다. 지금 올라와 있는 판은 그대로 플레이할 수 있습니다.",
     first: false,
     mobile: true,
     img: "assets/selection-pressure.webp",
@@ -198,14 +198,14 @@ const GAMES = [
     theme: "eco",
     tag: "관찰 일지, 잠시 덮어 둠",
     facts: [
-      { k: "조작", v: "탭, 더블탭, 길게 누르기와 라운드 사이 카드" },
+      { k: "조작", v: "경기 전 지침 시트와 작전타임, 라운드 사이 카드" },
       { k: "스택", v: "TypeScript, PixiJS" },
-      { k: "환경", v: "모바일 세로 최적" },
-      { k: "상태", v: "개발 보류 (2026-08-29)" }
+      { k: "환경", v: "PC와 폰 모두" },
+      { k: "상태", v: "개발 보류 (2026-09-12 이후)" }
     ],
     shots: [
-      { src: "assets/shots/selection-pressure-command.webp", cap: "탭 한 번, 무리가 그 자리로 간다" },
-      { src: "assets/shots/selection-pressure-boss.webp", cap: "보스: 성난 말벌 떼가 덮친다" },
+      { src: "assets/shots/selection-pressure-sheet.webp", cap: "지침과 일정표, 줄마다 움직이는 수가 뜬다" },
+      { src: "assets/shots/selection-pressure-timeout.webp", cap: "위협이 나타나자 경기가 멈춘다" },
       { src: "assets/shots/selection-pressure-draft.webp", cap: "라운드 사이, 카드로 진화한다" }
     ],
     links: {
