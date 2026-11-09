@@ -237,7 +237,11 @@ import { VerticalTiltShiftShader } from 'three/addons/shaders/VerticalTiltShiftS
    ============================================================ */
 
 const ROOT = '../';
-const DEVLOG = { 'be-the-bee': ROOT + 'g/be-the-bee/index.html' };
+// 개발 일지가 있는 게임과 그 일지가 실린 소개 페이지. 길가 기둥 수는 일지 항목 수를 따른다
+const DEVLOG = {
+  'be-the-bee': ROOT + 'g/be-the-bee/index.html',
+  'outlet-villains': ROOT + 'g/outlet-villains/index.html'
+};
 const FONT = '"Pretendard Variable", Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1121,7 +1125,7 @@ function nameTag(g) {
 }
 
 // 이름판 글씨가 기본 글꼴로 그려지지 않게, 쓸 글자의 글꼴을 먼저 받는다 (최대 2.5초)
-const SAMPLE = GAMES.map(g => g.title + g.kicker).join('') + '개발 보류 SOOMIN007 광장 옥상 지하철 감시탑';
+const SAMPLE = GAMES.map(g => g.title + g.kicker).join('') + '개발 보류 soomin007의 게임 섬 직접 만든 개가 땅마다 하나씩 있습니다 0123456789 옥상 지하철 감시탑';
 await Promise.race([
   Promise.all(['600', '700', '800'].map(w => document.fonts.load(`${w} 40px "Pretendard Variable"`, SAMPLE))),
   new Promise(r => setTimeout(r, 2500))
@@ -1155,43 +1159,51 @@ for (const reg of regions) {
   });
 }
 
-// 광장 표지판
-{
-  const post = new THREE.Group();
-  post.position.set(-1.25, PLAZA_H, 1.0);
-  scene.add(post);
-  mesh(new THREE.BoxGeometry(0.09, 1.3, 0.09), mat('#6b5a44'), post).position.y = 0.65;
-  const board = mesh(new THREE.BoxGeometry(1.5, 0.42, 0.06), new THREE.MeshStandardMaterial({
-    roughness: 0.8,
-    map: canvasTexture(450, 126, (ctx, w) => {
-      ctx.fillStyle = '#8a7457';
-      ctx.fillRect(0, 0, w, 126);
-      ctx.fillStyle = '#f4ead6';
-      ctx.font = `800 64px ${FONT}`;
-      ctx.textAlign = 'center';
-      ctx.fillText('SOOMIN007', w / 2, 86);
-    })
-  }), post);
-  board.position.y = 1.15;
-}
+// 광장의 이름돌: 이 섬이 무엇이고 누가 만들었는지 알려 준다.
+// 글씨는 비스듬한 판자에 새기면 읽히지 않아서, 늘 카메라를 보는 큰 이름표로 돌 위에 띄운다
+const PLAZA_STONE = new THREE.Vector3(0, PLAZA_H, -1.25);
+mesh(new THREE.CylinderGeometry(0.55, 0.62, 0.32, 6), mat('#8d877a', { roughness: 0.9 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.16, PLAZA_STONE.z);
+mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 6), mat('#f0b429', { emissive: '#6a4a00', emissiveIntensity: 0.4, roughness: 0.5 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.35, PLAZA_STONE.z);
+const plazaTag = new THREE.Sprite(new THREE.SpriteMaterial({
+  depthTest: false, transparent: true, opacity: 0, toneMapped: false,
+  map: canvasTexture(1000, 300, (ctx, w) => {
+    roundRect(ctx, 6, 6, w - 12, 288, 40);
+    ctx.fillStyle = 'rgba(11, 12, 15, .88)';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(240, 180, 41, .9)';
+    ctx.lineWidth = 6;
+    ctx.stroke();
+    ctx.textAlign = 'center';
+    ctx.fillStyle = '#f4efe4';
+    fitFont(ctx, 'soomin007의 게임 섬', 800, 104, w - 80);
+    ctx.fillText('soomin007의 게임 섬', w / 2, 146);
+    const sub = `직접 만든 게임 ${ORDER.length}개가 땅마다 하나씩 있습니다`;
+    ctx.fillStyle = '#f0b429';
+    fitFont(ctx, sub, 600, 46, w - 90);
+    ctx.fillText(sub, w / 2, 232);
+  })
+}));
+plazaTag.renderOrder = 11;
+plazaTag.position.set(PLAZA_STONE.x, PLAZA_H + 2.5, PLAZA_STONE.z);
+tagScene.add(plazaTag);
 
-// 개발 일지 기둥: Be the Bee로 가는 길 양옆에 열두 개
+// 개발 일지 기둥: 일지가 있는 게임으로 가는 길 양옆에, 일지 항목 수만큼 세운다.
+// 일지는 소개 페이지에서 읽어 오므로, 다 읽은 뒤에 세운다(아래 loadDevlog 호출)
 const posts = [];
-for (const reg of regions) {
-  if (!DEVLOG[reg.g.id]) continue;
+function buildPosts(reg, count) {
   const path = reg.road;
   const lens = [0];
   for (let k = 1; k < path.length; k++) lens.push(lens[k - 1] + path[k].distanceTo(path[k - 1]));
   const total = lens[lens.length - 1];
   const side = new THREE.Vector3(-reg.dir.z, 0, reg.dir.x);
-  for (let n = 0; n < 12; n++) {
-    const d = total * (0.14 + 0.8 * (n / 11));
+  for (let n = 0; n < count; n++) {
+    const d = total * (0.14 + 0.8 * (count > 1 ? n / (count - 1) : 0.5));
     let k = 1;
     while (k < path.length - 1 && lens[k] < d) k++;
     const p = path[k - 1].clone().lerp(path[k], (d - lens[k - 1]) / (lens[k] - lens[k - 1]));
     p.addScaledVector(side, n % 2 ? 0.66 : -0.66);
     p.y = groundY(p.x, p.z);
-    const cap = new THREE.MeshStandardMaterial({ color: '#3a2c0c', emissive: '#f0b429', emissiveIntensity: 0.25, roughness: 0.5 });
+    const cap = new THREE.MeshStandardMaterial({ color: '#2a2622', emissive: reg.g.color, emissiveIntensity: 0.25, roughness: 0.5 });
     const grp = new THREE.Group();
     grp.position.copy(p);
     scene.add(grp);
@@ -1598,10 +1610,13 @@ function showCard(i) {
   $('cKicker').textContent = g.kicker;
   $('cTitle').textContent = g.title;
   $('cLine').textContent = g.line;
-  const notes = [g.note];
-  if (DEVLOG[g.id]) notes.push('오는 길가에 선 기둥 열두 개가 개발 일지입니다. 기둥을 누르면 그 기록을 읽을 수 있습니다.');
+  const notes = [g.note ? esc(g.note) : ''];
+  if (DEVLOG[g.id]) {
+    const n = logs[g.id]?.entries.length;
+    notes.push(`오는 길가에 선 <span class="nw">기둥${n ? ` ${n}개가` : '들이'}</span> <span class="nw">개발 일지입니다.</span> 기둥을 누르면 <span class="nw">그 기록을</span> <span class="nw">읽을 수 있습니다.</span>`);
+  }
   const note = notes.filter(Boolean).join(' ');
-  $('cNote').textContent = note;
+  $('cNote').innerHTML = note;
   $('cNote').hidden = !note;
   const tags = (g.meta || []).slice(0, 3);
   if (g.status === 'paused') tags.unshift('개발 보류');
@@ -1959,6 +1974,12 @@ function loop() {
     reg.tag.scale.set(tagW, tagW * 190 / 640, 1);
     if (reg.anim) reg.anim(time, dt);
   }
+  // 광장 이름표는 섬 전체를 볼 때만 보인다. 땅에 다가가면 화면을 가리지 않게 사라진다
+  const plazaGoal = (state.mode === 'overview' ? 1 : 0) * (introDone ? 1 : THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1));
+  plazaTag.material.opacity += (plazaGoal - plazaTag.material.opacity) * Math.min(1, raw * 6);
+  // 폰처럼 카메라가 멀리 서는 화면에서는 이름표를 더 키워서 읽히게 한다
+  const plazaW = THREE.MathUtils.clamp(rig.dist * 0.2, 3.5, 11);
+  plazaTag.scale.set(plazaW, plazaW * 0.3, 1);
   draw();
 }
 
@@ -2024,10 +2045,13 @@ updateLand();
 updateSea();
 loading.classList.add('is-done');
 renderer.setAnimationLoop(loop);
-loadDevlog('be-the-bee').catch(() => {});
+// 일지를 읽어 와서 그 게임으로 가는 길가에 기둥을 세운다
+for (const reg of regions) {
+  if (DEVLOG[reg.g.id]) loadDevlog(reg.g.id).then(log => buildPosts(reg, log.entries.length)).catch(() => {});
+}
 
 // 검증용: 창이 가려져 그리기가 멈춰 있을 때 ?debug 로 열면 한 프레임씩 직접 돌릴 수 있다
-if (PARAMS.has('debug')) window.__tick = loop;
+if (PARAMS.has('debug')) Object.assign(window, { __tick: loop, __posts: posts });
 </script>
 </body>
 </html>
