@@ -10,7 +10,7 @@
   var dotsBox = document.getElementById("dots");
   var grid = document.getElementById("grid");
   var orderNote = document.getElementById("orderNote");
-  var brandEyebrow = document.getElementById("brandEyebrow");
+  var brandTag = document.getElementById("brandTag");
 
   var HOME_TITLE = document.title;
   var reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -38,6 +38,20 @@
     return a;
   }
 
+  /* 화살표는 글리프(‹ › ←) 대신 SVG 로 그린다 (known-issues #24) */
+  var ICON = { prev: "M15 5l-7 7 7 7", next: "M9 5l7 7-7 7", back: "M19 12H5M12 5l-7 7 7 7" };
+  function icon(name) {
+    var ns = "http://www.w3.org/2000/svg";
+    var s = document.createElementNS(ns, "svg");
+    s.setAttribute("viewBox", "0 0 24 24");
+    s.setAttribute("aria-hidden", "true");
+    s.setAttribute("class", "ico");
+    var p = document.createElementNS(ns, "path");
+    p.setAttribute("d", ICON[name]);
+    s.appendChild(p);
+    return s;
+  }
+
   /* ---------- 정렬: 터치 기기에선 폰으로 되는 게임 먼저 ---------- */
 
   var games = GAMES.slice();
@@ -45,8 +59,8 @@
     games.sort(function (a, b) { return (b.mobile ? 1 : 0) - (a.mobile ? 1 : 0); });
   }
 
-  brandEyebrow.textContent = "GAMES · " + games.length + " TITLES · ALL FREE";
-  orderNote.textContent = isTouch ? "모바일 지원 게임 우선 표시" : "총 " + games.length + "개 게임";
+  brandTag.textContent = "직접 만든 무료 게임 " + games.length + "개";
+  orderNote.textContent = isTouch ? "폰에서 되는 게임이 앞에 있습니다" : "";
 
   /* ---------- 피처드 캐러셀 ---------- */
 
@@ -79,27 +93,29 @@
 
     var scrim = el("div", "feat__scrim");
     var info = el("div", "feat__info");
-    var kicker = el("p", "feat__kicker", g.kicker);
-    kicker.style.color = g.color;
-    if (g.status === "paused") kicker.appendChild(el("span", "feat__status", "개발 보류"));
-    info.appendChild(kicker);
     info.appendChild(el("h1", "feat__title", g.title));
+    var genre = el("p", "feat__genre", g.kicker);
+    genre.style.color = g.color;
+    if (g.status === "paused") genre.appendChild(el("span", "feat__status", "개발 보류"));
+    info.appendChild(genre);
     info.appendChild(el("p", "feat__line", g.line));
     var cta = el("div", "feat__cta");
     var btn = el("span", "feat__btn", "자세히 보기");
     btn.style.background = g.color;
     cta.appendChild(btn);
-    cta.appendChild(el("span", "feat__free", "무료 · 브라우저 · 설치 없음"));
+    cta.appendChild(el("span", "feat__free", "설치 없이 브라우저에서 플레이"));
     info.appendChild(cta);
     scrim.appendChild(info);
     feat.appendChild(scrim);
 
-    var prev = el("button", "feat__nav feat__nav--prev", "‹");
+    var prev = el("button", "feat__nav feat__nav--prev");
+    prev.appendChild(icon("prev"));
     prev.setAttribute("aria-label", "이전 게임");
     prev.addEventListener("click", function () { go(current - 1, true); });
     feat.appendChild(prev);
 
-    var next = el("button", "feat__nav feat__nav--next", "›");
+    var next = el("button", "feat__nav feat__nav--next");
+    next.appendChild(icon("next"));
     next.setAttribute("aria-label", "다음 게임");
     next.addEventListener("click", function () { go(current + 1, true); });
     feat.appendChild(next);
@@ -208,7 +224,7 @@
     var chips = el("div", "gcard__chips");
     g.meta.slice(0, 3).forEach(function (m) { chips.appendChild(el("span", null, m)); });
     foot.appendChild(chips);
-    var open = el("span", "gcard__go", "자세히 보기 ›");
+    var open = el("span", "gcard__go", "자세히 보기");
     open.style.color = g.color;
     foot.appendChild(open);
     body.appendChild(foot);
@@ -272,7 +288,9 @@
     detail.appendChild(el("div", "d__texture"));
 
     var bar = el("header", "d__bar");
-    var back = el("button", "d__back", "← 목록으로");
+    var back = el("button", "d__back");
+    back.appendChild(icon("back"));
+    back.appendChild(document.createTextNode("목록으로"));
     back.addEventListener("click", closeDetail);
     bar.appendChild(back);
     bar.appendChild(el("span", "d__tag", g.tag || ""));
@@ -280,12 +298,12 @@
 
     var main = el("main", "d__main");
 
+    main.appendChild(el("h1", "d__title", g.title));
+
     var meta = el("div", "d__meta");
     meta.appendChild(el("span", "d__kicker", g.kicker));
     meta.appendChild(el("span", "d__year", g.yearLabel || g.year));
     main.appendChild(meta);
-
-    main.appendChild(el("h1", "d__title", g.title));
 
     var frame = el("div", "d__frame");
     var img = el("img");
@@ -313,7 +331,7 @@
     acts.appendChild(extLink(g.links.play, "바로 플레이", "d__play"));
     if (g.links.code) acts.appendChild(extLink(g.links.code, "소스 코드", "d__ghost"));
     if (g.links.itch) acts.appendChild(extLink(g.links.itch, "itch.io", "d__ghost"));
-    acts.appendChild(el("span", "d__free", "무료 · 브라우저 · 설치 없음"));
+    acts.appendChild(el("span", "d__free", "설치 없이 브라우저에서 플레이"));
     main.appendChild(acts);
 
     detail.appendChild(main);
@@ -348,7 +366,7 @@
       renderDetail(g);
       home.hidden = true;
       detail.hidden = false;
-      document.title = g.title + " · soomin007";
+      document.title = g.title;
       var backBtn = detail.querySelector(".d__back");
       if (backBtn) backBtn.focus({ preventScroll: true });
       window.scrollTo(0, 0);

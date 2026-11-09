@@ -8,14 +8,10 @@
   --bg: #0b0c0f;
   --ink: #e9e7e2;
   --mut: #a5a29b;
-  --dim: #7d7a74;
-  --faint: #5d5b56;
+  --dim: #8a867f; /* 카드(#14161c) 위에서도 대비 4.5:1 이상 */
   --card: #14161c;
   --line: rgba(255, 255, 255, 0.07);
   --sans: "Pretendard Variable", Pretendard, -apple-system, system-ui, sans-serif;
-  --mono: "IBM Plex Mono", ui-monospace, monospace;
-  --serif: "Noto Serif KR", serif;
-  --type: "Special Elite", "IBM Plex Mono", monospace;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -38,6 +34,8 @@ body {
 img { max-width: 100%; display: block; }
 a { color: inherit; text-decoration: none; }
 .nw { white-space: nowrap; }
+/* 화살표 아이콘 (app.js 의 icon(), 글리프 대신) */
+.ico { width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 button { font-family: inherit; }
 
 a:focus-visible, button:focus-visible {
@@ -65,13 +63,7 @@ a:focus-visible, button:focus-visible {
 }
 .bar__brand { display: flex; align-items: baseline; gap: 10px; min-width: 0; }
 .bar__name { font-weight: 900; font-size: 17px; letter-spacing: -0.02em; }
-.bar__eyebrow {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  color: var(--dim);
-  letter-spacing: 0.12em;
-  white-space: nowrap;
-}
+.bar__tag { font-size: 13px; color: var(--dim); white-space: nowrap; }
 .bar__nav { display: flex; gap: 18px; font-size: 13px; color: var(--mut); }
 .bar__nav a:hover { color: #fff; }
 
@@ -109,25 +101,21 @@ a:focus-visible, button:focus-visible {
   pointer-events: none;
 }
 .feat__info { animation: vfade 0.4s ease both; }
-.feat__kicker {
-  font-family: var(--mono);
-  font-size: 11px;
-  letter-spacing: 0.12em;
-}
-.feat__status {
-  margin-left: 10px;
-  padding: 2px 7px;
-  border-radius: 4px;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  color: #cfccc5;
-  letter-spacing: 0.06em;
-}
 .feat__title {
   font-size: clamp(22px, 3.2vw, 34px);
   font-weight: 900;
   letter-spacing: -0.03em;
-  margin: 3px 0 5px;
-  text-wrap: balance;
+  line-height: 1.25;
+}
+/* 장르는 제목 아래에 둔다. 제목 위에 작은 꼬리표를 얹지 않는다 (known-issues #24) */
+.feat__genre { margin: 3px 0 6px; font-size: 13px; font-weight: 600; }
+.feat__status {
+  margin-left: 8px;
+  padding: 1px 7px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  color: #cfccc5;
+  font-weight: 500;
 }
 .feat__line {
   font-size: 13.5px;
@@ -152,12 +140,7 @@ a:focus-visible, button:focus-visible {
   white-space: nowrap;
   /* background 은 JS 가 게임색으로 */
 }
-.feat__free {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  color: #8f8c85;
-  white-space: nowrap;
-}
+.feat__free { font-size: 12.5px; color: #a09d96; white-space: nowrap; }
 
 .feat__nav {
   position: absolute;
@@ -170,7 +153,9 @@ a:focus-visible, button:focus-visible {
   height: 38px;
   border-radius: 19px;
   cursor: pointer;
-  font-size: 16px;
+  padding: 0;
+  display: grid;
+  place-items: center;
 }
 .feat__nav:hover { background: rgba(8, 9, 12, 0.85); }
 .feat__nav--prev { left: 10px; }
@@ -271,10 +256,11 @@ a:focus-visible, button:focus-visible {
 .isle:hover { border-color: rgba(255, 255, 255, 0.16); background: #171a21; }
 .isle__art { flex: none; width: 220px; height: auto; aspect-ratio: 16 / 9; object-fit: cover; border-radius: 9px; }
 .isle__text { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
-.isle__kicker { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: #8fd0a0; }
 .isle__title { font-size: 17px; font-weight: 800; color: var(--ink); }
 .isle__line { font-size: 13px; line-height: 1.55; color: var(--mut); }
-.isle__go { flex: none; padding-right: 6px; font-size: 13px; font-weight: 700; color: #f0b429; white-space: nowrap; }
+.isle__go { flex: none; display: inline-flex; align-items: center; gap: 4px; padding-right: 6px; font-size: 13.5px; font-weight: 700; color: #f0b429; white-space: nowrap; }
+.isle__go .ico { width: 16px; height: 16px; transition: transform 0.2s ease; }
+.isle:hover .isle__go .ico { transform: translateX(3px); }
 
 /* ---------- 그리드 ---------- */
 
@@ -285,18 +271,8 @@ a:focus-visible, button:focus-visible {
   gap: 10px;
   margin-bottom: 14px;
 }
-.rowhead__title {
-  font-size: 13px;
-  font-weight: 800;
-  color: var(--mut);
-  letter-spacing: 0.05em;
-}
-.rowhead__note {
-  font-family: var(--mono);
-  font-size: 10px;
-  color: var(--faint);
-  letter-spacing: 0.06em;
-}
+.rowhead__title { font-size: 16px; font-weight: 800; }
+.rowhead__note { font-size: 12.5px; color: var(--dim); }
 
 .grid {
   display: grid;
@@ -325,18 +301,17 @@ a:focus-visible, button:focus-visible {
 .badge {
   position: absolute;
   top: 10px;
-  font-family: var(--mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 700;
-  letter-spacing: 0.06em;
-  padding: 3px 9px;
+  line-height: 1.5;
+  padding: 2px 8px;
   border-radius: 5px;
 }
 .badge--wip { left: 10px; color: #0b0c0f; /* background 은 JS 가 게임색으로 */ }
 .badge--first {
   left: 10px;
   background: rgba(11, 12, 15, 0.85);
-  /* color·border 는 JS 가 게임색으로 */
+  /* color 와 border 는 JS 가 게임색으로 */
 }
 .badge--kbd {
   right: 10px;
@@ -389,12 +364,7 @@ a:focus-visible, button:focus-visible {
   border-radius: 20px;
   white-space: nowrap;
 }
-.gcard__go {
-  font-family: var(--mono);
-  font-size: 10.5px;
-  font-weight: 600;
-  white-space: nowrap;
-}
+.gcard__go { font-size: 12px; font-weight: 700; white-space: nowrap; }
 
 .foot {
   margin-top: auto;
@@ -403,7 +373,7 @@ a:focus-visible, button:focus-visible {
   justify-content: space-between;
   gap: 12px;
   font-size: 12px;
-  color: #6d6a64;
+  color: var(--dim);
   border-top: 1px solid rgba(255, 255, 255, 0.05);
   flex-wrap: wrap;
 }
@@ -421,14 +391,14 @@ a:focus-visible, button:focus-visible {
   gap: 12px;
   padding: 18px clamp(20px, 4.5vw, 56px);
 }
-.d__back { cursor: pointer; white-space: nowrap; }
+.d__back { cursor: pointer; white-space: nowrap; display: inline-flex; align-items: center; gap: 6px; }
 .d__main {
   position: relative;
   max-width: 860px;
   margin: 0 auto;
   padding: 3vh clamp(22px, 5vw, 56px) 8vh;
 }
-.d__meta { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; }
+.d__meta { display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; margin-bottom: 22px; }
 .d__flourish { display: flex; gap: 10px; align-items: center; margin: 2px 0 18px; }
 .d__frame img {
   width: 100%;
@@ -470,12 +440,12 @@ a:focus-visible, button:focus-visible {
   padding: 8px 16px;
   border-radius: 6px;
 }
-.t-plain .d__tag { font-family: var(--mono); font-size: 10.5px; color: var(--faint); letter-spacing: 0.16em; }
+.t-plain .d__tag { font-size: 12.5px; color: var(--dim); }
 .t-plain .d__main { animation: vfade 0.4s ease both; }
-.t-plain .d__kicker { font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; color: var(--tone, #8ab8ff); }
-.t-plain .d__year { font-family: var(--mono); font-size: 11px; color: var(--faint); }
+.t-plain .d__kicker { font-size: 14px; font-weight: 600; color: var(--tone, #8ab8ff); }
+.t-plain .d__year { font-size: 13px; color: var(--dim); }
 .t-plain .d__title {
-  margin: 10px 0 14px;
+  margin: 0 0 8px;
   font-size: clamp(34px, 6vw, 62px);
   font-weight: 900;
   letter-spacing: -0.03em;
@@ -489,7 +459,7 @@ a:focus-visible, button:focus-visible {
 }
 .t-plain .d__line { margin: 26px 0 0; font-size: 16px; line-height: 1.8; color: var(--mut); max-width: 58ch; text-wrap: pretty; }
 .t-plain .d__note { margin-top: 14px; font-size: 12.5px; color: var(--tone, #8ab8ff); }
-.t-plain .d__fact dt { font-family: var(--mono); font-size: 10px; letter-spacing: 0.18em; color: var(--faint); margin-bottom: 6px; }
+.t-plain .d__fact dt { font-size: 12px; color: var(--dim); margin-bottom: 4px; }
 .t-plain .d__fact dd { font-size: 13.5px; font-weight: 600; }
 .t-plain .d__play {
   background: var(--tone, #8ab8ff);
@@ -506,15 +476,14 @@ a:focus-visible, button:focus-visible {
   padding: 12px 20px;
   border-radius: 8px;
 }
-.t-plain .d__free { font-family: var(--mono); font-size: 10.5px; color: var(--faint); }
+.t-plain .d__free { font-size: 12.5px; color: var(--dim); }
 
-/* ============================ 상세: 갤러리 · 맛보기 ============================ */
+/* ============================ 상세: 갤러리와 맛보기 ============================ */
 
 .d__shots { margin-top: 42px; }
 .d__shots-head {
-  font-size: 12.5px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
+  font-size: 16px;
+  font-weight: 800;
   margin-bottom: 14px;
 }
 .d__shots-grid { display: grid; gap: 16px; grid-template-columns: 1fr; align-items: start; }
@@ -548,12 +517,14 @@ a:focus-visible, button:focus-visible {
 /* ============================ 반응형 ============================ */
 
 @media (max-width: 640px) {
-  /* 폰에선 21:10 이 너무 낮아 오버레이 텍스트(킥커)가 카드 위로 잘린다 → 세로 여유 확보 */
+  /* 폰에선 21:10 이 너무 낮아 오버레이 글(제목)이 카드 위로 잘린다. 세로 여유를 둔다 */
   .feat__art { aspect-ratio: 16 / 11; }
   .feat__scrim { padding: 50px 16px 16px; }
   .feat__line { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .feat__nav { display: none; } /* 폰에선 스와이프·점으로 */
-  .bar__eyebrow { display: none; }
+  .feat__nav { display: none; } /* 폰에선 스와이프나 점으로 */
+  /* 이름 아래에 한 줄 소개 */
+  .bar__brand { flex-direction: column; align-items: flex-start; gap: 0; }
+  .bar__tag { font-size: 12px; }
   .grid { grid-template-columns: 1fr; }
   /* 섬 입구는 그림을 위로, 글을 아래로 */
   .isle { flex-direction: column; align-items: stretch; gap: 10px; }

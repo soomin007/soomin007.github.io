@@ -3,14 +3,15 @@
    (JSON 대신 .js 인 이유: file:// 로 열어도 fetch 없이 바로 뜬다)
 
    필드
-     id        앵커·해시 라우팅용 고유 문자열. 영소문자·하이픈만. (#g/<id>)
-     page      전용 소개 페이지 경로 (예: "g/enigma/"). 있으면 카드·피처드가 그 페이지로
+     id        앵커와 해시 라우팅용 고유 문자열. 영소문자와 하이픈만. (#g/<id>)
+     page      전용 소개 페이지 경로 (예: "g/enigma/"). 있으면 카드와 피처드가 그 페이지로
                가고, 옛 #g/<id> 링크는 그 페이지로 리다이렉트된다. 없으면 내장 상세를 쓴다
      title     표시할 제목
-     kicker    제목 위 한 줄. 장르·형식
-     line      카드·피처드에 쓰는 한 줄. "무엇을 하는 게임인가"만
+     kicker    장르나 형식 한 줄. 제목 아래에 놓인다 (제목 위 꼬리표로 쓰지 않는다)
+     line      카드와 피처드에 쓰는 한 줄. "무엇을 하는 게임인가"만.
+               줄이 바뀌면 안 되는 묶음은 ~ 로 잇는다 (파일 끝에서 줄바꿈 없는 공백으로 바뀐다)
      lineLong  상세 페이지용 확장 설명. 없으면 line 을 쓴다
-     color     이 게임의 색. 홈 글로우·버튼·점 인디케이터에 쓰인다
+     color     이 게임의 색. 홈 글로우, 버튼, 점 인디케이터에 쓰인다
      year      연도. yearLabel 이 있으면 상세에선 그걸 우선 표시 (연출용)
      meta      카드 태그 칩. 3개까지 보인다
      status    'live' | 'wip' | 'paused'  (wip 은 "앞서 해보기", paused 는 "개발 보류" 리본.
@@ -21,7 +22,7 @@
      img       캡슐 이미지 경로 (assets/<id>.webp, 1232x706 권장)
      imgFeat   피처드 캐러셀 전용 이미지 (assets/feat/<id>.webp, 1680x800 권장).
                하단 45%는 어둡고 비어 있게 만들어 오버레이 문구 자리를 확보한다.
-               게임 UI·텍스트가 박힌 스크린샷을 그대로 쓰지 않는다. 없으면 img 를 쓴다
+               게임 UI나 글자가 박힌 스크린샷을 그대로 쓰지 않는다. 없으면 img 를 쓴다
      theme     (구버전 내장 테마 식별자. 전용 페이지 체제 이후 미사용, 기록용으로만 남김)
      tag       상세 페이지 우상단 연출 문구
      facts     상세 페이지 표. {k,v} 4개 내외. 검증된 사실만. 수치를 지어내지 않는다
@@ -51,11 +52,11 @@ const GAMES = [
     img: "assets/be-the-bee.webp",
     imgFeat: "assets/feat/be-the-bee.webp",
     theme: "bee",
-    tag: "HIVE · 오늘도 확장 중",
+    tag: "오늘도 확장 중인 벌집",
     facts: [
-      { k: "인원", v: "2인 (온라인 · AI 대전)" },
-      { k: "변형", v: "여왕벌 모드 · 무한 모드" },
-      { k: "환경", v: "폰 · PC 모두" },
+      { k: "인원", v: "2인 (온라인 대전, AI 대전)" },
+      { k: "변형", v: "여왕벌 모드, 무한 모드" },
+      { k: "환경", v: "폰과 PC 모두" },
       { k: "상태", v: "라이브" }
     ],
     shots: [
@@ -74,7 +75,7 @@ const GAMES = [
     page: "g/enigma/",
     title: "ENIGMA",
     kicker: "암호 해독 퍼즐",
-    line: "1942년 블레츨리 파크에서 실제 2차대전 암호 다섯 가지를 직접 해독하는 퍼즐 게임입니다.",
+    line: "1942년 블레츨리 파크에서 실제 2차대전 암호 다섯~가지를 직접 해독하는 퍼즐 게임입니다.",
     lineLong: "1942년 블레츨리 파크에서 실제 2차대전 암호 다섯 가지를 직접 해독합니다. 라디오를 감청하고, 단서를 조합해 보고서를 제출합니다. 15개 스테이지와 3가지 엔딩이 준비되어 있습니다.",
     color: "#C2453D",
     year: "2026",
@@ -87,10 +88,10 @@ const GAMES = [
     img: "assets/enigma.webp",
     imgFeat: "assets/feat/enigma.webp",
     theme: "enigma",
-    tag: "문서 № E-1942-05 · 복호화 완료",
+    tag: "문서 № E-1942-05, 복호화 완료",
     facts: [
       { k: "인원", v: "1인" },
-      { k: "분량", v: "15 스테이지 · 엔딩 3종" },
+      { k: "분량", v: "15 스테이지, 엔딩 3종" },
       { k: "환경", v: "PC" },
       { k: "상태", v: "라이브" }
     ],
@@ -110,7 +111,7 @@ const GAMES = [
     page: "g/otherside/",
     title: "See you on the other side",
     kicker: "비동기 로그라이트",
-    line: "폭풍마다 원정대가 떠나고 대부분 돌아오지 못합니다. 죽기 전 단 한 번, 다음 원정대에게 물건을 남길 수 있습니다.",
+    line: "폭풍마다 원정대가 떠나고 대부분 돌아오지 못합니다. 죽기 전 단~한~번, 다음 원정대에게 물건을 남길 수 있습니다.",
     lineLong: "폭풍마다 원정대가 떠나고 대부분 돌아오지 못합니다. 모래폭풍이 글씨를 지우는 세계라 말은 남길 수 없습니다. 죽기 전 단 한 번, 다음 원정대에게 물건 하나를 남길 수 있습니다.",
     color: "#C2B49A",
     year: "2026",
@@ -127,7 +128,7 @@ const GAMES = [
     facts: [
       { k: "인원", v: "1인" },
       { k: "엔진", v: "Godot 4.6" },
-      { k: "환경", v: "폰 · PC 모두" },
+      { k: "환경", v: "폰과 PC 모두" },
       { k: "상태", v: "라이브" }
     ],
     shots: [
@@ -159,11 +160,11 @@ const GAMES = [
     img: "assets/eyes-on-you.webp",
     imgFeat: "assets/feat/eyes-on-you.webp",
     theme: "hud",
-    tag: "SESSION 7734 · 암호화됨",
+    tag: "SESSION 7734, 암호화됨",
     facts: [
       { k: "인원", v: "1인" },
-      { k: "분량", v: "한 판 완결 · 엔딩 4종" },
-      { k: "환경", v: "PC · 키보드 필요" },
+      { k: "분량", v: "한 판 완결, 엔딩 4종" },
+      { k: "환경", v: "PC, 키보드 필요" },
       { k: "엔진", v: "Godot 4.6" }
     ],
     shots: [
@@ -195,10 +196,10 @@ const GAMES = [
     img: "assets/selection-pressure.webp",
     imgFeat: "assets/feat/selection-pressure.webp",
     theme: "eco",
-    tag: "관찰 일지 · 잠시 덮어 둠",
+    tag: "관찰 일지, 잠시 덮어 둠",
     facts: [
-      { k: "조작", v: "탭 · 더블탭 · 길게 누르기 + 라운드 사이 카드" },
-      { k: "스택", v: "TypeScript · PixiJS" },
+      { k: "조작", v: "탭, 더블탭, 길게 누르기와 라운드 사이 카드" },
+      { k: "스택", v: "TypeScript, PixiJS" },
       { k: "환경", v: "모바일 세로 최적" },
       { k: "상태", v: "개발 보류 (2026-08-29)" }
     ],
@@ -233,7 +234,7 @@ const GAMES = [
     theme: "",
     tag: "",
     facts: [
-      { k: "조작", v: "방향키(WASD) · Z 되돌리기 · R 처음부터" },
+      { k: "조작", v: "방향키(WASD), Z 되돌리기, R 처음부터" },
       { k: "환경", v: "PC" },
       { k: "그림체", v: "흑백 (빌런마다 고유색)" },
       { k: "만든 계기", v: "시리어스 게임 수업 활동" },
@@ -251,3 +252,12 @@ const GAMES = [
     }
   }
 ];
+
+/* 문구 안의 ~ 는 줄이 바뀌면 안 되는 묶음 표시다 (known-issues #13). 이 파일을 읽는 모든 화면
+   (허브, 섬, 전시관)이 같은 문구를 쓰도록 여기서 한 번 줄바꿈 없는 공백으로 바꾼다.
+   yearLabel 의 범위 표기(1942 ~ 2026)는 건드리지 않는다 */
+GAMES.forEach(function (g) {
+  ["line", "lineLong", "note"].forEach(function (k) {
+    if (g[k]) g[k] = g[k].replace(/~/g, String.fromCharCode(160));
+  });
+});
