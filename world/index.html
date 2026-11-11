@@ -173,11 +173,23 @@
     .sheet__panel { border-radius: 18px; }
   }
 
-  /* 섬 소개. 개발 일지와 같은 창 모양을 쓴다 */
+  /* 섬 소개. 개발 일지와 같은 창 모양을 쓴다.
+     펼쳐 두는 글은 두 문단까지만 두고, 만든 과정은 접어 둔다(known-issues #31) */
   .about { border-top: 1px solid var(--line); }
-  .about p { margin: 0; padding-top: 14px; font-size: 15px; line-height: 1.75; color: var(--sub); }
-  .about p:first-child { padding-top: 16px; }
-  .about h3 { margin: 0; padding-top: 26px; font-size: 16px; line-height: 1.4; }
+  .about p { margin: 0; padding-top: 12px; font-size: 15px; line-height: 1.75; color: var(--sub); }
+  .about > p:first-child { padding-top: 16px; }
+  .about h3 { margin: 0; padding-top: 22px; font-size: 15px; line-height: 1.4; }
+  .keys { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 10px 0 0; font-size: 14.5px; line-height: 1.6; }
+  .keys dt { color: var(--ink); }
+  .keys dd { margin: 0; color: var(--sub); }
+  .more { margin-top: 20px; border-top: 1px solid var(--line); }
+  .more summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding-top: 14px; padding-bottom: 2px; list-style: none; cursor: pointer; font-size: 15px; color: var(--ink);
+  }
+  .more summary::-webkit-details-marker { display: none; }
+  .more summary svg { flex: none; color: var(--dim); transition: transform .2s ease; }
+  .more[open] summary svg { transform: rotate(180deg); }
   /* 마우스와 키보드 설명은 손가락으로 쓰는 기기에서 감춘다 */
   @media (pointer: coarse) { .about .for-pc { display: none; } }
 
@@ -288,13 +300,25 @@
       <button class="btn" id="aClose" type="button">닫기</button>
     </div>
     <div class="about">
-      <p>이 섬은 제가 만든 게임들을 <span class="nw">한 장의 지도에</span> <span class="nw">모아 둔</span> 곳입니다. 게임마다 <span class="nw">그 게임</span> 세계를 닮은 땅이 <span class="nw">하나씩 있고,</span> 가고 싶은 땅을 누르면 말이 광장을 거쳐 길을 따라 <span class="nw">그 땅까지</span> 뛰어갑니다. <span class="nw">땅 앞에서</span> 플레이를 누르면 카메라가 <span class="nw">땅의 입구로</span> 들어가면서 <span class="nw">게임이 열립니다.</span></p>
-      <p>저는 어떻게 하면 사람들이 제 게임을 <span class="nw">해 보고 싶어질지를</span> 계속 <span class="nw">고민해 왔습니다.</span> <span class="nw">중간 과제에서는</span> 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었고,</span> 이번에는 게임 세계를 직접 둘러보며 <span class="nw">고를 수 있는</span> 공간을 <span class="nw">만들기로 했습니다.</span> <span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤에는 지도를 골랐습니다. <span class="nw">슈퍼 마리오 갤럭시 2가</span> <span class="nw">3D 허브</span> 대신 월드맵을 쓴 것처럼, 지도는 게임까지 가는 길을 <span class="nw">짧게 줄여 줍니다.</span></p>
-      <p>섬을 <span class="nw">육각 타일로</span> <span class="nw">짠 것은</span> <span class="nw">Be the Bee의</span> 판이 바깥으로 자라는 모양에서 가져왔습니다. <span class="nw">풀 포기나</span> 돌멩이 같은 <span class="nw">작은 것들은</span> 손으로 <span class="nw">하나씩 놓지 않고,</span> <span class="nw">타일 종류에</span> 따라 규칙대로 <span class="nw">깔리게 했습니다.</span> <span class="nw">개발 일지가</span> 있는 게임은 <span class="nw">그 땅으로</span> 가는 길가에 <span class="nw">일지 항목 수만큼</span> 기둥이 <span class="nw">서 있어서,</span> 기둥을 누르면 <span class="nw">그 기록을</span> <span class="nw">읽을 수 있습니다.</span> 섬의 낮과 저녁과 밤은 보는 사람의 시계를 따르고, 소리는 <span class="nw">녹음 파일 없이</span> 브라우저가 그때그때 <span class="nw">만들어 냅니다.</span></p>
-      <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록은 허브 <span class="nw">첫 화면과</span> <span class="nw">같은 파일에서</span> <span class="nw">읽어 오기</span> 때문에, 게임을 하나 더하면 섬이 땅을 <span class="nw">저절로 다시 나눕니다.</span></p>
-      <h3>섬을 둘러보는 방법</h3>
-      <p>땅이나 이름표를 누르면 말이 그곳으로 가고, 섬을 끌면 <span class="nw">돌려 볼 수 있습니다.</span> <span class="nw">오른쪽 위</span> <span class="nw">'목록으로 보기'를</span> 누르면 같은 게임들을 목록으로 <span class="nw">볼 수 있습니다.</span></p>
-      <p class="for-pc"><span class="nw">마우스 휠로는</span> 섬에 다가가거나 <span class="nw">물러설 수 있습니다.</span> 키보드에서는 <span class="nw">오른쪽 화살표 키로</span> <span class="nw">다음 땅에</span> 가고, <span class="nw">Esc 키로</span> 광장에 돌아오며, <span class="nw">땅 앞에서</span> <span class="nw">Enter 키를</span> 누르면 게임이 열립니다.</p>
+      <p>이 섬은 제가 만든 게임들을 <span class="nw">한 장의 지도에</span> <span class="nw">모아 둔</span> 곳입니다. 게임마다 <span class="nw">그 세계를</span> 닮은 땅이 <span class="nw">하나씩 있고,</span> <span class="nw">땅 앞에서</span> 플레이를 누르면 카메라가 <span class="nw">땅의 입구로</span> <span class="nw">들어가며 게임이 열립니다.</span></p>
+      <p>저는 어떻게 하면 사람들이 제 게임을 <span class="nw">해 보고 싶어질지</span> 고민하다가, 게임 세계를 <span class="nw">직접 둘러보며</span> 고르는 <span class="nw">섬을 만들었습니다.</span></p>
+      <div class="for-pc">
+        <h3>키보드와 마우스로 둘러보기</h3>
+        <dl class="keys">
+          <dt>마우스로 끌기</dt><dd>섬을 돌립니다.</dd>
+          <dt>마우스 휠</dt><dd>섬에 다가가거나 물러섭니다.</dd>
+          <dt>오른쪽 화살표 키</dt><dd>다음 땅으로 갑니다.</dd>
+          <dt>Esc 키</dt><dd>광장으로 돌아옵니다.</dd>
+          <dt>Enter 키</dt><dd>땅 앞에서 게임을 엽니다.</dd>
+        </dl>
+      </div>
+      <details class="more">
+        <summary>만든 과정<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
+        <p>중간 과제에서는 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었습니다.</span> 섬에서는 <span class="nw">그 일지가</span> <span class="nw">땅으로 가는</span> 길가의 기둥이 되어, 기둥을 누르면 <span class="nw">기록을 읽을 수 있습니다.</span></p>
+        <p><span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤 <span class="nw">지도를 골랐습니다.</span> <span class="nw">슈퍼 마리오 갤럭시 2가</span> <span class="nw">3D 허브</span> 대신 월드맵을 쓴 것처럼, 지도는 게임까지 가는 길을 <span class="nw">짧게 줄여 줍니다.</span></p>
+        <p>육각 타일은 <span class="nw">Be the Bee의</span> 판이 바깥으로 자라는 <span class="nw">모양에서 가져왔습니다.</span> 섬의 낮과 밤은 <span class="nw">보는 사람의</span> 시계를 따르고, 소리는 <span class="nw">녹음 파일 없이</span> 브라우저가 그때그때 <span class="nw">만들어 냅니다.</span></p>
+        <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록을 허브 <span class="nw">첫 화면과</span> <span class="nw">같은 파일에서</span> 읽어 오기 때문에, 게임을 하나 더하면 섬이 땅을 <span class="nw">저절로 다시 나눕니다.</span></p>
+      </details>
     </div>
   </div>
 </div>
