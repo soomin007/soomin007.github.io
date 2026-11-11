@@ -50,9 +50,11 @@
   .top > * { pointer-events: auto; }
   .brand { margin: 0; font-size: 15px; font-weight: 700; letter-spacing: -.01em; white-space: nowrap; }
   .top__right { display: flex; align-items: center; gap: 14px; white-space: nowrap; }
-  .top a, .sound { padding: 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--dim); text-decoration: none; cursor: pointer; }
-  .top a:hover, .sound:hover { color: var(--ink); }
-  @media (max-width: 380px) { .hide-s { display: none; } }
+  /* 글자는 작아도 누르는 자리는 위아래로 넓힌다 (바깥 여백을 같은 만큼 빼서 배치는 그대로) */
+  .top a, .top button { padding: 8px 0; margin: -8px 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--dim); text-decoration: none; cursor: pointer; }
+  .top a:hover, .top button:hover { color: var(--ink); }
+  /* 좁은 폰에서는 링크 글을 줄이고 사이를 좁혀, 이름과 버튼 셋이 20px 여백 안에 한 줄로 들어가게 한다 */
+  @media (max-width: 380px) { .hide-s { display: none; } .top__right { gap: 10px; } }
 
   .dock {
     position: fixed; left: 0; right: 0; bottom: 0;
@@ -171,11 +173,37 @@
     .sheet__panel { border-radius: 18px; }
   }
 
+  /* 섬 소개. 개발 일지와 같은 창 모양을 쓴다 */
+  .about { border-top: 1px solid var(--line); }
+  .about p { margin: 0; padding-top: 14px; font-size: 15px; line-height: 1.75; color: var(--sub); }
+  .about p:first-child { padding-top: 16px; }
+  .about h3 { margin: 0; padding-top: 26px; font-size: 16px; line-height: 1.4; }
+  /* 마우스와 키보드 설명은 손가락으로 쓰는 기기에서 감춘다 */
+  @media (pointer: coarse) { .about .for-pc { display: none; } }
+
   .loading {
     position: fixed; inset: 0; display: grid; place-items: center;
-    background: var(--bg); color: var(--dim); font-size: 14px; transition: opacity .6s ease;
+    padding-left: var(--pad); padding-right: var(--pad);
+    background: var(--bg); color: var(--dim); font-size: 14px; text-align: center; transition: opacity .6s ease;
   }
   .loading.is-done { opacity: 0; pointer-events: none; }
+  .loading p { margin: 0; line-height: 1.6; }
+  .loading p + p { margin-top: 6px; font-size: 13px; }
+  .loading a { color: var(--ink); }
+
+  /* 섬을 띄우지 못했을 때(WebGL 을 쓸 수 없거나 three.js 를 받지 못했을 때) 대신 보여 주는 화면 */
+  .fail { position: fixed; inset: 0; display: flex; overflow-y: auto; background: var(--bg); }
+  .fail__inner {
+    width: 100%; max-width: 520px; margin: auto;
+    padding-top: max(28px, env(safe-area-inset-top)); padding-bottom: max(28px, env(safe-area-inset-bottom));
+    padding-left: var(--pad); padding-right: var(--pad);
+  }
+  .fail__pic { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; border: 1px solid var(--line); border-radius: 14px; background: #15161b; }
+  .fail__title { margin: 20px 0 0; font-size: 21px; line-height: 1.4; letter-spacing: -.01em; outline: none; }
+  .fail__text { margin: 8px 0 0; font-size: 15px; line-height: 1.7; color: var(--sub); }
+  .fail__row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+  .fail__row .btn { display: block; text-align: center; text-decoration: none; }
+  .fail__note { margin: 14px 0 0; font-size: 13px; line-height: 1.6; color: var(--dim); }
 </style>
 </head>
 <body>
@@ -185,6 +213,7 @@
 <header class="top">
   <p class="brand">soomin007의 게임 섬</p>
   <div class="top__right">
+    <button id="bAbout" type="button" aria-haspopup="dialog">섬 소개</button>
     <button class="sound" id="bSound" type="button">소리 끄기</button>
     <a href="../">목록<span class="hide-s">으로 보기</span></a>
   </div>
@@ -231,7 +260,135 @@
   </div>
 </div>
 
-<div class="loading" id="loading">섬을 준비하고 있습니다</div>
+<div class="loading" id="loading">
+  <div>
+    <p>섬을 준비하고 있습니다</p>
+    <p id="loadMore" hidden>오래 걸리면 <a href="../">목록</a>에서 게임들을 먼저 볼 수 있습니다.</p>
+  </div>
+</div>
+
+<!-- 섬을 띄우지 못했을 때 대신 보여 주는 화면. 문구는 아래 스크립트의 FAIL 에 있다 -->
+<section class="fail" id="fail" hidden aria-labelledby="fTitle">
+  <div class="fail__inner">
+    <img class="fail__pic" id="fPic" width="800" height="450" alt="게임들이 사는 섬을 비스듬히 내려다본 그림">
+    <h1 class="fail__title" id="fTitle" tabindex="-1"></h1>
+    <p class="fail__text" id="fText"></p>
+    <div class="fail__row" id="fRow"></div>
+    <p class="fail__note" id="fNote" hidden></p>
+  </div>
+</section>
+
+<div class="sheet" id="about" hidden>
+  <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="aTitle">
+    <div class="sheet__head">
+      <div>
+        <h2 class="sheet__title" id="aTitle">게임들이 사는 섬</h2>
+        <p class="sheet__lead">soomin007이 2026년 웹프로그래밍개론 <span class="nw">개인 과제로 만들었습니다.</span></p>
+      </div>
+      <button class="btn" id="aClose" type="button">닫기</button>
+    </div>
+    <div class="about">
+      <p>이 섬은 제가 만든 게임들을 <span class="nw">한 장의 지도에</span> <span class="nw">모아 둔</span> 곳입니다. 게임마다 <span class="nw">그 게임</span> 세계를 닮은 땅이 <span class="nw">하나씩 있고,</span> 가고 싶은 땅을 누르면 말이 광장을 거쳐 길을 따라 <span class="nw">그 땅까지</span> 뛰어갑니다. <span class="nw">땅 앞에서</span> 플레이를 누르면 카메라가 <span class="nw">땅의 입구로</span> 들어가면서 <span class="nw">게임이 열립니다.</span></p>
+      <p>저는 어떻게 하면 사람들이 제 게임을 <span class="nw">해 보고 싶어질지를</span> 계속 <span class="nw">고민해 왔습니다.</span> <span class="nw">중간 과제에서는</span> 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었고,</span> 이번에는 게임 세계를 직접 둘러보며 <span class="nw">고를 수 있는</span> 공간을 <span class="nw">만들기로 했습니다.</span> <span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤에는 지도를 골랐습니다. <span class="nw">슈퍼 마리오 갤럭시 2가</span> <span class="nw">3D 허브</span> 대신 월드맵을 쓴 것처럼, 지도는 게임까지 가는 길을 <span class="nw">짧게 줄여 줍니다.</span></p>
+      <p>섬을 <span class="nw">육각 타일로</span> <span class="nw">짠 것은</span> <span class="nw">Be the Bee의</span> 판이 바깥으로 자라는 모양에서 가져왔습니다. <span class="nw">풀 포기나</span> 돌멩이 같은 <span class="nw">작은 것들은</span> 손으로 <span class="nw">하나씩 놓지 않고,</span> <span class="nw">타일 종류에</span> 따라 규칙대로 <span class="nw">깔리게 했습니다.</span> <span class="nw">개발 일지가</span> 있는 게임은 <span class="nw">그 땅으로</span> 가는 길가에 <span class="nw">일지 항목 수만큼</span> 기둥이 <span class="nw">서 있어서,</span> 기둥을 누르면 <span class="nw">그 기록을</span> <span class="nw">읽을 수 있습니다.</span> 섬의 낮과 저녁과 밤은 보는 사람의 시계를 따르고, 소리는 <span class="nw">녹음 파일 없이</span> 브라우저가 그때그때 <span class="nw">만들어 냅니다.</span></p>
+      <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록은 허브 <span class="nw">첫 화면과</span> <span class="nw">같은 파일에서</span> <span class="nw">읽어 오기</span> 때문에, 게임을 하나 더하면 섬이 땅을 <span class="nw">저절로 다시 나눕니다.</span></p>
+      <h3>섬을 둘러보는 방법</h3>
+      <p>땅이나 이름표를 누르면 말이 그곳으로 가고, 섬을 끌면 <span class="nw">돌려 볼 수 있습니다.</span> <span class="nw">오른쪽 위</span> <span class="nw">'목록으로 보기'를</span> 누르면 같은 게임들을 목록으로 <span class="nw">볼 수 있습니다.</span></p>
+      <p class="for-pc"><span class="nw">마우스 휠로는</span> 섬에 다가가거나 <span class="nw">물러설 수 있습니다.</span> 키보드에서는 <span class="nw">오른쪽 화살표 키로</span> <span class="nw">다음 땅에</span> 가고, <span class="nw">Esc 키로</span> 광장에 돌아오며, <span class="nw">땅 앞에서</span> <span class="nw">Enter 키를</span> 누르면 게임이 열립니다.</p>
+    </div>
+  </div>
+</div>
+
+<script>
+/* 섬 소개 창과, 섬을 띄우지 못했을 때 대신 보여 주는 화면.
+   WebGL 을 쓸 수 없거나 three.js 를 받지 못하면 아래 모듈이 아예 돌지 않으므로, 이 둘은 모듈 밖의 일반 스크립트에 둔다 */
+(() => {
+  const $ = id => document.getElementById(id);
+  const about = $('about'), loadingEl = $('loading'), fail = $('fail');
+  const ready = () => loadingEl.classList.contains('is-done');
+
+  // ---------- 섬 소개 ----------
+  let opener = null;
+  function openAbout() {
+    opener = document.activeElement;
+    about.hidden = false;
+    about.querySelector('.sheet__panel').scrollTop = 0;
+    $('aClose').focus();
+  }
+  function closeAbout() {
+    about.hidden = true;
+    opener?.focus?.();
+    opener = null;
+  }
+  $('bAbout').addEventListener('click', openAbout);
+  $('aClose').addEventListener('click', closeAbout);
+  about.addEventListener('click', e => { if (e.target === about) closeAbout(); });
+  // 소개 창이 열려 있으면 섬의 키(다음 땅, 광장으로 같은)가 움직이지 않게 여기서 멈춘다.
+  // 이 스크립트가 모듈보다 먼저 돌아서 이 처리기가 먼저 불린다
+  addEventListener('keydown', e => {
+    if (about.hidden) return;
+    if (e.key === 'Escape') closeAbout();
+    e.stopImmediatePropagation();
+  });
+
+  // ---------- 섬을 띄우지 못했을 때 ----------
+  const LIST = '<a class="btn btn--play" href="../">목록으로 보기</a>';
+  const FAIL = {
+    webgl: {
+      title: '이 브라우저에서는 섬을 <span class="nw">그릴 수 없습니다</span>',
+      text: '이 섬은 3D 그래픽 기능(WebGL)으로 그리는데, 지금 쓰는 브라우저에서는 <span class="nw">이 기능이</span> 꺼져 있거나 지원되지 않습니다. 섬에 있는 게임들은 목록에서 모두 보고 <span class="nw">플레이할 수 있습니다.</span>',
+      row: LIST + '<button class="btn" type="button" data-act="about">섬 소개 읽기</button>',
+      note: '브라우저 설정에서 그래픽 가속(하드웨어 가속)이 꺼져 있으면 3D 그래픽을 <span class="nw">쓸 수 없습니다.</span> <span class="nw">이 설정을</span> 켜고 다시 열면 섬이 <span class="nw">보일 수 있습니다.</span>'
+    },
+    load: {
+      title: '섬을 불러오지 못했습니다',
+      text: '섬을 그리는 데 필요한 파일을 받지 못했거나, 준비하는 도중에 오류가 났습니다. <span class="nw">다시 불러와도</span> 같으면 목록에서 게임들을 <span class="nw">볼 수 있습니다.</span>',
+      row: '<button class="btn btn--play" type="button" data-act="reload">다시 불러오기</button>' + LIST.replace(' btn--play', ''),
+      note: ''
+    }
+  };
+  let failed = false;
+  // 모듈이 WebGL 을 만들지 못하면 'webgl' 로, 파일이나 스크립트 오류면 'load' 로 부른다. 처음 부른 쪽만 쓴다
+  function islandFail(kind) {
+    if (failed || ready()) return;
+    failed = true;
+    const f = FAIL[kind] || FAIL.load;
+    $('fPic').src = '../assets/island.webp';
+    $('fTitle').innerHTML = f.title;
+    $('fText').innerHTML = f.text;
+    $('fRow').innerHTML = f.row;
+    $('fNote').innerHTML = f.note;
+    $('fNote').hidden = !f.note;
+    loadingEl.hidden = true;
+    fail.hidden = false;
+    $('fTitle').focus();
+  }
+  window.islandFail = islandFail;
+  $('fRow').addEventListener('click', e => {
+    const act = e.target.closest('[data-act]')?.dataset.act;
+    if (act === 'about') openAbout();
+    else if (act === 'reload') location.reload();
+  });
+
+  // three.js 는 WebGL2 로만 그린다. 버려도 되는 캔버스로 먼저 확인해서, 만들 수 없으면 파일을 기다리지 않고 바로 알린다
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2');
+    if (gl) gl.getExtension('WEBGL_lose_context')?.loseContext();
+    else islandFail('webgl');
+  } catch (e) { islandFail('webgl'); }
+
+  // 섬이 뜨기 전에 스크립트를 받지 못했거나 오류가 나면 안내 화면으로 바꾼다.
+  // 그림이나 글꼴처럼 섬과 상관없는 파일, 브라우저 확장 프로그램의 오류는 넘긴다
+  addEventListener('error', e => {
+    if (ready()) return;
+    if (e.target instanceof HTMLScriptElement) islandFail('load');
+    else if (e.target === window && !/^(chrome|moz|safari-web)-extension:/.test(e.filename || '')) islandFail('load');
+  }, true);
+
+  // 느린 연결에서는 기다리는 동안 목록으로 가는 길을 알려 준다
+  setTimeout(() => { if (!failed && !ready()) $('loadMore').hidden = false; }, 8000);
+})();
+</script>
 
 <!-- 게임 목록은 허브와 같은 파일을 쓴다 (전역 GAMES) -->
 <script src="../games.js"></script>
@@ -320,7 +477,14 @@ const LIGHT = {
 
 // ---------- 무대 ----------
 
-const renderer = new THREE.WebGLRenderer({ canvas, antialias: !FX });
+let renderer;
+try {
+  renderer = new THREE.WebGLRenderer({ canvas, antialias: !FX });
+} catch (e) {
+  // WebGL 을 만들지 못하면 목록으로 가는 안내 화면을 띄우고 섬 만들기를 멈춘다 (위의 일반 스크립트)
+  window.islandFail?.('webgl');
+  throw e;
+}
 renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
 // ACES 는 색을 바래게 하고 밝은 곳을 눌러서 화면이 뿌옇게 보였다. 원래 색에 가까운 Neutral 을 쓴다
 renderer.toneMapping = THREE.NeutralToneMapping;
