@@ -8,8 +8,11 @@
 <meta property="og:type" content="website">
 <meta property="og:title" content="게임들이 사는 섬">
 <meta property="og:description" content="soomin007이 직접 만든 게임들이 땅마다 하나씩 자리 잡은 3D 섬입니다.">
-<meta property="og:image" content="https://soomin007.github.io/assets/island.webp">
+<meta property="og:image" content="https://soomin007.github.io/world/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
 <meta property="og:url" content="https://soomin007.github.io/world/">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="icon" type="image/png" href="../icon.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.css">
 <style>
@@ -270,7 +273,6 @@ const ROOT = '../';
 const DEVLOG = {
   'be-the-bee': ROOT + 'g/be-the-bee/index.html',
   'outlet-villains': ROOT + 'g/outlet-villains/index.html',
-  'selection-pressure': ROOT + 'g/selection-pressure/index.html',
   'otherside': ROOT + 'g/otherside/index.html',
   'enigma': ROOT + 'g/enigma/index.html',
   'eyes-on-you': ROOT + 'g/eyes-on-you/index.html'
@@ -414,14 +416,13 @@ const LANDS = {
   'enigma': { ground: ['#3d5634', '#46613e', '#584530'], lift: [0.55, 0.72], clutter: 'grass', build: buildManor },
   'otherside': { ground: ['#b6a47e', '#c4b18a', '#8b8372'], lift: [0.42, 1.05], clutter: 'pebble', build: buildCamp },
   'eyes-on-you': { ground: ['#2a2f3a', '#313745', '#262a33'], lift: [0.6, 0.66], clutter: 'none', build: buildCity },
-  'selection-pressure': { ground: ['#3d7848', '#4a8853', '#346a3e'], lift: [0.5, 0.88], clutter: 'grass', build: buildWild },
   'outlet-villains': { ground: ['#8a5f42', '#97694a', '#7a5139'], lift: [0.58, 0.62], clutter: 'none', build: buildCafe }
 };
 const PLAIN = { ground: ['#555a52', '#5e6259'], lift: [0.5, 0.7], clutter: 'grass', build: buildPlain };
 
 // 섬 위의 자리. 북쪽(안쪽 가운데)부터 시계 방향으로, 키 큰 땅은 뒤쪽에 낮은 땅은 카메라 쪽에 둔다.
 // games.js 에 새 게임이 생기면 이 목록 뒤에 저절로 붙어 섬이 한 칸씩 늘어난다
-const SLOTS = ['be-the-bee', 'eyes-on-you', 'otherside', 'outlet-villains', 'enigma', 'selection-pressure'];
+const SLOTS = ['be-the-bee', 'eyes-on-you', 'otherside', 'outlet-villains', 'enigma'];
 const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 const ORDER = [...SLOTS.filter(id => byId[id]), ...GAMES.map(g => g.id).filter(id => !SLOTS.includes(id))].map(id => byId[id]);
 const SECTOR = (Math.PI * 2) / ORDER.length;
@@ -923,106 +924,6 @@ function buildCity(c) {
   return { door, anim: t => { head.rotation.y = t * 0.6; } };
 }
 
-// 적자생존: 숲과 굴, 굴 앞을 몰려다니는 무리. 개발 보류라 공사 울타리를 두른다
-function buildWild(c) {
-  const trunk = mat('#5a4330');
-  const leaves = ['#2f6b3a', '#3d7f45', '#4f8f4a'].map(col => mat(col));
-  const canopies = [];
-  for (const q of c.scatter(14, 4.2, 11.2, 0.5)) {
-    const h = 0.5 + rand() * 0.4;
-    mesh(new THREE.CylinderGeometry(0.06, 0.09, h, 5), trunk, c.group).position.set(q.x, q.y + h / 2, q.z);
-    const s = 0.45 + rand() * 0.35;
-    const geo = rand() < 0.5 ? new THREE.ConeGeometry(s, s * 2.2, 6) : new THREE.IcosahedronGeometry(s, 0);
-    const f = mesh(geo, leaves[Math.floor(rand() * 3)], c.group);
-    f.position.set(q.x, q.y + h + s * 0.9, q.z);
-    canopies.push({ f, ph: rand() * 6 });
-  }
-
-  const p = c.at(0, MARK_R);
-  const den = facing(c, p);
-  mesh(new THREE.SphereGeometry(0.95, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2), mat('#4a5a35'), den);
-  const door = new THREE.Mesh(new THREE.CircleGeometry(0.36, 10, 0, Math.PI), flat('#0d0f0a'));
-  door.position.set(0, 0.02, 0.9);
-  den.add(door);
-
-  if (c.g.status === 'paused') buildFence(den);
-
-  // 대표 움직임: 말이 이 땅에 오면 무리가 말을 따라 몰려온다 (탭으로 무리를 이끄는 이 게임의 조작)
-  const swarm = new THREE.InstancedMesh(new THREE.ConeGeometry(0.07, 0.18, 4), mat('#b8f0a0', { emissive: '#2a5a1e' }), 30);
-  swarm.castShadow = true;
-  swarm.frustumCulled = false;
-  c.group.add(swarm);
-  const home = c.at(-0.22, MARK_R - 2.4);
-  const center = home.clone();
-  const agents = Array.from({ length: 30 }, () => ({ a: rand() * Math.PI * 2, r: 0.5 + rand() * 1.3, s: 0.6 + rand() * 0.9, ph: rand() * 6 }));
-  const e = new THREE.Euler(0, 0, 0, 'YXZ'), qt = new THREE.Quaternion(), one = new THREE.Vector3(1, 1, 1), pos = new THREE.Vector3(), m4 = new THREE.Matrix4();
-  return {
-    door,
-    anim: (t, dt) => {
-      canopies.forEach(({ f, ph }) => {
-        f.rotation.z = Math.sin(t * 1.3 + ph) * 0.05;
-        f.rotation.x = Math.cos(t * 1.1 + ph) * 0.04;
-      });
-      const follow = walk.at === c.g.id && !walk.dest;
-      const goal = follow ? pawn.position : home;
-      center.x += (goal.x + (follow ? 0 : Math.sin(t * 0.4)) - center.x) * (1 - Math.exp(-dt * 1.6));
-      center.z += (goal.z + (follow ? 0 : Math.cos(t * 0.33) * 0.8) - center.z) * (1 - Math.exp(-dt * 1.6));
-      agents.forEach((ag, k) => {
-        const a = ag.a + t * ag.s;
-        const r = follow ? 0.5 + ag.r * 0.6 : ag.r;
-        pos.set(center.x + Math.cos(a) * r, groundY(center.x, center.z) + 0.1 + Math.abs(Math.sin(t * 6 + ag.ph)) * 0.12, center.z + Math.sin(a) * r);
-        e.set(Math.PI / 2, Math.atan2(-Math.sin(a), Math.cos(a)), 0);
-        swarm.setMatrixAt(k, m4.compose(pos, qt.setFromEuler(e), one));
-      });
-      swarm.instanceMatrix.needsUpdate = true;
-    }
-  };
-}
-
-// 개발 보류: 공사 울타리와 표지판
-function buildFence(den) {
-  const barTex = canvasTexture(128, 32, (ctx, w, h) => {
-    ctx.fillStyle = '#f2efe6';
-    ctx.fillRect(0, 0, w, h);
-    ctx.fillStyle = '#e8862e';
-    for (let x = -h; x < w + h; x += 32) {
-      ctx.beginPath();
-      ctx.moveTo(x, h);
-      ctx.lineTo(x + h, 0);
-      ctx.lineTo(x + h + 14, 0);
-      ctx.lineTo(x + 14, h);
-      ctx.fill();
-    }
-  });
-  const barM = new THREE.MeshStandardMaterial({ map: barTex, roughness: 0.7 });
-  const postM = mat('#d8d2c4');
-  const pts = [-1.1, -0.55, 0, 0.55, 1.1].map(a => new THREE.Vector3(Math.sin(a) * 1.75, 0, Math.cos(a) * 1.75));
-  pts.forEach((pt, k) => {
-    mesh(new THREE.BoxGeometry(0.07, 0.62, 0.07), postM, den).position.set(pt.x, 0.31, pt.z);
-    if (k === 0) return;
-    const prev = pts[k - 1];
-    const bar = mesh(new THREE.BoxGeometry(prev.distanceTo(pt), 0.12, 0.03), barM, den);
-    bar.position.set((pt.x + prev.x) / 2, 0.45, (pt.z + prev.z) / 2);
-    bar.rotation.y = -Math.atan2(pt.z - prev.z, pt.x - prev.x);
-  });
-  const sign = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.1, 0.36),
-    new THREE.MeshBasicMaterial({
-      map: canvasTexture(330, 108, (ctx, w) => {
-        ctx.fillStyle = '#e8c547';
-        ctx.fillRect(0, 0, w, 108);
-        ctx.fillStyle = '#1a170e';
-        ctx.font = `800 52px ${FONT}`;
-        ctx.textAlign = 'center';
-        ctx.fillText('개발 보류', w / 2, 72);
-      })
-    })
-  );
-  sign.position.set(0, 0.95, 1.8);
-  den.add(sign);
-  mesh(new THREE.BoxGeometry(0.06, 0.8, 0.06), postM, den).position.set(0, 0.4, 1.76);
-}
-
 // 충전이 필요해!: 카공 카페와 테라스. 배터리가 떨어져 가는 빨간 청소 로봇이 탁자 사이를 돈다
 function buildCafe(c) {
   const p = c.at(0, MARK_R);
@@ -1284,7 +1185,7 @@ if (!NIGHT) {
 const fireflies = [];
 let flies = null;
 if (NIGHT) {
-  const green = land.filter(t => !t.road && ['be-the-bee', 'enigma', 'selection-pressure'].includes(t.region));
+  const green = land.filter(t => !t.road && ['be-the-bee', 'enigma'].includes(t.region));
   for (let k = 0; k < 46; k++) {
     const t = green[Math.floor(rand() * green.length)];
     fireflies.push({ x: t.x, z: t.z, y: t.h, ph: rand() * 20, r: 0.3 + rand() * 0.6 });

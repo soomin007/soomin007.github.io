@@ -34,13 +34,15 @@
    영어 꼬리표("HOW TO PLAY")를 얹지 않는다. 카드 왼쪽 색 띠, 유리 흐림, 그라데이션 글자, 글리프 화살표와 별도 쓰지 않는다.
    보조 글자도 배경과 대비 4.5:1 이상. 저장소의 `node tools/check-design.cjs` 가 통과해야 한다.
 
-## 현재 상태 (2026-11-09 기준, 이미 구현됨)
+## 현재 상태 (2026-11-11 기준, 이미 구현됨)
 
 - 홈: 상단 바(이름과 한 줄 소개), 피처드 캐러셀(자동 6.5초, 스와이프와 점), "몇 분 있으세요?" 고르기,
   섬 입구, 캡슐 그리드 순서. 피처드에 뜬 게임의 색이 배경 글로우와 버튼, 점을 물들인다.
-- 게임 소개: 게임마다 전용 페이지 `g/<id>/` 가 있고(6개), 게임 세계에 맞춘 테마를 쓴다.
-  Be the Bee 와 충전이 필요해!에는 개발 일지가 있다. `#g/<id>` 내장 상세는 page 가 없는 새 게임의 폴백으로만 남았다.
+  피처드 글은 PC 에서는 그림 위에 얹고, 폰(640px 이하)에서는 그림 아래 바탕색 칸에 둔다(높이는 슬라이드마다 같다).
+- 게임 소개: 게임마다 전용 페이지 `g/<id>/` 가 있고(5개), 게임 세계에 맞춘 테마를 쓴다.
+  다섯 게임 모두 소개 페이지 아래에 개발 일지가 있다. `#g/<id>` 내장 상세는 page 가 없는 새 게임의 폴백으로만 남았다.
 - 섬 지도: `world/`. three.js 로 그린 육각 섬에 게임마다 땅이 하나씩 있고, 땅을 누르면 말이 뛰어간다.
+  땅 이름표는 3D 위치를 따라가는 화면 글자(HTML)다. 과제전에 제출할 주소다.
 - 적응: 터치 기기에서 `mobile: true` 게임 우선 정렬, `prefers-reduced-motion` 존중,
   375px~1920px 반응형.
 
@@ -55,11 +57,11 @@
 | ENIGMA 캡슐 | https://soomin007.github.io/assets/enigma.webp | 1232x706 |
 | Otherside 캡슐 | https://soomin007.github.io/assets/otherside.webp | 1232x706 |
 | Eyes on You 캡슐 | https://soomin007.github.io/assets/eyes-on-you.webp | 1232x706 |
-| 적자생존 캡슐 | https://soomin007.github.io/assets/selection-pressure.webp | 1232x706 |
 | 충전이 필요해! 캡슐 | https://soomin007.github.io/assets/outlet-villains.webp | 1232x706 |
 | 섬 입구 그림 | https://soomin007.github.io/assets/island.webp | 800x450 |
-| 피처드 전용 6장 | https://soomin007.github.io/assets/feat/<게임id>.webp | 1680x800 |
-| OG 썸네일 | https://soomin007.github.io/og.png | 1200x630 |
+| 피처드 전용 5장 | https://soomin007.github.io/assets/feat/<게임id>.webp | 1680x800 |
+| 허브 링크 미리보기 | https://soomin007.github.io/og.png | 1200x630 |
+| 섬 링크 미리보기 | https://soomin007.github.io/world/og.png | 1200x630 |
 | 파비콘 | https://soomin007.github.io/icon.png | 256x256 |
 
 ## 산출물 형식

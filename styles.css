@@ -517,9 +517,11 @@ a:focus-visible, button:focus-visible {
 /* ============================ 반응형 ============================ */
 
 @media (max-width: 640px) {
-  /* 폰에선 21:10 이 너무 낮아 오버레이 글(제목)이 카드 위로 잘린다. 세로 여유를 둔다 */
-  .feat__art { aspect-ratio: 16 / 11; }
-  .feat__scrim { padding: 50px 16px 16px; }
+  /* 폰에서는 글을 그림 위에 얹지 않고 그림 아래 바탕색 칸에 둔다. 그림 위에 얹으면 장르와 소개가
+     밝은 그림에 묻혔다 (known-issues #29). 피처드 그림은 아래쪽이 바탕색으로 잦아들게 구워져 있어 이어 붙는다.
+     슬라이드가 넘어갈 때 아래 내용이 들썩이지 않게 글 칸 높이를 가장 긴 게임에 맞춘다 */
+  .feat__art { aspect-ratio: 21 / 10; }
+  .feat__scrim { position: relative; inset: auto; padding: 2px 16px 16px; background: #0b0c0f; min-height: 173px; }
   .feat__line { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
   .feat__nav { display: none; } /* 폰에선 스와이프나 점으로 */
   /* 이름 아래에 한 줄 소개 */
@@ -531,9 +533,13 @@ a:focus-visible, button:focus-visible {
   .isle__art { width: 100%; aspect-ratio: 16 / 7; object-position: center 45%; }
   .isle__go { align-self: flex-end; }
 }
-@media (max-width: 359px) {
-  /* 초협폭(폴드 커버 등)은 한 단계 더 */
-  .feat__art { aspect-ratio: 4 / 3; }
+/* 초협폭(폴드 커버 등)에서는 버튼 줄이 꺾이고(339px 이하), 더 좁으면 긴 제목도 두 줄이 된다(329px 이하).
+   값은 tools/measure-feat.cjs 로 잰 것이다 */
+@media (max-width: 339px) {
+  .feat__scrim { min-height: 205px; }
+}
+@media (max-width: 329px) {
+  .feat__scrim { min-height: 233px; }
 }
 
 /* ============================ 모션 최소화 ============================ */
