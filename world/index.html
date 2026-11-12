@@ -1439,7 +1439,16 @@ function buildBeacon(c) {
   flame.position.y = 1.3;
   flame.visible = false;
   grp.add(flame);
-  return { grp, bowl, flame, on: false };
+  // 불이 켜지면 꼭대기에서 게임 색 빛기둥이 솟는다. 불꽃만으로는 섬 전체를 볼 때 너무 작아서, 어느 봉우리가 다 켜졌는지 멀리서도 보이게 한다
+  const beamGeo = new THREE.CylinderGeometry(0.08, 0.42, 9, 14, 1, true);
+  beamGeo.translate(0, 4.5, 0);
+  const beam = new THREE.Mesh(beamGeo, new THREE.MeshBasicMaterial({
+    color: c.g.color, transparent: true, opacity: NIGHT ? 0.3 : 0.22, depthWrite: false, blending: THREE.AdditiveBlending, side: THREE.DoubleSide, toneMapped: false
+  }));
+  beam.position.y = 1.3;
+  beam.visible = false;
+  grp.add(beam);
+  return { grp, bowl, flame, beam, on: false };
 }
 
 const pickables = [landMesh];
@@ -1461,7 +1470,8 @@ for (const reg of regions) {
   reg.group.traverse(o => {
     if (!o.isMesh) return;
     o.userData = { kind: 'region', id: reg.g.id, s0: o.scale.clone() };
-    pickables.push(o);
+    // 빛기둥은 꺼져 있어도 광선에 걸려서, 봉우리 위 하늘을 누르면 꼭대기로 가 버린다. 누름 대상에서 뺀다
+    if (o !== reg.beacon.beam) pickables.push(o);
   });
 }
 
@@ -1686,6 +1696,7 @@ function paintLit(reg) {
   const on = done(reg);
   reg.beacon.on = on;
   reg.beacon.flame.visible = on;
+  reg.beacon.beam.visible = on;
   reg.beacon.bowl.material.emissiveIntensity = on ? 0.9 : 0;
   reg.light.intensity = LIGHT.lamp * (on ? 1.6 : 1);
 }
