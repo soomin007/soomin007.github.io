@@ -4,10 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>게임들이 사는 섬</title>
-<meta name="description" content="soomin007이 직접 만든 게임들이 땅마다 하나씩 자리 잡은 3D 섬입니다. 가고 싶은 땅을 누르면 말이 그 게임까지 뛰어갑니다.">
+<meta name="description" content="soomin007이 직접 만든 게임마다 봉우리가 하나씩 있는 3D 섬입니다. 봉우리로 오르는 길의 칸 하나가 그 게임을 만든 하루입니다.">
 <meta property="og:type" content="website">
 <meta property="og:title" content="게임들이 사는 섬">
-<meta property="og:description" content="soomin007이 직접 만든 게임들이 땅마다 하나씩 자리 잡은 3D 섬입니다.">
+<meta property="og:description" content="soomin007이 직접 만든 게임마다 봉우리가 하나씩 있는 3D 섬입니다. 길의 칸 하나가 그 게임을 만든 하루입니다.">
 <meta property="og:image" content="https://soomin007.github.io/world/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
@@ -53,8 +53,13 @@
   /* 글자는 작아도 누르는 자리는 위아래로 넓힌다 (바깥 여백을 같은 만큼 빼서 배치는 그대로) */
   .top a, .top button { padding: 8px 0; margin: -8px 0; border: 0; background: none; font: inherit; font-size: 13px; color: var(--dim); text-decoration: none; cursor: pointer; }
   .top a:hover, .top button:hover { color: var(--ink); }
+  /* 섬 소개는 처음 온 사람이 찾을 수 있게 테두리 있는 버튼으로 보인다 */
+  .top #bAbout { padding: 5px 11px; margin: -5px 0; border: 1px solid rgba(255, 255, 255, .34); border-radius: 99px; color: var(--ink); }
+  .top #bAbout:hover { background: rgba(255, 255, 255, .08); }
   /* 좁은 폰에서는 링크 글을 줄이고 사이를 좁혀, 이름과 버튼 셋이 20px 여백 안에 한 줄로 들어가게 한다 */
   @media (max-width: 380px) { .hide-s { display: none; } .top__right { gap: 10px; } }
+  /* 테두리 있는 '섬 소개' 버튼까지 한 줄에 들어가게, 좁은 폰에서는 이름을 soomin007 까지만 쓴다(광장 이름판에 전체 이름이 있다) */
+  @media (max-width: 400px) { .hide-n { display: none; } }
 
   .dock {
     position: fixed; left: 0; right: 0; bottom: 0;
@@ -62,7 +67,7 @@
     pointer-events: none;
   }
   .dock > * { pointer-events: auto; }
-  .hint { margin: 0 0 10px; font-size: 13px; line-height: 1.5; color: var(--dim); }
+  .hint { margin: 0 0 10px; font-size: 13.5px; line-height: 1.55; color: var(--sub); }
   .hint b { color: var(--ink); font-weight: 600; }
   .chips { display: flex; gap: 8px; overflow-x: auto; scrollbar-width: none; }
   .chips::-webkit-scrollbar { display: none; }
@@ -117,6 +122,12 @@
   /* 버튼은 두 칸씩 두 줄로 맞춘다. 윗줄은 이 게임(플레이, 개발 일지), 아랫줄은 섬 안 이동(다음 땅, 광장으로).
      줄바꿈에 맡기면 폰에서 마지막 버튼 하나만 아랫줄로 떨어졌다 (허브 known-issues #28) */
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
+  /* 길의 칸 카드: 몇 번째 칸인지, 그날의 날짜, 그날 쓴 일지 제목 */
+  .day__where { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--dim); }
+  .day__where b { font-weight: 600; color: color-mix(in srgb, var(--accent) 75%, #fff); }
+  .day__date { margin: 8px 0 0; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--sub); }
+  .day__title { margin: 4px 0 0; font-size: 17px; font-weight: 700; line-height: 1.4; letter-spacing: -.01em; }
+  .day__first { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--sub); }
   .row > .btn--play:has(+ [hidden]) { grid-column: 1 / -1; }
   .btn {
     padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; white-space: nowrap;
@@ -167,6 +178,8 @@
   .log__date { margin: 0; font-size: 12.5px; color: var(--dim); }
   .log__title { margin: 4px 0 8px; font-size: 17px; }
   .log__body { margin: 0 0 8px; font-size: 15px; line-height: 1.75; color: var(--sub); }
+  .sheet__all { display: block; width: 100%; margin-top: 2px; }
+  .about__reset { margin-top: 18px; }
   .log__quote { margin: 4px 0 0; padding: 8px 12px; border: 1px solid var(--line); border-radius: 10px; background: rgba(255, 255, 255, .03); font-size: 14.5px; line-height: 1.7; color: var(--ink); }
   @media (min-width: 760px) {
     .sheet { align-items: center; }
@@ -223,7 +236,7 @@
 <div class="names" id="names" aria-hidden="true"></div>
 
 <header class="top">
-  <p class="brand">soomin007의 게임 섬</p>
+  <p class="brand">soomin007<span class="hide-n">의 게임 섬</span></p>
   <div class="top__right">
     <button id="bAbout" type="button" aria-haspopup="dialog">섬 소개</button>
     <button class="sound" id="bSound" type="button">소리 끄기</button>
@@ -246,8 +259,19 @@
     <div class="row">
       <button class="btn btn--play" id="bPlay" type="button">플레이</button>
       <button class="btn" id="bLog" type="button" hidden>개발 일지</button>
-      <button class="btn" id="bNext" type="button">다음 땅</button>
+      <button class="btn" id="bNext" type="button">다음 봉우리</button>
       <button class="btn" id="bHome" type="button">광장으로</button>
+    </div>
+  </section>
+  <section class="card" id="day" hidden>
+    <p class="day__where" id="dWhere"></p>
+    <p class="day__date" id="dDate"></p>
+    <div id="dList"></div>
+    <div class="row">
+      <button class="btn btn--play" id="bUp" type="button">다음 칸</button>
+      <button class="btn" id="bRead" type="button">그날 일지 읽기</button>
+      <button class="btn" id="bTop" type="button">게임까지 가기</button>
+      <button class="btn" id="bHome2" type="button">광장으로</button>
     </div>
   </section>
 </div>
@@ -269,6 +293,7 @@
       <button class="btn" id="sClose" type="button">닫기</button>
     </div>
     <ol class="log" id="sList"></ol>
+    <button class="btn sheet__all" id="sAll" type="button" hidden>이 게임의 일지 전체 보기</button>
   </div>
 </div>
 
@@ -300,25 +325,44 @@
       <button class="btn" id="aClose" type="button">닫기</button>
     </div>
     <div class="about">
-      <p>이 섬은 제가 만든 게임들을 <span class="nw">한 장의 지도에</span> <span class="nw">모아 둔</span> 곳입니다. 게임마다 <span class="nw">그 세계를</span> 닮은 땅이 <span class="nw">하나씩 있고,</span> <span class="nw">땅 앞에서</span> 플레이를 누르면 카메라가 <span class="nw">땅의 입구로</span> <span class="nw">들어가며 게임이 열립니다.</span></p>
-      <p>저는 어떻게 하면 사람들이 제 게임을 <span class="nw">해 보고 싶어질지</span> 고민하다가, 게임 세계를 <span class="nw">직접 둘러보며</span> 고르는 <span class="nw">섬을 만들었습니다.</span></p>
+      <p>이 섬에는 제가 만든 게임마다 <span class="nw">그 세계를 닮은</span> 봉우리가 <span class="nw">하나씩 있습니다.</span> 봉우리로 오르는 <span class="nw">길의 칸 하나가</span> <span class="nw">그 게임을</span> <span class="nw">만든 하루이고,</span> 칸을 모두 밟으면 꼭대기에 <span class="nw">불이 켜집니다.</span></p>
+      <p>저는 어떻게 하면 사람들이 제 게임을 <span class="nw">해 보고 싶어질지</span> 고민하다가, 게임이 <span class="nw">만들어진 날들을</span> 지나 <span class="nw">그 게임에 닿는</span> <span class="nw">섬을 만들었습니다.</span></p>
       <div class="for-pc">
         <h3>키보드와 마우스로 둘러보기</h3>
         <dl class="keys">
           <dt>마우스로 끌기</dt><dd>섬을 돌립니다.</dd>
           <dt>마우스 휠</dt><dd>섬에 다가가거나 물러섭니다.</dd>
-          <dt>오른쪽 화살표 키</dt><dd>다음 땅으로 갑니다.</dd>
+          <dt>위, 아래 화살표 키</dt><dd>한 칸 오르거나 내려갑니다.</dd>
+          <dt>왼쪽, 오른쪽 화살표 키</dt><dd>이웃한 봉우리로 갑니다.</dd>
           <dt>Esc 키</dt><dd>광장으로 돌아옵니다.</dd>
-          <dt>Enter 키</dt><dd>땅 앞에서 게임을 엽니다.</dd>
+          <dt>Enter 키</dt><dd>꼭대기에서 게임을 엽니다.</dd>
         </dl>
       </div>
       <details class="more">
         <summary>만든 과정<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
-        <p>중간 과제에서는 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었습니다.</span> 섬에서는 <span class="nw">그 일지가</span> <span class="nw">땅으로 가는</span> 길가의 기둥이 되어, 기둥을 누르면 <span class="nw">기록을 읽을 수 있습니다.</span></p>
-        <p><span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤 <span class="nw">지도를 골랐습니다.</span> <span class="nw">슈퍼 마리오 갤럭시 2가</span> <span class="nw">3D 허브</span> 대신 월드맵을 쓴 것처럼, 지도는 게임까지 가는 길을 <span class="nw">짧게 줄여 줍니다.</span></p>
+        <p>중간 과제에서는 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었습니다.</span> 섬에서는 <span class="nw">그 일지를</span> <span class="nw">날짜별로 나누어</span> 하루를 <span class="nw">길의 한 칸으로</span> <span class="nw">놓았습니다.</span> 일지를 오래 쓴 게임일수록 길이 길고 <span class="nw">봉우리가 높습니다.</span></p>
+        <p><span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤 <span class="nw">지도를 골랐습니다.</span> 그러다 섬이 <span class="nw">그려 놓은 지도에</span> 그친다는 생각이 들어, Journey처럼 <span class="nw">멀리 보이는</span> 봉우리를 향해 걸으며 이야기를 읽는 <span class="nw">섬으로 바꾸었습니다.</span></p>
         <p>육각 타일은 <span class="nw">Be the Bee의</span> 판이 바깥으로 자라는 <span class="nw">모양에서 가져왔습니다.</span> 섬의 낮과 밤은 <span class="nw">보는 사람의</span> 시계를 따르고, 소리는 <span class="nw">녹음 파일 없이</span> 브라우저가 그때그때 <span class="nw">만들어 냅니다.</span></p>
-        <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록을 허브 <span class="nw">첫 화면과</span> <span class="nw">같은 파일에서</span> 읽어 오기 때문에, 게임을 하나 더하면 섬이 땅을 <span class="nw">저절로 다시 나눕니다.</span></p>
+        <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록과 개발 일지를 허브의 <span class="nw">다른 페이지에서</span> 읽어 오기 때문에, 게임이나 일지를 더하면 봉우리와 길이 <span class="nw">저절로 다시 생깁니다.</span></p>
       </details>
+      <button class="btn about__reset" id="aReset" type="button" hidden>밟은 칸 기록 지우기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 모든 봉우리에 불이 켜졌을 때 한 번 뜨는 창. 글은 모듈의 showEnding 이 일지에서 세어 채운다 -->
+<div class="sheet" id="ending" hidden>
+  <div class="sheet__panel" role="dialog" aria-modal="true" aria-labelledby="eTitle">
+    <div class="sheet__head">
+      <div>
+        <h2 class="sheet__title" id="eTitle"></h2>
+      </div>
+      <button class="btn" id="eClose" type="button">닫기</button>
+    </div>
+    <div class="about"><p id="eText"></p></div>
+    <div class="row">
+      <button class="btn btn--play" id="eStay" type="button">불 켜진 섬 보기</button>
+      <button class="btn" id="eReset" type="button">불 끄고 처음부터</button>
     </div>
   </div>
 </div>
@@ -437,10 +481,12 @@ import { VerticalTiltShiftShader } from 'three/addons/shaders/VerticalTiltShiftS
 /* ============================================================
    게임들이 사는 섬 (허브 첫 화면의 섬 입구에서 들어온다)
 
-   - 육각 타일로 된 섬 하나에, 게임마다 그 게임 세계에 어울리는 땅을 둔다
-   - 가고 싶은 땅을 누르면 말이 광장을 거쳐 길을 따라 한 칸씩 뛰어간다
-   - 개발 일지가 있는 게임은 그 땅으로 가는 길가에 일지 항목 수만큼 기둥이 선다
-   - 플레이를 누르면 카메라가 그 땅의 입구로 들어가고, 게임이 화면 전체를 채운다
+   - 육각 타일로 된 섬 하나에, 게임마다 그 게임 세계를 닮은 봉우리를 하나씩 세운다
+   - 광장에서 봉우리 꼭대기까지 감아 오르는 길의 칸 하나가 그 게임의 개발 일지를 쓴 하루다.
+     일지를 오래 쓴 게임일수록 길이 길고 봉우리가 높다
+   - 말은 한 칸씩 오르고, 칸에 설 때마다 그날의 일지 제목이 뜬다. 밟은 칸의 기둥은 불이 켜진 채 남고,
+     한 길의 칸을 모두 밟으면 꼭대기에 불이 켜진다. 언제든 꼭대기로 바로 갈 수 있다(게임을 막지 않는다)
+   - 꼭대기에서 플레이를 누르면 카메라가 그 땅의 입구로 들어가고, 게임이 화면 전체를 채운다
 
    디테일은 손으로 하나씩 놓지 않고 규칙으로 생기게 했다
    - 타일 종류에 따라 풀 포기, 돌멩이, 길 디딤판, 물가 물결이 저절로 깔린다
@@ -450,7 +496,7 @@ import { VerticalTiltShiftShader } from 'three/addons/shaders/VerticalTiltShiftS
    ============================================================ */
 
 const ROOT = '../';
-// 개발 일지가 있는 게임과 그 일지가 실린 소개 페이지. 길가 기둥 수는 일지 항목 수를 따른다
+// 개발 일지가 있는 게임과 그 일지가 실린 소개 페이지. 일지를 쓴 날의 수가 그 봉우리로 오르는 길의 칸 수가 된다
 const DEVLOG = {
   'be-the-bee': ROOT + 'g/be-the-bee/index.html',
   'outlet-villains': ROOT + 'g/outlet-villains/index.html',
@@ -458,6 +504,60 @@ const DEVLOG = {
   'enigma': ROOT + 'g/enigma/index.html',
   'eyes-on-you': ROOT + 'g/eyes-on-you/index.html'
 };
+
+// ---------- 개발 일지 ----------
+// 섬의 모양이 일지에 달려 있어서, 섬을 짓기 전에 읽어 온다(소개 페이지의 #devlog)
+
+// 길은 봉우리 둘레를 두 바퀴 넘게 돌 수 없다. 날이 이보다 많으면 이웃한 날을 둘씩 묶는다
+const MAX_STEPS = 15;
+const logs = {};
+const firstSentence = text => (text.match(/^.+?[.?!](?=\s|$)/) || [text])[0];
+
+// 같은 날 시작한 일지는 한 칸에 묶는다. 칸의 날짜는 일지에 적힌 그대로 쓰고, 날짜가 서로 다르면 시작한 날만 쓴다
+function groupDays(entries) {
+  let days = [];
+  entries.forEach((e, n) => {
+    const start = e.date.split('~')[0].trim();
+    const last = days.at(-1);
+    if (last && last.start === start) last.items.push(n);
+    else days.push({ start, items: [n] });
+  });
+  while (days.length > MAX_STEPS) {
+    const merged = [];
+    for (let k = 0; k < days.length; k += 2) {
+      merged.push(days[k + 1] ? { start: days[k].start, items: [...days[k].items, ...days[k + 1].items] } : days[k]);
+    }
+    days = merged;
+  }
+  return days.map(d => {
+    const dates = d.items.map(n => entries[n].date);
+    return { items: d.items, date: dates.every(x => x === dates[0]) ? dates[0] : d.start };
+  });
+}
+
+async function loadDevlog(id) {
+  if (logs[id]) return logs[id];
+  const res = await fetch(DEVLOG[id]);
+  if (!res.ok) throw new Error(`${id} ${res.status}`);
+  const doc = new DOMParser().parseFromString(await res.text(), 'text/html');
+  const entries = [...doc.querySelectorAll('#devlog .log__item')].map(li => ({
+    date: li.querySelector('.log__date')?.textContent.trim() || '',
+    title: li.querySelector('.log__title')?.textContent.trim() || '',
+    first: firstSentence(li.querySelector('.log__body')?.textContent.trim().replace(/\s+/g, ' ') || ''),
+    html: [...li.querySelectorAll('.log__body, .log__quote')].map(p => p.outerHTML).join('')
+  }));
+  logs[id] = {
+    lead: doc.querySelector('#devlog .log__lead')?.textContent.trim() || '',
+    entries,
+    days: entries.length ? groupDays(entries) : null
+  };
+  return logs[id];
+}
+// 다섯 쪽을 한꺼번에 받는다. 연결이 느려 6초 안에 못 받은 게임은 기본 길이로 짓고 날짜 칸 없이 둔다
+const logsReady = Promise.race([
+  Promise.all(Object.keys(DEVLOG).map(id => loadDevlog(id).catch(() => null))),
+  new Promise(r => setTimeout(r, 6000))
+]);
 const FONT = '"Pretendard Variable", Pretendard, "Malgun Gothic", "Apple SD Gothic Neo", sans-serif';
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -467,7 +567,7 @@ const FX = !TOUCH && innerWidth >= 900;
 
 const $ = id => document.getElementById(id);
 const canvas = $('stage');
-const dock = $('dock'), entry = $('entry'), card = $('card');
+const dock = $('dock'), entry = $('entry'), card = $('card'), dayCard = $('day');
 const playEl = $('play'), sheet = $('sheet'), loading = $('loading');
 
 // 매번 같은 섬이 나오도록 씨앗을 고정한 난수
@@ -608,28 +708,92 @@ const LANDS = {
 };
 const PLAIN = { ground: ['#555a52', '#5e6259'], lift: [0.5, 0.7], clutter: 'grass', build: buildPlain };
 
-// 섬 위의 자리. 북쪽(안쪽 가운데)부터 시계 방향으로, 키 큰 땅은 뒤쪽에 낮은 땅은 카메라 쪽에 둔다.
-// games.js 에 새 게임이 생기면 이 목록 뒤에 저절로 붙어 섬이 한 칸씩 늘어난다
-const SLOTS = ['be-the-bee', 'eyes-on-you', 'otherside', 'outlet-villains', 'enigma'];
+// 섬 위의 자리. 북쪽부터 시계 방향으로 놓는다. 카메라가 남쪽에서 보므로 길이 긴(높은) 봉우리를 뒤쪽에 둔다.
+// games.js 에 새 게임이 생기면 이 목록 뒤에 저절로 붙어 봉우리가 하나 늘어난다
+const SLOTS = ['eyes-on-you', 'otherside', 'outlet-villains', 'be-the-bee', 'enigma'];
 const byId = Object.fromEntries(GAMES.map(g => [g.id, g]));
 const ORDER = [...SLOTS.filter(id => byId[id]), ...GAMES.map(g => g.id).filter(id => !SLOTS.includes(id))].map(id => byId[id]);
 const SECTOR = (Math.PI * 2) / ORDER.length;
-const COAST = ang => 11.2 + Math.sin(ang * 3 + 1.3) * 0.9 + Math.sin(ang * 5 + 0.4) * 0.45;
-const PLAZA_R = 2.4, STOP_R = 7.4, MARK_R = 9.0, PLAZA_H = 0.72;
+const COAST = ang => 13.7 + Math.sin(ang * 3 + 1.3) * 0.9 + Math.sin(ang * 5 + 0.4) * 0.45;
+const PLAZA_R = 2.4, PLAZA_H = 0.72;
+const SUMMIT_D = 5;      // 광장 한가운데에서 봉우리 꼭대기까지의 칸 수
+const RISE = 0.2;        // 길을 한 칸 오를 때마다 높아지는 높이
+const DEFAULT_STEPS = 5; // 일지를 받지 못한 게임의 길 칸 수
+
+await logsReady;
+
+const HEX_DIRS = [[1, 0], [1, -1], [0, -1], [-1, 0], [-1, 1], [0, 1]];
+function hexRing(c, k) {
+  const out = [];
+  let q = c.q + HEX_DIRS[4][0] * k, r = c.r + HEX_DIRS[4][1] * k;
+  for (let i = 0; i < 6; i++) {
+    for (let j = 0; j < k; j++) {
+      out.push({ q, r });
+      q += HEX_DIRS[i][0];
+      r += HEX_DIRS[i][1];
+    }
+  }
+  return out;
+}
+const angleOf = (x, z) => (Math.atan2(x, -z) + Math.PI * 2) % (Math.PI * 2);
+const wrapPi = a => Math.atan2(Math.sin(a), Math.cos(a));
+const sameHex = (a, b) => a.q === b.q && a.r === b.r;
+
+// 봉우리 하나의 설계. 꼭대기를 가운데 두고, 길은 광장 가장자리에서 나와 꼭대기에서 두 칸 떨어진 고리를 따라 돌다가
+// 다 돌면 한 칸 떨어진 고리로 올라선다. 길이 끝난 다음 칸이 꼭대기 마당(도착 칸)이다
+const plans = ORDER.map((g, i) => {
+  const ang = i * SECTOR;
+  const days = logs[g.id]?.days || null;
+  const n = days ? days.length : DEFAULT_STEPS;
+  const top = hexRing({ q: 0, r: 0 }, SUMMIT_D)
+    .map(h => { const w = hexToWorld(h.q, h.r); return { h, d: Math.abs(wrapPi(angleOf(w.x, w.z) - ang)) }; })
+    .sort((a, b) => a.d - b.d)[0].h;
+  const line = hexLine({ q: 0, r: 0 }, top);
+  const rot = i % 2 ? 1 : -1; // 봉우리마다 감아 오르는 방향을 번갈아 둔다
+  const around = h => { const w = hexToWorld(h.q - top.q, h.r - top.r); return Math.atan2(w.x, -w.z); };
+  const ringOf = h => hexDist(h.q - top.q, h.r - top.r);
+  const spiral = [line[SUMMIT_D - 2]];
+  while (spiral.length < 18) {
+    const cur = spiral.at(-1);
+    const next = HEX_DIRS.map(([dq, dr]) => ({ q: cur.q + dq, r: cur.r + dr }))
+      .filter(h => ringOf(h) >= 1 && ringOf(h) <= 2 && !spiral.some(s => sameHex(s, h)))
+      .map(h => ({ h, ring: ringOf(h), go: wrapPi(around(h) - around(cur)) * rot }))
+      .filter(c => c.go > -0.01)
+      .sort((a, b) => b.ring - a.ring || b.go - a.go)[0];
+    if (!next) break;
+    spiral.push(next.h);
+  }
+  const way = [...line.slice(2, SUMMIT_D - 2), ...spiral];
+  return { g, i, ang, days, n, top, line, trail: way.slice(0, n), arrival: way[n] };
+});
 
 const tiles = [];
 const tileAt = new Map();
-for (let q = -13; q <= 13; q++) {
-  for (let r = -13; r <= 13; r++) {
+for (let q = -16; q <= 16; q++) {
+  for (let r = -16; r <= 16; r++) {
     const { x, z } = hexToWorld(q, r);
     const wr = Math.hypot(x, z);
-    const ang = (Math.atan2(x, -z) + Math.PI * 2) % (Math.PI * 2);
+    const ang = angleOf(x, z);
     if (wr > COAST(ang) + 4) continue;
-    const t = { q, r, x, z, wr, ang, water: wr > COAST(ang), region: null, road: false, coastal: false, h: 0.18, color: new THREE.Color() };
+    const t = { q, r, x, z, wr, ang, water: wr > COAST(ang), region: null, road: false, mesa: null, step: 0, coastal: false, h: 0.18, color: new THREE.Color() };
     if (!t.water) t.region = wr < PLAZA_R ? 'plaza' : ORDER[Math.round(ang / SECTOR) % ORDER.length].id;
     tiles.push(t);
     tileAt.set(key(q, r), t);
   }
+}
+const tileOf = h => tileAt.get(key(h.q, h.r));
+
+// 봉우리와 길은 해안선이 어디로 지나든 늘 땅이다
+for (const p of plans) {
+  for (const t of tiles) {
+    if (hexDist(t.q - p.top.q, t.r - p.top.r) > 2) continue;
+    t.water = false;
+    t.mesa = p.g.id;
+    t.region = p.g.id;
+  }
+  p.trail.forEach((h, k) => Object.assign(tileOf(h), { water: false, road: true, step: k + 1, region: p.g.id }));
+  tileOf(p.top).top = true;
+  tileOf(p.arrival).arrival = true;
 }
 
 for (const t of tiles) {
@@ -648,9 +812,20 @@ for (const t of tiles) {
     const inland = THREE.MathUtils.clamp((COAST(t.ang) - t.wr) / 1.8, 0, 1); // 해안에 가까울수록 낮다
     t.h = THREE.MathUtils.lerp(0.32, land.lift[0] + (land.lift[1] - land.lift[0]) * rand(), inland);
     t.color.set(land.ground[Math.floor(rand() * land.ground.length)]).offsetHSL(0, 0, (rand() - 0.5) * 0.05);
-    t.coastal = inland < 0.35;
+    t.coastal = inland < 0.35 && !t.mesa && !t.road;
     if (t.coastal) t.color.lerp(new THREE.Color('#8f8468'), 0.5);
   }
+}
+
+// 길은 한 칸에 RISE 만큼 오르고, 꼭대기 마당은 마지막 칸보다 한 칸 높다
+for (const p of plans) {
+  const topH = PLAZA_H + (p.n + 1) * RISE;
+  for (const t of tiles) if (t.mesa === p.g.id && !t.step) t.h = topH;
+  p.trail.forEach((h, k) => {
+    const t = tileOf(h);
+    t.h = PLAZA_H + (k + 1) * RISE;
+    t.color.set(k % 2 ? '#a39b86' : '#978f7b');
+  });
 }
 
 const groundY = (x, z) => {
@@ -659,22 +834,22 @@ const groundY = (x, z) => {
   return t ? t.h : 0.5;
 };
 
-// 광장에서 각 땅으로 가는 길. 길 타일은 광장 높이에서 땅 높이로 고르게 내려간다
-const regions = ORDER.map((g, i) => {
-  const ang = i * SECTOR;
-  const dir = new THREE.Vector3(Math.sin(ang), 0, -Math.cos(ang));
-  const stopHex = worldToHex(dir.x * STOP_R, dir.z * STOP_R);
-  const line = hexLine({ q: 0, r: 0 }, stopHex);
-  const road = line.map((h, k) => {
-    const t = tileAt.get(key(h.q, h.r));
-    if (t.region !== 'plaza') {
-      t.road = true;
-      t.h = THREE.MathUtils.lerp(PLAZA_H, 0.62, k / (line.length - 1));
-      t.color.set(k % 2 ? '#a39b86' : '#978f7b');
-    }
-    return new THREE.Vector3(t.x, t.h, t.z);
-  });
-  return { g, i, ang, dir, road, group: new THREE.Group() };
+const tileAt3 = t => new THREE.Vector3(t.x, t.h, t.z);
+const regions = plans.map((p, i) => {
+  const steps = p.trail.map(h => tileAt3(tileOf(h)));
+  const arrival = tileAt3(tileOf(p.arrival));
+  const top = tileAt3(tileOf(p.top));
+  // 꼭대기 마당에서 물건을 둘 자리: 꼭대기와 도착 칸을 뺀 마당 칸을, 도착 칸에서 가까운 순서로
+  const spots = tiles.filter(t => t.mesa === p.g.id && !t.step && !t.top && !t.arrival)
+    .sort((a, b) => Math.hypot(a.x - arrival.x, a.z - arrival.z) - Math.hypot(b.x - arrival.x, b.z - arrival.z))
+    .map(tileAt3);
+  return {
+    g: p.g, i, ang: p.ang, dir: new THREE.Vector3(Math.sin(p.ang), 0, -Math.cos(p.ang)),
+    n: p.n, days: p.days, steps, arrival, top, spots,
+    // 말이 지나는 자리: 광장 한가운데, 광장 가장자리, 길의 칸들, 도착 칸
+    path: [new THREE.Vector3(0, PLAZA_H, 0), tileAt3(tileOf(p.line[1])), ...steps, arrival],
+    lit: new Set(), group: new THREE.Group()
+  };
 });
 
 // 타일: 윗모서리를 깎은 육각기둥. 윗면이 y=0 에 오고 아래로 길게 내려가므로, 타일마다 제 높이만큼 올려 놓는다
@@ -688,7 +863,8 @@ function hexShape(r) {
   s.closePath();
   return s;
 }
-const TILE_DEPTH = 2.6, BEVEL = 0.07;
+// 봉우리 타일은 높이 솟으므로 기둥을 바다 밑까지 길게 둔다(짧으면 봉우리 가장자리 밑이 떠 보인다)
+const TILE_DEPTH = 4.4, BEVEL = 0.07;
 const hexGeo = new THREE.ExtrudeGeometry(hexShape(HEX * 0.9), {
   depth: TILE_DEPTH, bevelEnabled: true, bevelThickness: BEVEL, bevelSize: 0.06, bevelSegments: 1, curveSegments: 1
 });
@@ -723,7 +899,7 @@ slabGeo.translate(0, 0.025, 0);
 const tuftList = [], pebbleList = [], slabList = [];
 for (const t of land) {
   if (t.road) { slabList.push(t); continue; }
-  if (t.region === 'plaza') continue;
+  if (t.region === 'plaza' || t.top || t.arrival) continue;
   const kind = t.coastal ? 'pebble' : (LANDS[t.region] || PLAIN).clutter;
   const n = kind === 'grass' ? 3 + Math.floor(rand() * 4) : kind === 'pebble' ? 1 + Math.floor(rand() * 3) : 0;
   for (let i = 0; i < n; i++) {
@@ -782,36 +958,45 @@ function landKit(reg) {
     return new THREE.Vector3(x, groundY(x, z), z);
   };
   const toCenter = p => new THREE.Vector3(-p.x, 0, -p.z).normalize();
-  // 길과 물을 피해 이 땅 안에 흩뿌릴 자리
+  // 길과 물과 봉우리를 피해, 이 땅의 낮은 곳에 흩뿌릴 자리
   const scatter = (n, minR, maxR, spread) => {
     const out = [];
     for (let tries = 0; out.length < n && tries < n * 30; tries++) {
       const p = at((rand() * 2 - 1) * spread, minR + rand() * (maxR - minR));
       const h = worldToHex(p.x, p.z);
       const t = tileAt.get(key(h.q, h.r));
-      if (!t || t.water || t.road || t.region !== reg.g.id) continue;
+      if (!t || t.water || t.road || t.mesa || t.region !== reg.g.id) continue;
       if (out.some(o => o.distanceTo(p) < 0.9)) continue;
       out.push(p);
     }
     return out;
   };
-  return { g: reg.g, ang: reg.ang, group: reg.group, at, toCenter, scatter };
-}
-
-// 앞면(+z)이 광장을 보도록 세우는 묶음
-function facing(c, p) {
-  const grp = new THREE.Group();
-  grp.position.copy(p);
-  const toC = c.toCenter(p);
-  grp.rotation.y = Math.atan2(toC.x, toC.z);
-  c.group.add(grp);
-  return grp;
+  // 앞면(+z)이 to 쪽을 보게 세우는 묶음. 꼭대기의 물건은 도착 칸(말이 서는 곳)을 본다
+  const face = (p, to = reg.arrival) => {
+    const grp = new THREE.Group();
+    grp.position.copy(p);
+    grp.rotation.y = Math.atan2(to.x - p.x, to.z - p.z);
+    reg.group.add(grp);
+    return grp;
+  };
+  // 꼭대기 마당에서 빈칸을 하나씩 꺼내 쓴다. near 에서 가까운 칸부터, 꼭대기에서 minR 이상 떨어진 칸만.
+  // 큰 건물이 선 꼭대기와 겹치지 않게 minR 을 준다. 빈칸이 모자라면 길 들머리 옆 낮은 땅에 둔다
+  const pool = reg.spots.slice();
+  const take = (minR = 0, near = reg.arrival) => {
+    const ok = pool.filter(p => Math.hypot(p.x - reg.top.x, p.z - reg.top.z) >= minR);
+    const list = ok.length ? ok : pool;
+    if (!list.length) return at(rand() < 0.5 ? -0.4 : 0.4, 4.4);
+    const best = list.reduce((a, b) => (Math.hypot(b.x - near.x, b.z - near.z) < Math.hypot(a.x - near.x, a.z - near.z) ? b : a));
+    pool.splice(pool.indexOf(best), 1);
+    return best.clone();
+  };
+  return { g: reg.g, ang: reg.ang, dir: reg.dir, group: reg.group, top: reg.top.clone(), at, toCenter, scatter, face, take };
 }
 
 // Be the Bee: 꽃밭과 육각 벌집, 벌집 둘레를 도는 벌
 function buildHive(c) {
-  const p = c.at(0, MARK_R);
-  const hive = facing(c, p);
+  const p = c.top;
+  const hive = c.face(p);
   const honey = mat('#d39a1d', { roughness: 0.55 });
   let y = 0;
   for (const [rad, h] of [[1.0, 0.45], [1.18, 0.5], [1.1, 0.5], [0.86, 0.45], [0.5, 0.32]]) {
@@ -824,13 +1009,13 @@ function buildHive(c) {
 
   const petals = ['#f2e6c9', '#e9a3b6', '#f5d35b', '#b9a7e8'].map(col => mat(col, { roughness: 0.6 }));
   const stem = mat('#4d6b2a');
-  for (const q of c.scatter(16, 4.2, 10.4, 0.48)) {
+  for (const q of c.scatter(18, 3.4, 13.4, 0.6)) {
     mesh(new THREE.CylinderGeometry(0.025, 0.025, 0.35, 4), stem, c.group).position.set(q.x, q.y + 0.17, q.z);
     mesh(new THREE.IcosahedronGeometry(0.11, 0), petals[Math.floor(rand() * petals.length)], c.group).position.set(q.x, q.y + 0.38, q.z);
   }
 
   // 대표 물건: 같은 색 꿀벌 다섯 마리가 한 줄로 이어진 판. 이 게임의 승리 조건이다
-  const board = facing(c, c.at(-0.36, 6.9));
+  const board = c.face(c.take(2.5));
   const cellM = [mat('#d8a63a', { roughness: 0.6 }), mat('#86622c', { roughness: 0.7 })];
   const cellGeo = new THREE.CylinderGeometry(0.21, 0.21, 0.06, 6);
   const cells = [];
@@ -864,8 +1049,8 @@ function buildHive(c) {
 
 // ENIGMA: 1942년 블레츨리 파크의 저택과 무전 철탑, 산울타리
 function buildManor(c) {
-  const p = c.at(0.04, MARK_R);
-  const house = facing(c, p);
+  const p = c.top;
+  const house = c.face(p);
   const brick = mat('#7a3b31');
   mesh(new THREE.BoxGeometry(2.6, 1.3, 1.5), brick, house).position.y = 0.65;
   mesh(new THREE.BoxGeometry(1.1, 1.0, 1.1), brick, house).position.set(1.6, 0.5, -0.1);
@@ -887,7 +1072,7 @@ function buildManor(c) {
   const chimney = house.localToWorld(new THREE.Vector3(-0.8, 2.25, -0.2));
 
   // 무전 철탑
-  const m = c.at(-0.34, MARK_R - 0.4);
+  const m = c.take(2.5);
   const steel = mat('#8b8f95', { metalness: 0.3, roughness: 0.5 });
   mesh(new THREE.CylinderGeometry(0.05, 0.08, 4.2, 6), steel, c.group).position.set(m.x, m.y + 2.1, m.z);
   for (let k = 0; k < 3; k++) {
@@ -898,14 +1083,14 @@ function buildManor(c) {
   c.group.add(beacon);
 
   const hedge = mat('#2f4a2a');
-  for (const q of c.scatter(7, 4.8, 10.2, 0.45)) {
+  for (const q of c.scatter(9, 3.6, 13.2, 0.6)) {
     const h = mesh(new THREE.BoxGeometry(0.9, 0.4, 0.4), hedge, c.group);
     h.position.set(q.x, q.y + 0.2, q.z);
     h.rotation.y = rand() * Math.PI;
   }
 
   // 대표 물건: 감청용 무전기와 회전자 세 개가 도는 해독기 (스크린샷의 라디오 감청, 해독기)
-  const desk = facing(c, c.at(0.3, 7.4));
+  const desk = c.face(c.take(2.5));
   const wood = mat('#5b4330');
   mesh(new THREE.BoxGeometry(1.15, 0.06, 0.6), wood, desk).position.y = 0.55;
   for (const [x, z] of [[-0.5, -0.24], [0.5, -0.24], [-0.5, 0.24], [0.5, 0.24]]) {
@@ -947,8 +1132,8 @@ function buildManor(c) {
 
 // See you on the other side: 폭풍이 머무는 바닷가 야영지
 function buildCamp(c) {
-  const p = c.at(0, MARK_R - 0.3);
-  const camp = facing(c, p);
+  const p = c.top;
+  const camp = c.face(p);
   const tent = mesh(new THREE.ConeGeometry(1.0, 1.35, 4), mat('#d9cba6'), camp);
   tent.position.y = 0.67;
   tent.rotation.y = Math.PI / 4;
@@ -958,14 +1143,14 @@ function buildCamp(c) {
   camp.add(door);
 
   const rock = mat('#6d675c');
-  for (const q of c.scatter(9, 6.2, 11.4, 0.48)) {
+  for (const q of c.scatter(11, 4.4, 13.6, 0.6)) {
     const s = 0.25 + rand() * 0.45;
     const m = mesh(new THREE.DodecahedronGeometry(s, 0), rock, c.group);
     m.position.set(q.x, q.y + s * 0.5, q.z);
     m.rotation.set(rand() * 3, rand() * 3, rand() * 3);
   }
 
-  const fp = c.at(0.24, MARK_R - 1.7);
+  const fp = c.take(1.6);
   const fire = new THREE.Mesh(new THREE.ConeGeometry(0.16, 0.36, 5), new THREE.MeshBasicMaterial({ color: '#ffb347', toneMapped: false }));
   fire.position.set(fp.x, fp.y + 0.18, fp.z);
   c.group.add(fire);
@@ -974,7 +1159,7 @@ function buildCamp(c) {
   c.group.add(fireLight);
 
   // 대표 물건: 앞선 원정대가 남기고 간 물건. 죽기 전 한 번 다음 원정대에게 물건을 남기는 규칙에서 가져왔다
-  const cache = facing(c, c.at(-0.3, MARK_R - 1.2));
+  const cache = c.face(c.take(1.6));
   const stone = mat('#7a7468');
   [[0.34, 0.12], [0.27, 0.32], [0.2, 0.49], [0.13, 0.62]].forEach(([s, y]) => {
     const m = mesh(new THREE.DodecahedronGeometry(s, 0), stone, cache);
@@ -999,9 +1184,9 @@ function buildCamp(c) {
 
   // 폭풍은 바다 쪽에서 몰려온다: 구름은 해안 너머 하늘에 둔다
   const cloudM = mat('#464c57', { roughness: 1 });
-  const cp = c.at(0.12, MARK_R + 3.6);
+  const cp = c.top.clone().addScaledVector(c.dir, 4.8);
   const cloud = new THREE.Group();
-  cloud.position.set(cp.x, 7.8, cp.z);
+  cloud.position.set(cp.x, c.top.y + 6.4, cp.z);
   cloud.scale.setScalar(0.8);
   c.group.add(cloud);
   for (let k = 0; k < 9; k++) {
@@ -1011,7 +1196,7 @@ function buildCamp(c) {
     m.receiveShadow = false;
   }
   const flash = new THREE.PointLight('#cfe3ff', 0, 22, 1.5);
-  flash.position.set(cp.x, 6.4, cp.z);
+  flash.position.set(cp.x, c.top.y + 5.0, cp.z);
   c.group.add(flash);
   let next = 2;
   return {
@@ -1065,14 +1250,14 @@ function buildCity(c) {
     }
   });
   const shell = new THREE.MeshStandardMaterial({ color: '#1c2230', roughness: 0.7, emissive: '#ffffff', emissiveMap: windows, emissiveIntensity: LIGHT.glow, flatShading: true });
-  for (const q of c.scatter(8, 4.4, 10.6, 0.46)) {
+  for (const q of c.scatter(10, 4.0, 13.4, 0.6)) {
     const w = 0.6 + rand() * 0.6, h = 0.9 + rand() * 2.4, d = 0.6 + rand() * 0.6;
     const b = mesh(new THREE.BoxGeometry(w, h, d), shell, c.group);
     b.position.set(q.x, q.y + h / 2, q.z);
     b.rotation.y = c.ang + (rand() - 0.5) * 0.3;
   }
 
-  const tp = c.at(-0.05, MARK_R);
+  const tp = c.top;
   const steel = mat('#3a4150');
   mesh(new THREE.CylinderGeometry(0.16, 0.24, 3.4, 6), steel, c.group).position.set(tp.x, tp.y + 1.7, tp.z);
   mesh(new THREE.BoxGeometry(0.75, 0.45, 0.75), steel, c.group).position.set(tp.x, tp.y + 3.55, tp.z);
@@ -1090,8 +1275,8 @@ function buildCity(c) {
   search.target.position.set(0, -6 * Math.cos(0.9), -6 * Math.sin(0.9));
   head.add(search, search.target);
 
-  const sp = c.at(0.3, MARK_R - 1.7);
-  const sub = facing(c, sp);
+  const sp = c.take(0);
+  const sub = c.face(sp);
   mesh(new THREE.BoxGeometry(1.0, 0.7, 0.9), mat('#2b3242'), sub).position.y = 0.35;
   const door = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.5, 0.02), flat('#05070b'));
   door.position.set(0, 0.28, 0.46);
@@ -1101,7 +1286,7 @@ function buildCity(c) {
   sub.add(subSign);
 
   // 대표 물건: 세 갈래 표지판. 이 게임의 세 루트(옥상, 지하철, 감시탑)를 가리킨다
-  const post = facing(c, c.at(-0.2, 6.5));
+  const post = c.face(c.take(0));
   mesh(new THREE.CylinderGeometry(0.035, 0.04, 1.4, 6), mat('#5d6472'), post).position.y = 0.7;
   [['옥상', '#3b5aa8', -0.55, 1.22], ['지하철', '#2f4a86', 0.15, 1.0], ['감시탑', '#26386a', 0.7, 0.78]].forEach(([text, col, rot, y]) => {
     const board = mesh(new THREE.BoxGeometry(0.66, 0.16, 0.02), signBoard(text, col), post);
@@ -1114,8 +1299,8 @@ function buildCity(c) {
 
 // 충전이 필요해!: 카공 카페와 테라스. 배터리가 떨어져 가는 빨간 청소 로봇이 탁자 사이를 돈다
 function buildCafe(c) {
-  const p = c.at(0, MARK_R);
-  const cafe = facing(c, p);
+  const p = c.top;
+  const cafe = c.face(p);
   mesh(new THREE.BoxGeometry(2.5, 1.3, 1.4), mat('#e6e0d5'), cafe).position.y = 0.65;
   mesh(new THREE.BoxGeometry(2.62, 0.12, 1.52), mat('#2a2826'), cafe).position.y = 1.36;
   const glass = new THREE.Mesh(new THREE.BoxGeometry(1.4, 0.62, 0.03), glowMat('#ffd9a0', 0.8));
@@ -1129,7 +1314,7 @@ function buildCafe(c) {
   awning.rotation.x = 0.38;
 
   // 대표 물건: 벽에서 뽑혀 나온 플러그와 빈 충전 독, 그리고 커다란 콘센트
-  const plugBase = facing(c, c.at(0.27, 8.1));
+  const plugBase = c.face(c.take(2.5));
   mesh(new THREE.BoxGeometry(0.56, 0.9, 0.18), mat('#d9d3c8'), plugBase).position.y = 0.45;
   const plate = mesh(new THREE.BoxGeometry(0.46, 0.46, 0.04), mat('#f4f1ea', { roughness: 0.5 }), plugBase);
   plate.position.set(0, 0.62, 0.11);
@@ -1141,8 +1326,10 @@ function buildCafe(c) {
     hole.position.set(dx, 0.62, 0.134);
     plugBase.add(hole);
   }
-  const dockP = c.at(0.1, 8.5);
-  const dock = facing(c, dockP);
+  plugBase.updateMatrixWorld(true);
+  const dockP = plugBase.localToWorld(new THREE.Vector3(-0.42, 0, 0.42));
+  dockP.y = groundY(dockP.x, dockP.z);
+  const dock = c.face(dockP);
   mesh(new THREE.CylinderGeometry(0.36, 0.38, 0.06, 20), mat('#cfc9bd'), dock).position.y = 0.03;
   mesh(new THREE.BoxGeometry(0.3, 0.22, 0.08), mat('#3a3734'), dock).position.set(0, 0.14, -0.28);
   plugBase.updateMatrixWorld(true);
@@ -1160,8 +1347,8 @@ function buildCafe(c) {
   // 테라스 탁자와 노트북
   const top = mat('#efe9df'), leg = mat('#2a2826');
   const screen = glowMat('#9ec4ff', 0.6);
-  for (const [da, rr] of [[-0.24, 7.8], [-0.36, 8.7]]) {
-    const tbl = facing(c, c.at(da, rr));
+  for (const tp of [c.take(2.5), c.take(2.5)]) {
+    const tbl = c.face(tp);
     mesh(new THREE.CylinderGeometry(0.3, 0.3, 0.04, 16), top, tbl).position.y = 0.5;
     mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.5, 6), leg, tbl).position.y = 0.25;
     mesh(new THREE.BoxGeometry(0.24, 0.015, 0.16), leg, tbl).position.set(0.04, 0.53, 0.02);
@@ -1187,14 +1374,14 @@ function buildCafe(c) {
   const battery = new THREE.Mesh(new THREE.BoxGeometry(0.1, 0.05, 0.04), new THREE.MeshBasicMaterial({ color: '#ff3b2f', toneMapped: false }));
   battery.position.set(0, 0.5, 0);
   robot.add(battery);
-  const loop = c.at(-0.12, 8.1);
+  const loop = c.take(2.5);
   return {
     door,
     anim: t => {
       const u = t * 0.32 + Math.sin(t * 0.9) * 0.25;
-      const x = loop.x + Math.cos(u) * 0.95, z = loop.z + Math.sin(u) * 0.6;
+      const x = loop.x + Math.cos(u) * 0.5, z = loop.z + Math.sin(u) * 0.34;
       robot.position.set(x, groundY(x, z), z);
-      robot.rotation.y = Math.atan2(-Math.sin(u) * 0.95, Math.cos(u) * 0.6);
+      robot.rotation.y = Math.atan2(-Math.sin(u) * 0.5, Math.cos(u) * 0.34);
       battery.visible = Math.sin(t * 6) > -0.2;
     }
   };
@@ -1202,8 +1389,8 @@ function buildCafe(c) {
 
 // games.js 에 새 게임이 생겼을 때 쓰는 기본 땅
 function buildPlain(c) {
-  const p = c.at(0, MARK_R);
-  const obj = facing(c, p);
+  const p = c.top;
+  const obj = c.face(p);
   mesh(new THREE.CylinderGeometry(0.3, 0.45, 2.2, 6), mat(c.g.color || '#888'), obj).position.y = 1.1;
   const door = new THREE.Mesh(new THREE.CircleGeometry(0.2, 12), flat('#111'));
   door.position.set(0, 0.5, 0.42);
@@ -1232,29 +1419,44 @@ function nameTag(g) {
 }
 
 // 이름판 글씨가 기본 글꼴로 그려지지 않게, 쓸 글자의 글꼴을 먼저 받는다 (최대 2.5초)
-const SAMPLE = GAMES.map(g => g.title + g.kicker).join('') + '개발 보류 soomin007의 게임 섬 직접 만든 개가 땅마다 하나씩 있습니다 0123456789 옥상 지하철 감시탑';
+const SAMPLE = GAMES.map(g => g.title + g.kicker).join('') + '개발 보류 soomin007의 게임 섬 직접 만든 개가 봉우리마다 하나씩 있습니다 0123456789 옥상 지하철 감시탑';
 await Promise.race([
   Promise.all(['600', '700', '800'].map(w => document.fonts.load(`${w} 40px "Pretendard Variable"`, SAMPLE))),
   new Promise(r => setTimeout(r, 2500))
 ]).catch(() => {});
+
+// 꼭대기 불: 이 봉우리로 오르는 길의 칸을 모두 밟으면 켜진다. 광장에서 잘 보이게 마당에서 섬 가운데 쪽 칸에 세운다
+function buildBeacon(c) {
+  const p = c.take(2.5, new THREE.Vector3());
+  const grp = new THREE.Group();
+  grp.position.copy(p);
+  c.group.add(grp);
+  const stone = mat('#6f695e', { roughness: 0.9 });
+  mesh(new THREE.CylinderGeometry(0.1, 0.15, 0.9, 6), stone, grp).position.y = 0.45;
+  const bowl = mesh(new THREE.CylinderGeometry(0.27, 0.16, 0.16, 8), new THREE.MeshStandardMaterial({ color: '#3a332b', emissive: c.g.color, emissiveIntensity: 0, roughness: 0.6 }), grp);
+  bowl.position.y = 0.98;
+  const flame = new THREE.Mesh(new THREE.ConeGeometry(0.17, 0.5, 6), new THREE.MeshBasicMaterial({ color: '#ffc46b', toneMapped: false }));
+  flame.position.y = 1.3;
+  flame.visible = false;
+  grp.add(flame);
+  return { grp, bowl, flame, on: false };
+}
 
 const pickables = [landMesh];
 for (const reg of regions) {
   scene.add(reg.group);
   const c = landKit(reg);
   const built = (LANDS[reg.g.id] || PLAIN).build(c);
+  reg.beacon = buildBeacon(c);
   reg.anim = built.anim;
   reg.group.updateMatrixWorld(true);
   reg.entrance = built.door.getWorldPosition(new THREE.Vector3());
-  reg.stop = reg.road[reg.road.length - 1];
-  reg.landmark = c.at(0, MARK_R);
-  reg.focus = reg.stop.clone().lerp(reg.landmark, 0.45).setY(0.8);
   reg.tag = nameTag(reg.g);
-  reg.tag.pos.set(reg.landmark.x, 5.4, reg.landmark.z);
+  reg.tag.pos.set(reg.top.x, reg.top.y + 4.4, reg.top.z);
 
-  const light = new THREE.PointLight(reg.g.color, LIGHT.lamp, 11, 2);
-  light.position.set(reg.landmark.x, reg.landmark.y + 3.2, reg.landmark.z);
-  scene.add(light);
+  reg.light = new THREE.PointLight(reg.g.color, LIGHT.lamp, 11, 2);
+  reg.light.position.set(reg.top.x, reg.top.y + 3.2, reg.top.z);
+  scene.add(reg.light);
 
   reg.group.traverse(o => {
     if (!o.isMesh) return;
@@ -1268,7 +1470,7 @@ for (const reg of regions) {
 const PLAZA_STONE = new THREE.Vector3(0, PLAZA_H, -1.25);
 mesh(new THREE.CylinderGeometry(0.55, 0.62, 0.32, 6), mat('#8d877a', { roughness: 0.9 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.16, PLAZA_STONE.z);
 mesh(new THREE.CylinderGeometry(0.42, 0.42, 0.06, 6), mat('#f0b429', { emissive: '#6a4a00', emissiveIntensity: 0.4, roughness: 0.5 }), scene).position.set(PLAZA_STONE.x, PLAZA_H + 0.35, PLAZA_STONE.z);
-const plazaTag = makeTag('soomin007의 게임 섬', `직접 만든 게임 ${ORDER.length}개가 땅마다 하나씩 있습니다`, 'name sign');
+const plazaTag = makeTag('soomin007의 게임 섬', `직접 만든 게임 ${ORDER.length}개가 봉우리마다 하나씩 있습니다`, 'name sign');
 plazaTag.pos.set(PLAZA_STONE.x, PLAZA_H + 2.5, PLAZA_STONE.z);
 const allTags = [...regions.map(r => r.tag), plazaTag];
 
@@ -1320,37 +1522,33 @@ function tagAt(x, y) {
   return best ? best.g.id : null;
 }
 
-// 개발 일지 기둥: 일지가 있는 게임으로 가는 길 양옆에, 일지 항목 수만큼 세운다.
-// 일지는 소개 페이지에서 읽어 오므로, 다 읽은 뒤에 세운다(아래 loadDevlog 호출)
+// 날 기둥: 길의 칸마다 하나씩, 봉우리 바깥쪽 가장자리에 선다(길 들머리 칸은 길 옆에).
+// 말이 그 칸에 서서 그날의 일지를 보면 불이 켜지고, 켜진 불은 다음에 와도 남아 있다
 const posts = [];
-function buildPosts(reg, count) {
-  const path = reg.road;
-  const lens = [0];
-  for (let k = 1; k < path.length; k++) lens.push(lens[k - 1] + path[k].distanceTo(path[k - 1]));
-  const total = lens[lens.length - 1];
-  const side = new THREE.Vector3(-reg.dir.z, 0, reg.dir.x);
-  for (let n = 0; n < count; n++) {
-    const d = total * (0.14 + 0.8 * (count > 1 ? n / (count - 1) : 0.5));
-    let k = 1;
-    while (k < path.length - 1 && lens[k] < d) k++;
-    const p = path[k - 1].clone().lerp(path[k], (d - lens[k - 1]) / (lens[k] - lens[k - 1]));
-    p.addScaledVector(side, n % 2 ? 0.66 : -0.66);
-    p.y = groundY(p.x, p.z);
-    const cap = new THREE.MeshStandardMaterial({ color: '#2a2622', emissive: reg.g.color, emissiveIntensity: 0.25, roughness: 0.5 });
+const DIM = 0.25, LIT = 1.8;
+function buildPosts(reg) {
+  reg.posts = reg.steps.map((p, k) => {
+    const out = new THREE.Vector3(p.x - reg.top.x, 0, p.z - reg.top.z).normalize();
+    const side = k === 0 ? new THREE.Vector3(-out.z, 0, out.x) : out;
+    const at = p.clone().addScaledVector(side, 0.62);
+    const cap = new THREE.MeshStandardMaterial({ color: '#2a2622', emissive: reg.g.color, emissiveIntensity: DIM, roughness: 0.5 });
     const grp = new THREE.Group();
-    grp.position.copy(p);
+    grp.position.set(at.x, p.y, at.z);
     scene.add(grp);
-    const pole = mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.5, 6), mat('#4a3f2c'), grp);
+    const pole = mesh(new THREE.CylinderGeometry(0.07, 0.09, 0.5, 6), mat('#4a3f2c'), grp);
     pole.position.y = 0.25;
-    const top = mesh(new THREE.CylinderGeometry(0.16, 0.16, 0.08, 6), cap, grp);
-    top.position.y = 0.54;
-    for (const m of [pole, top]) {
-      m.userData = { kind: 'post', index: n, id: reg.g.id };
+    const head = mesh(new THREE.CylinderGeometry(0.15, 0.15, 0.08, 6), cap, grp);
+    head.position.y = 0.54;
+    for (const m of [pole, head]) {
+      m.userData = { kind: 'post', r: reg.i, s: k + 1 };
       pickables.push(m);
     }
-    posts.push({ grp, cap, p, lit: false });
-  }
+    const post = { grp, cap };
+    posts.push(post);
+    return post;
+  });
 }
+regions.forEach(buildPosts);
 
 // ---------- 생명: 새, 반딧불 ----------
 
@@ -1417,22 +1615,33 @@ pawn.position.set(0, PLAZA_H, 0);
 scene.add(pawn);
 
 const HOP = REDUCE ? 0.05 : 0.2;
-const walk = { pts: [], i: 0, t: 0, from: new THREE.Vector3(), to: new THREE.Vector3(), at: 'plaza', dest: null, queue: null };
-const roadOf = id => regions.find(r => r.g.id === id).road;
+// 말이 서는 자리: 광장(r = -1), 또는 봉우리 r 의 s 번째 칸(1..n). s = n + 1 은 꼭대기 도착 칸이다
+const PLAZA = { r: -1, s: 0 };
+const walk = { pts: [], i: 0, t: 0, hop: HOP, from: new THREE.Vector3(), to: new THREE.Vector3(), at: PLAZA, dest: null, queue: null };
+const pidx = at => (at.r < 0 ? 0 : at.s + 1); // reg.path 에서의 자리
+const sameAt = (a, b) => a.r === b.r && (a.r < 0 || a.s === b.s);
+const posAt = at => (at.r < 0 ? regions[0].path[0] : regions[at.r].path[pidx(at)]);
+const topAt = r => ({ r, s: regions[r].n + 1 });
 
-// 광장을 거쳐 가는 길. 지금 선 자리는 빼고, 목적지는 넣는다
+// 지금 선 자리는 빼고 목적지는 넣는다. 다른 봉우리로 갈 때는 광장까지 내려왔다가 다시 오른다
 function route(from, to) {
-  if (from === to) return [];
-  const back = from === 'plaza' ? [] : [...roadOf(from)].reverse().slice(1);
-  const out = to === 'plaza' ? [] : roadOf(to).slice(1);
-  return [...back, ...out];
+  const pts = [];
+  if (from.r === to.r) {
+    if (from.r < 0) return pts;
+    const path = regions[from.r].path, a = pidx(from), b = pidx(to), d = Math.sign(b - a);
+    for (let k = a + d; d && k !== b + d; k += d) pts.push(path[k]);
+    return pts;
+  }
+  if (from.r >= 0) for (let k = pidx(from) - 1; k >= 0; k--) pts.push(regions[from.r].path[k]);
+  if (to.r >= 0) for (let k = 1; k <= pidx(to); k++) pts.push(regions[to.r].path[k]);
+  return pts;
 }
 
 // 흐른 시간만큼 한 칸씩 뛴다. 프레임이 밀려도 걸음이 느려지지 않는다
 function stepWalk(dt) {
   while (walk.dest && dt > 0) {
-    const use = Math.min(dt, Math.max(0, 1 - walk.t) * HOP);
-    walk.t += use / HOP;
+    const use = Math.min(dt, Math.max(0, 1 - walk.t) * walk.hop);
+    walk.t += use / walk.hop;
     dt -= use;
     const k = walk.t >= 1 - 1e-6 ? 1 : walk.t;
     const hop = Math.sin(Math.PI * k) * 0.32;
@@ -1444,7 +1653,6 @@ function stepWalk(dt) {
     if (dx * dx + dz * dz > 1e-4) pawn.rotation.y = Math.atan2(dx, dz);
     if (k < 1) return;
     puff(walk.to);
-    lightPosts(walk.to);
     walk.i++;
     if (walk.i >= walk.pts.length) {
       pawn.position.copy(walk.to);
@@ -1459,14 +1667,46 @@ function stepWalk(dt) {
   }
 }
 
-// 말이 지나간 일지 기둥은 불이 켜진 채로 남는다
-function lightPosts(p) {
-  for (const post of posts) {
-    if (post.lit || Math.hypot(post.p.x - p.x, post.p.z - p.z) > 1.3) continue;
-    post.lit = true;
-    post.cap.emissiveIntensity = 1.6;
-    sfx.post();
+// ---------- 밟은 칸과 꼭대기 불 ----------
+// 밟은 칸은 이 브라우저에 남긴다. 과제전처럼 여러 사람이 한 컴퓨터를 쓰면 끝 창이나 소개 창에서 지울 수 있다
+const LIT_KEY = 'island.days';
+function loadLit() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem(LIT_KEY) || '{}') || {}; } catch (e) { /* 저장소를 못 쓰면 이번 방문만 센다 */ }
+  for (const reg of regions) {
+    for (const s of saved[reg.g.id] || []) if (s >= 1 && s <= reg.n) reg.lit.add(s);
   }
+}
+function saveLit() {
+  try { localStorage.setItem(LIT_KEY, JSON.stringify(Object.fromEntries(regions.map(r => [r.g.id, [...r.lit]])))); } catch (e) { /* 저장 못 해도 이번 방문에는 남는다 */ }
+}
+const done = reg => reg.lit.size >= reg.n;
+function paintLit(reg) {
+  reg.posts.forEach((post, k) => { post.cap.emissiveIntensity = reg.lit.has(k + 1) ? LIT : DIM; });
+  const on = done(reg);
+  reg.beacon.on = on;
+  reg.beacon.flame.visible = on;
+  reg.beacon.bowl.material.emissiveIntensity = on ? 0.9 : 0;
+  reg.light.intensity = LIGHT.lamp * (on ? 1.6 : 1);
+}
+function markDay(r, s) {
+  const reg = regions[r];
+  if (reg.lit.has(s)) return;
+  const was = done(reg);
+  reg.lit.add(s);
+  saveLit();
+  paintLit(reg);
+  if (!was && done(reg)) {
+    sfx.beacon();
+    if (regions.every(done)) setTimeout(showEnding, 1500);
+  }
+}
+function clearLit() {
+  for (const reg of regions) {
+    reg.lit.clear();
+    paintLit(reg);
+  }
+  saveLit();
 }
 
 // ---------- 소리 (파일 없이 브라우저에서 만든다) ----------
@@ -1555,6 +1795,7 @@ const sfx = {
   post: () => blip(1320, 0.14, 'sine', 0.035),
   arrive: () => { blip(660, 0.24, 'sine', 0.08); blip(990, 0.32, 'sine', 0.06, 1, 0.09); },
   home: () => { blip(523, 0.24, 'sine', 0.07); blip(392, 0.32, 'sine', 0.05, 1, 0.09); },
+  beacon: () => { blip(523, 0.4, 'sine', 0.06); blip(659, 0.45, 'sine', 0.05, 1, 0.14); blip(784, 0.7, 'sine', 0.05, 1, 0.28); },
   enter: whoosh
 };
 
@@ -1581,7 +1822,8 @@ let FOV = 40;
 const ui = { x: 0, y: 0, tx: 0, ty: 0 };  // 카드가 가리는 너비와 높이(px)
 const rig = { target: new THREE.Vector3(0, 0.6, 0), dist: 60, yaw: 0 };
 const want = { target: new THREE.Vector3(0, 0.6, 0), dist: 30, yaw: 0 };
-const state = { mode: 'overview', i: -1 };
+// mode: overview(광장), walking, step(길의 칸), region(꼭대기), entering, playing
+const state = { mode: 'overview', i: -1, s: 0 };
 
 function tangents() {
   const t = Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
@@ -1603,7 +1845,10 @@ function applyView() {
 }
 
 function updateRig(dt) {
-  if (state.mode === 'walking') want.target.copy(pawn.position).setY(0.6);
+  if (state.mode === 'walking') {
+    want.target.copy(pawn.position);
+    want.target.y = walk.to.y + 0.4;
+  }
   rig.target.lerp(want.target, 1 - Math.exp(-dt * 4));
   rig.dist += (want.dist - rig.dist) * (1 - Math.exp(-dt * 3));
   rig.yaw += (want.yaw - rig.yaw) * (1 - Math.exp(-dt * 8));
@@ -1622,22 +1867,37 @@ function updateRig(dt) {
 }
 
 // 카메라를 돌릴 때는 지금 각도에서 가장 짧은 쪽으로 돈다
-const wrapPi = a => Math.atan2(Math.sin(a), Math.cos(a));
 const turnTo = yaw => { want.yaw += wrapPi(yaw - want.yaw); };
-// 땅은 광장 쪽에서 바깥을 보는 각도로 본다. 그래야 건물 앞면이 카메라를 향한다
-const yawOf = id => (id === 'plaza' ? 0 : -regions.find(r => r.g.id === id).ang);
+// 봉우리에서는 말이 선 칸의 바깥쪽(꼭대기 반대편)에서 꼭대기를 본다. 말이 감아 오르면 카메라도 봉우리를 돈다
+const yawAt = at => {
+  if (at.r < 0) return 0;
+  const reg = regions[at.r], p = posAt(at);
+  return Math.atan2(p.x - reg.top.x, p.z - reg.top.z);
+};
 
 // 섬 전체. 북쪽 이름표가 위로 잘리지 않게 바라보는 점을 조금 북쪽에 둔다
 function focusOverview() {
-  want.target.set(0, 0.5, -1.0);
-  want.dist = fitDist(13.0);
+  want.target.set(0, 0.9, -1.2);
+  want.dist = fitDist(14.4);
   turnTo(0);
 }
 
-function focusRegion(i) {
-  want.target.copy(regions[i].focus);
+// 길의 칸: 말과 꼭대기가 함께 들어오게, 둘 사이를 본다
+function focusStep(r, s) {
+  const reg = regions[r], p = reg.steps[s - 1];
+  want.target.copy(p).lerp(reg.top, 0.35);
+  want.target.y = (p.y + reg.top.y) / 2 + 0.5;
   want.dist = fitDist(4.6);
-  turnTo(yawOf(regions[i].g.id));
+  turnTo(yawAt({ r, s }));
+}
+
+// 꼭대기: 도착 칸에서 꼭대기의 건물을 본다
+function focusRegion(i) {
+  const reg = regions[i];
+  want.target.copy(reg.arrival).lerp(reg.top, 0.55);
+  want.target.y = reg.top.y + 0.7;
+  want.dist = fitDist(4.6);
+  turnTo(yawAt(topAt(i)));
 }
 
 // ---------- 마무리 효과 (PC) ----------
@@ -1684,6 +1944,22 @@ function setAccent(hex) {
 const canPlay = g => !(TOUCH && !g.mobile);
 const esc = s => s.replace(/[&<>"]/g, ch => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[ch]);
 
+// 일지에서 읽어 온 글은 손으로 묶어 둘 수 없어서, 끊기면 안 되는 낱말 사이를 규칙으로 묶는다(허브 known-issues #26).
+// 관형사와 뒷말, 의존 명사와 보조 용언의 앞, 문단 끝 두 낱말. 묶음이 너무 길면 좁은 폰에서 넘치므로 묶지 않는다
+const GLUE_END = /^(이|그|저|각|몇|한|두|세|네|첫|새|옛|온|모든|이런|그런|저런|어떤|여러)$/;
+const GLUE_START = /^(수|것|때|줄|뿐|듯|만큼|적|중|데|있|없|두|뒀|놓|놨|버|보|봤|주|줬|싶|하|되|드리|드립|대|개|명|가지|컷|번|쪽|편|채|졌|져)(\s|[다니습었는은을를이가도요며고게지서면기,.]|$)/;
+function wrapKo(text, max = 12) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const groups = [];
+  words.forEach((word, i) => {
+    const g = groups.at(-1);
+    const glue = g && (GLUE_END.test(words[i - 1]) || GLUE_START.test(word) || i === words.length - 1);
+    if (glue && [...g.join(' '), ' ', ...word].length <= max) g.push(word);
+    else groups.push([word]);
+  });
+  return groups.map(g => (g.length > 1 ? `<span class="nw">${esc(g.join(' '))}</span>` : esc(g[0]))).join(' ');
+}
+
 // 받침이 있으면 '으로', 없거나 ㄹ 받침이면 '로'
 function toward(word) {
   const ch = word.charCodeAt(word.length - 1);
@@ -1693,8 +1969,9 @@ function toward(word) {
 }
 
 function measureUI() {
-  if (!card.hidden && innerWidth >= 900) {
-    ui.tx = card.getBoundingClientRect().right + 16;
+  const shown = !card.hidden ? card : !dayCard.hidden ? dayCard : null;
+  if (shown && innerWidth >= 900) {
+    ui.tx = shown.getBoundingClientRect().right + 16;
     ui.ty = 0;
   } else {
     ui.tx = 0;
@@ -1702,11 +1979,14 @@ function measureUI() {
   }
 }
 
+// 광장에서 늘 보이는 안내. 이 섬에서 걷는 까닭을 먼저 말한다
+const HINT = '<b><span class="nw">길의 칸 하나가</span> 그 게임을 <span class="nw">만든 하루입니다.</span></b> 봉우리를 고르면 말이 <span class="nw">첫 칸에 섭니다.</span>';
 function showEntry(html) {
   stopPreview();
   card.hidden = true;
+  dayCard.hidden = true;
   entry.hidden = false;
-  $('hint').innerHTML = html || '가고 싶은 땅을 누르면 <span class="nw">말이 그곳으로</span> <span class="nw">뛰어갑니다.</span> <span class="nw">끌어서 섬을 돌릴 수 있습니다.</span>';
+  $('hint').innerHTML = html || HINT;
   measureUI();
 }
 
@@ -1739,10 +2019,12 @@ function showCard(i) {
   $('cKicker').textContent = g.kicker;
   $('cTitle').textContent = g.title;
   $('cLine').textContent = g.line;
+  const reg = regions[i];
   const notes = [g.note ? esc(g.note) : ''];
-  if (DEVLOG[g.id]) {
-    const n = logs[g.id]?.entries.length;
-    notes.push(`오는 길가에 선 <span class="nw">기둥${n ? ` ${n}개가` : '들이'}</span> <span class="nw">개발 일지입니다.</span> 기둥을 누르면 <span class="nw">그 기록을</span> <span class="nw">읽을 수 있습니다.</span>`);
+  if (reg.days) {
+    notes.push(done(reg)
+      ? `오르는 길 <span class="nw">${reg.n}칸을 모두 밟아</span> 꼭대기에 <span class="nw">불이 켜졌습니다.</span>`
+      : `오르는 길 <span class="nw">${reg.n}칸 가운데</span> <span class="nw">${reg.lit.size}칸을 밟았습니다.</span> 모두 밟으면 꼭대기에 <span class="nw">불이 켜집니다.</span>`);
   }
   const note = notes.filter(Boolean).join(' ');
   $('cNote').innerHTML = note;
@@ -1754,9 +2036,34 @@ function showCard(i) {
   const ok = canPlay(g);
   $('bPlay').disabled = !ok;
   $('bPlay').textContent = ok ? '플레이' : 'PC 전용';
-  $('bLog').hidden = !DEVLOG[g.id];
+  $('bLog').hidden = !reg.days;
   entry.hidden = true;
+  dayCard.hidden = true;
   card.hidden = false;
+  measureUI();
+}
+
+// 길의 칸 카드: 몇 번째 칸인지, 그날의 날짜와 일지 제목. 일지가 하나뿐인 날은 첫 문장도 붙인다
+function showDay(r, s) {
+  const reg = regions[r], g = reg.g, day = reg.days?.[s - 1];
+  stopPreview();
+  setAccent(g.color);
+  $('dWhere').innerHTML = `<b>${esc(g.title)}</b> 가는 길, <span class="nw">${reg.n}칸 가운데</span> <span class="nw">${s}번째 칸</span>`;
+  if (day) {
+    const items = day.items.map(n => logs[g.id].entries[n]);
+    $('dDate').textContent = day.date;
+    $('dList').innerHTML = items.map(e => `<p class="day__title">${wrapKo(e.title)}</p>`).join('')
+      + (items.length === 1 && items[0].first ? `<p class="day__first">${wrapKo(items[0].first, 16)}</p>` : '');
+  } else {
+    $('dDate').textContent = '';
+    $('dList').innerHTML = '<p class="day__first">이 게임의 일지를 <span class="nw">불러오지 못했습니다.</span></p>';
+  }
+  $('dDate').hidden = !day;
+  $('bRead').hidden = !day;
+  $('bUp').textContent = s < reg.n ? '다음 칸' : '꼭대기로';
+  entry.hidden = true;
+  card.hidden = true;
+  dayCard.hidden = false;
   measureUI();
 }
 
@@ -1767,60 +2074,84 @@ ORDER.forEach(g => {
   const dot = document.createElement('i');
   dot.style.background = g.color;
   chip.append(dot, g.title);
-  chip.addEventListener('click', () => travel(g.id));
+  chip.addEventListener('click', () => travel({ r: ORDER.indexOf(g), s: 1 }));
   $('chips').append(chip);
 });
 
 // ---------- 움직임 ----------
 
-function travel(id) {
+const nameAt = at => (at.r < 0 ? '광장' : regions[at.r].g.title);
+
+function travel(to) {
   if (state.mode === 'entering' || state.mode === 'playing') return;
   if (walk.dest) {
-    walk.queue = id;
+    walk.queue = to;
     return;
   }
-  if (id === walk.at) {
+  if (sameAt(to, walk.at)) {
     arrive();
     return;
   }
-  walk.pts = route(walk.at, id);
+  walk.pts = route(walk.at, to);
+  // 멀리 갈 때는 걸음을 재게 한다. 한 칸 오를 때는 또박또박
+  walk.hop = walk.pts.length > 3 ? HOP * 0.6 : HOP;
   walk.i = 0;
   walk.t = 0;
-  walk.dest = id;
+  walk.dest = to;
   walk.from.copy(pawn.position);
   walk.to.copy(walk.pts[0]);
+  // 같은 길에서 한두 칸 옮길 때는 카드를 그대로 두어 화면이 출렁이지 않게 한다
+  const near = walk.pts.length <= 2 && to.r >= 0 && to.r === walk.at.r && state.mode !== 'overview';
   state.mode = 'walking';
-  want.dist = fitDist(6.5);
-  turnTo(yawOf(id));
+  turnTo(yawAt(to));
+  if (!near) {
+    want.dist = fitDist(6.5);
+    showEntry(`<b>${esc(toward(nameAt(to)))}</b> 가는 중입니다.`);
+  }
   sfx.hop();
-  const name = id === 'plaza' ? '광장' : regions.find(r => r.g.id === id).g.title;
-  showEntry(`<b>${esc(toward(name))}</b> 가는 중입니다.`);
 }
 
 function arrive() {
   const moved = Boolean(walk.dest);
   if (walk.dest) walk.at = walk.dest;
   walk.dest = null;
-  if (walk.queue && walk.queue !== walk.at) {
+  if (walk.queue && !sameAt(walk.queue, walk.at)) {
     const q = walk.queue;
     walk.queue = null;
     travel(q);
     return;
   }
   walk.queue = null;
-  if (walk.at === 'plaza') {
+  const at = walk.at;
+  if (at.r < 0) {
     state.mode = 'overview';
     state.i = -1;
     showEntry();
     focusOverview();
     if (moved) sfx.home();
+  } else if (at.s <= regions[at.r].n) {
+    state.mode = 'step';
+    state.i = at.r;
+    state.s = at.s;
+    showDay(at.r, at.s);
+    focusStep(at.r, at.s);
+    if (moved) sfx.post();
+    markDay(at.r, at.s);
   } else {
     state.mode = 'region';
-    state.i = regions.findIndex(r => r.g.id === walk.at);
-    showCard(state.i);
-    focusRegion(state.i);
+    state.i = at.r;
+    showCard(at.r);
+    focusRegion(at.r);
     if (moved) sfx.arrive();
   }
+}
+
+// 한 칸 오르거나(+1) 내려간다(-1). 걷는 중이면 가고 있는 칸을 기준으로 잇는다
+function climb(d) {
+  const at = walk.queue || walk.dest || walk.at;
+  if (at.r < 0) return;
+  const s = at.s + d;
+  travel(s < 1 ? PLAZA : { r: at.r, s: Math.min(s, regions[at.r].n + 1) });
 }
 
 // 화면 전체 보기. 브라우저마다 이름이 달라서 둘 다 시도하고, 거절되면 조용히 넘어간다
@@ -1893,41 +2224,67 @@ function exitGame() {
   focusRegion(state.i);
 }
 
-function nextLand() {
+// 이웃한 봉우리의 첫 칸으로
+function nextLand(d = 1) {
   const n = regions.length;
-  const i = state.mode === 'region' ? state.i : -1;
-  travel(regions[(i + 1 + n) % n].g.id);
+  const at = walk.queue || walk.dest || walk.at;
+  const i = at.r >= 0 ? at.r : d > 0 ? -1 : 0;
+  travel({ r: (i + d + n) % n, s: 1 });
 }
 
-// ---------- 개발 일지 ----------
-
-const logs = {};
-async function loadDevlog(id) {
-  if (logs[id]) return logs[id];
-  const html = await fetch(DEVLOG[id]).then(r => r.text());
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  logs[id] = {
-    lead: doc.querySelector('#devlog .log__lead')?.textContent.trim() || '',
-    entries: [...doc.querySelectorAll('#devlog .log__item')].map(li => ({
-      date: li.querySelector('.log__date')?.textContent.trim() || '',
-      title: li.querySelector('.log__title')?.textContent.trim() || '',
-      html: [...li.querySelectorAll('.log__body, .log__quote')].map(p => p.outerHTML).join('')
-    }))
-  };
-  return logs[id];
+// ---------- 끝 ----------
+// 모든 봉우리에 불이 켜지면 한 번 띄운다. 숫자는 일지에서 센다
+const KOR = ['', '한', '두', '세', '네', '다섯', '여섯', '일곱', '여덟', '아홉', '열'];
+const endingEl = $('ending');
+function showEnding() {
+  const all = regions.flatMap(r => logs[r.g.id]?.entries || []);
+  const ym = all.map(e => e.date.match(/(\d{4})년\s*(\d{1,2})월/)).filter(Boolean).map(m => +m[1] * 100 + +m[2]).sort((a, b) => a - b);
+  const fmt = v => `${Math.floor(v / 100)}년 ${v % 100}월`;
+  const days = regions.reduce((a, r) => a + r.n, 0);
+  $('eTitle').textContent = `${KOR[regions.length] || regions.length} 봉우리에 모두 불이 켜졌습니다`;
+  $('eText').innerHTML = (ym.length ? `<span class="nw">${fmt(ym[0])}부터</span> <span class="nw">${fmt(ym.at(-1))}까지의</span> ` : '')
+    + `개발 일지 <span class="nw">${all.length}편,</span> <span class="nw">${days}칸을</span> <span class="nw">모두 밟으셨습니다.</span> 끝까지 걸어 주셔서 <span class="nw">고맙습니다.</span>`;
+  endingEl.hidden = false;
+  $('eStay').focus();
+}
+function closeEnding(home) {
+  endingEl.hidden = true;
+  if (home) travel(PLAZA);
 }
 
-async function openLog(id, k = 0) {
-  const log = await loadDevlog(id).catch(() => null);
-  if (!log) return;
-  const g = regions.find(r => r.g.id === id).g;
+// ---------- 개발 일지 창 ----------
+
+const logItem = (e, n) => `<li id="log-${n}"><p class="log__date">${esc(e.date)}</p><h3 class="log__title">${esc(e.title)}</h3>${e.html}</li>`;
+let sheetGame = null;
+function openSheet(g, lead, html, all) {
+  sheetGame = g.id;
   $('sTitle').textContent = `${g.title} 개발 일지`;
-  $('sLead').textContent = log.lead;
-  $('sList').innerHTML = log.entries.map((e, n) =>
-    `<li id="log-${n}"><p class="log__date">${esc(e.date)}</p><h3 class="log__title">${esc(e.title)}</h3>${e.html}</li>`).join('');
+  $('sLead').textContent = lead;
+  $('sList').innerHTML = html;
+  $('sAll').hidden = !all;
   sheet.hidden = false;
   sheet.querySelector('.sheet__panel').scrollTop = 0;
-  if (k > 0) $(`log-${k}`)?.scrollIntoView({ block: 'start' });
+  $('sClose').focus();
+}
+
+// 일지 전체
+async function openLog(id) {
+  const log = await loadDevlog(id).catch(() => null);
+  if (!log) return;
+  openSheet(regions.find(r => r.g.id === id).g, log.lead, log.entries.map(logItem).join(''), false);
+}
+
+// 칸 하나(그날 쓴 일지만)
+function openDay(r, s) {
+  const reg = regions[r], day = reg.days?.[s - 1];
+  if (!day) return;
+  const log = logs[reg.g.id];
+  openSheet(reg.g, `${reg.n}칸 가운데 ${s}번째 칸, ${day.date}`, day.items.map(n => logItem(log.entries[n], n)).join(''), true);
+}
+
+function closeSheet() {
+  sheet.hidden = true;
+  (state.mode === 'step' ? $('bRead') : state.mode === 'region' ? $('bLog') : null)?.focus();
 }
 
 // ---------- 입력 ----------
@@ -1941,22 +2298,35 @@ function hitAt(e) {
   return ray.intersectObjects(pickables, false)[0] || null;
 }
 
+// 이름표나 낮은 땅을 누르면 그 봉우리의 첫 칸으로, 길의 칸이나 날 기둥을 누르면 그 칸으로,
+// 꼭대기 마당이나 건물을 누르면 꼭대기로 바로 간다
+const regionIndex = id => regions.findIndex(r => r.g.id === id);
 function pick(e) {
   if (state.mode === 'entering' || state.mode === 'playing') return;
   const tagId = tagAt(e.clientX, e.clientY);
   if (tagId) {
-    travel(tagId);
+    travel({ r: regionIndex(tagId), s: 1 });
     return;
   }
   const hit = hitAt(e);
   if (!hit) return;
   const d = hit.object.userData;
   if (d.kind === 'post') {
-    openLog(d.id, d.index);
+    travel({ r: d.r, s: d.s });
     return;
   }
-  const id = d.kind === 'tiles' ? d.list[hit.instanceId]?.region : d.id;
-  if (id) travel(id);
+  if (d.kind === 'region') {
+    travel(topAt(regionIndex(d.id)));
+    return;
+  }
+  const t = d.list?.[hit.instanceId];
+  if (!t) return;
+  if (t.region === 'plaza') return travel(PLAZA);
+  const r = regionIndex(t.region);
+  if (r < 0) return;
+  if (t.step) travel({ r, s: t.step });
+  else if (t.mesa) travel(topAt(r));
+  else travel({ r, s: 1 });
 }
 
 let press = null;
@@ -1991,22 +2361,39 @@ canvas.addEventListener('wheel', e => {
 }, { passive: false });
 
 $('bPlay').addEventListener('click', enterGame);
-$('bLog').addEventListener('click', () => openLog(regions[state.i].g.id, 0));
-$('bNext').addEventListener('click', nextLand);
-$('bHome').addEventListener('click', () => travel('plaza'));
+$('bLog').addEventListener('click', () => openLog(regions[state.i].g.id));
+$('bNext').addEventListener('click', () => nextLand(1));
+$('bHome').addEventListener('click', () => travel(PLAZA));
+$('bUp').addEventListener('click', () => climb(1));
+$('bRead').addEventListener('click', () => openDay(state.i, state.s));
+$('bTop').addEventListener('click', () => { const at = walk.dest || walk.at; if (at.r >= 0) travel(topAt(at.r)); });
+$('bHome2').addEventListener('click', () => travel(PLAZA));
 $('bExit').addEventListener('click', exitGame);
-$('sClose').addEventListener('click', () => { sheet.hidden = true; });
-sheet.addEventListener('click', e => { if (e.target === sheet) sheet.hidden = true; });
+$('sClose').addEventListener('click', closeSheet);
+$('sAll').addEventListener('click', () => openLog(sheetGame));
+sheet.addEventListener('click', e => { if (e.target === sheet) closeSheet(); });
+$('eClose').addEventListener('click', () => closeEnding(false));
+$('eStay').addEventListener('click', () => closeEnding(true));
+$('eReset').addEventListener('click', () => { clearLit(); closeEnding(true); });
+endingEl.addEventListener('click', e => { if (e.target === endingEl) closeEnding(false); });
 
 addEventListener('keydown', e => {
   if (!sheet.hidden) {
-    if (e.key === 'Escape') sheet.hidden = true;
+    if (e.key === 'Escape') closeSheet();
+    return;
+  }
+  if (!endingEl.hidden) {
+    if (e.key === 'Escape') closeEnding(false);
     return;
   }
   if (state.mode === 'entering' || state.mode === 'playing') return;
-  if (e.key === 'ArrowRight') nextLand();
-  else if (e.key === 'Enter' && state.mode === 'region' && document.activeElement === document.body) enterGame();
-  else if (e.key === 'Escape') travel('plaza');
+  const k = e.key;
+  if (k === 'ArrowRight') nextLand(1);
+  else if (k === 'ArrowLeft') nextLand(-1);
+  else if (k === 'ArrowUp' || k === 'w' || k === 'W') climb(1);
+  else if (k === 'ArrowDown' || k === 's' || k === 'S') climb(-1);
+  else if (k === 'Enter' && state.mode === 'region' && document.activeElement === document.body) enterGame();
+  else if (k === 'Escape') travel(PLAZA);
 });
 
 // ---------- 그리기 ----------
@@ -2051,7 +2438,7 @@ function updateIntro() {
   });
   posts.forEach((post, n) => post.grp.scale.setScalar(Math.max(0.001, easeBack(THREE.MathUtils.clamp((intro - 1.0 - n * 0.04) / 0.3, 0, 1)))));
   const drop = THREE.MathUtils.clamp((intro - 1.3) / 0.35, 0, 1);
-  const base = walk.at === 'plaza' ? PLAZA_H : roadOf(walk.at).at(-1).y;
+  const base = posAt(walk.at).y;
   pawn.position.y = base + (1 - drop * drop) * 4;
   pawn.visible = intro > 1.3;
   const settled = intro > 1.25;
@@ -2104,6 +2491,15 @@ function loop() {
   updateLife(dt);
   for (const reg of regions) {
     if (reg.anim) reg.anim(time, dt);
+    if (reg.beacon.on) reg.beacon.flame.scale.set(1, 1 + Math.sin(time * 11 + reg.i) * 0.14, 1);
+  }
+  // 봉우리를 오르는 동안에는 그 봉우리 이름표만 남긴다. 다른 봉우리 이름표가 오르는 길 위에 떠서 가렸다
+  if (introDone) {
+    const focusR = (walk.dest || walk.at).r;
+    for (const reg of regions) {
+      const goal = focusR < 0 || reg.i === focusR ? 1 : 0;
+      reg.tag.alpha += (goal - reg.tag.alpha) * Math.min(1, raw * 6);
+    }
   }
   // 광장 이름판은 섬 전체를 볼 때만 보인다. 땅에 다가가면 화면을 가리지 않게 사라진다
   const plazaGoal = (state.mode === 'overview' ? 1 : 0) * (introDone ? 1 : THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1));
@@ -2128,6 +2524,7 @@ function resize() {
   ui.y = ui.ty;
   if (state.mode === 'overview') focusOverview();
   else if (state.mode === 'region') focusRegion(state.i);
+  else if (state.mode === 'step') focusStep(state.i, state.s);
 }
 addEventListener('resize', resize);
 
@@ -2146,9 +2543,18 @@ document.addEventListener('visibilitychange', () => {
 // 폰에서 게임을 원래 주소로 열었다가 뒤로 돌아오면, 주소의 #땅이름 으로 떠났던 땅 앞에서 다시 시작한다
 const startLand = regions.find(r => location.hash === '#' + r.g.id);
 if (startLand) {
-  walk.at = startLand.g.id;
-  pawn.position.copy(startLand.stop);
+  walk.at = topAt(startLand.i);
+  pawn.position.copy(startLand.arrival);
 }
+loadLit();
+regions.forEach(paintLit);
+// 소개 창의 '밟은 칸 기록 지우기'는 섬이 뜬 뒤에만 보인다(지울 기록은 이 모듈이 다룬다)
+$('aReset').hidden = false;
+$('aReset').addEventListener('click', () => {
+  clearLit();
+  $('aReset').textContent = '기록을 지웠습니다';
+  setTimeout(() => { $('aReset').textContent = '밟은 칸 기록 지우기'; }, 2000);
+});
 
 showEntry();
 resize();
@@ -2178,13 +2584,8 @@ updateLand();
 updateSea();
 loading.classList.add('is-done');
 renderer.setAnimationLoop(loop);
-// 일지를 읽어 와서 그 게임으로 가는 길가에 기둥을 세운다
-for (const reg of regions) {
-  if (DEVLOG[reg.g.id]) loadDevlog(reg.g.id).then(log => buildPosts(reg, log.entries.length)).catch(() => {});
-}
-
 // 검증용: 창이 가려져 그리기가 멈춰 있을 때 ?debug 로 열면 한 프레임씩 직접 돌릴 수 있다
-if (PARAMS.has('debug')) Object.assign(window, { __tick: loop, __posts: posts });
+if (PARAMS.has('debug')) Object.assign(window, { __tick: loop, __posts: posts, __island: { regions, state, walk, travel, climb, markDay, clearLit, showEnding, showDay } });
 </script>
 </body>
 </html>
