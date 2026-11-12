@@ -122,13 +122,35 @@
   /* 버튼은 두 칸씩 두 줄로 맞춘다. 윗줄은 이 게임(플레이, 개발 일지), 아랫줄은 섬 안 이동(다음 땅, 광장으로).
      줄바꿈에 맡기면 폰에서 마지막 버튼 하나만 아랫줄로 떨어졌다 (허브 known-issues #28) */
   .row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; }
-  /* 길의 칸 카드: 몇 번째 칸인지, 그날의 날짜, 그날 쓴 일지 제목 */
+  /* 길의 칸 카드: 몇 번째 칸인지와 버튼. 그날의 날짜와 일지 제목은 날 기둥 옆에 띄운다(.say) */
   .day__where { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--dim); }
   .day__where b { font-weight: 600; color: color-mix(in srgb, var(--accent) 75%, #fff); }
-  .day__date { margin: 8px 0 0; font-size: 13px; font-weight: 600; line-height: 1.4; color: var(--sub); }
-  .day__title { margin: 4px 0 0; font-size: 17px; font-weight: 700; line-height: 1.4; letter-spacing: -.01em; }
-  .day__first { margin: 6px 0 0; font-size: 14px; line-height: 1.6; color: var(--sub); }
   .row > .btn--play:has(+ [hidden]) { grid-column: 1 / -1; }
+
+  /* 그날의 글: 말이 선 칸의 날 기둥 옆에 날짜와 일지 제목을 띄운다. 이름표처럼 화면 위 글자로 그리고
+     위치만 기둥을 따라가게 해서 폰에서도 또렷하다 (허브 known-issues #27). 하늘과 땅 어디에 놓여도 읽히게 어두운 바탕을 깐다 */
+  .say {
+    position: fixed; left: 0; top: 0;
+    width: max-content; max-width: min(300px, calc(100vw - 2 * var(--pad)));
+    padding: 10px 14px 12px; border: 1.5px solid var(--c, var(--line)); border-radius: 12px;
+    background: rgba(11, 12, 15, .9); visibility: hidden; pointer-events: none;
+  }
+  .say p { margin: 0; }
+  .say__date { font-size: 13px; font-weight: 600; line-height: 1.4; color: color-mix(in srgb, var(--c, #fff) 75%, #fff); }
+  .say__title { padding-top: 3px; font-size: 16px; font-weight: 700; line-height: 1.4; letter-spacing: -.01em; color: var(--ink); }
+  .say__first { padding-top: 5px; font-size: 14px; line-height: 1.6; color: var(--sub); }
+  @media (min-width: 900px) {
+    .say { max-width: 340px; padding: 12px 16px 14px; }
+    .say__title { font-size: 17px; }
+  }
+
+  /* 봉우리를 오르는 동안에는 뒤가 밝은 하늘이라 머리글이 묻힌다. 그동안만 머리글 뒤에 어두운 띠를 깐다 */
+  .band {
+    position: fixed; top: 0; left: 0; right: 0; height: var(--band, 52px);
+    border-bottom: 1px solid var(--line); background: rgba(15, 16, 20, .94);
+    opacity: 0; transition: opacity .6s ease; pointer-events: none;
+  }
+  .is-sky .band { opacity: 1; }
   .btn {
     padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px; white-space: nowrap;
     background: rgba(255, 255, 255, .05); color: var(--ink); font: inherit; font-size: 14px; cursor: pointer;
@@ -140,6 +162,11 @@
   /* 넓은 화면에서는 카드를 왼쪽에 세우고, 섬은 오른쪽 빈 곳 가운데에 둔다 */
   @media (min-width: 900px) {
     .card { position: fixed; left: var(--pad); bottom: 20px; width: 380px; }
+  }
+  /* 폰에서 꼭대기에 막 닿아 섬을 내려다보는 2초 남짓 동안은 카드를 제목과 버튼만 남기고 줄인다.
+     카드가 화면 아래 절반을 덮으면 전망이 띠처럼 좁아졌다. 플레이 버튼은 그대로 누를 수 있다 */
+  @media (max-width: 899px) {
+    .card.is-brief .card__preview, .card.is-brief .card__line, .card.is-brief .card__note, .card.is-brief .tags { display: none; }
   }
 
   .play {
@@ -234,6 +261,8 @@
 <body>
 <canvas class="stage" id="stage" aria-label="게임 섬 지도 3D 화면"></canvas>
 <div class="names" id="names" aria-hidden="true"></div>
+<div class="say" id="say"><p class="say__date" id="sayDate"></p><div id="sayList"></div></div>
+<div class="band" aria-hidden="true"></div>
 
 <header class="top">
   <p class="brand">soomin007<span class="hide-n">의 게임 섬</span></p>
@@ -265,8 +294,6 @@
   </section>
   <section class="card" id="day" hidden>
     <p class="day__where" id="dWhere"></p>
-    <p class="day__date" id="dDate"></p>
-    <div id="dList"></div>
     <div class="row">
       <button class="btn btn--play" id="bUp" type="button">다음 칸</button>
       <button class="btn" id="bRead" type="button">그날 일지 읽기</button>
@@ -341,7 +368,7 @@
       <details class="more">
         <summary>만든 과정<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M4 6l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></summary>
         <p>중간 과제에서는 게임이 만들어진 과정을 <span class="nw">개발 일지로</span> <span class="nw">보여 주었습니다.</span> 섬에서는 <span class="nw">그 일지를</span> <span class="nw">날짜별로 나누어</span> 하루를 <span class="nw">길의 한 칸으로</span> <span class="nw">놓았습니다.</span> 일지를 오래 쓴 게임일수록 길이 길고 <span class="nw">봉우리가 높습니다.</span></p>
-        <p><span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤 <span class="nw">지도를 골랐습니다.</span> 그러다 섬이 <span class="nw">그려 놓은 지도에</span> 그친다는 생각이 들어, Journey처럼 <span class="nw">멀리 보이는</span> 봉우리를 향해 걸으며 이야기를 읽는 <span class="nw">섬으로 바꾸었습니다.</span></p>
+        <p><span class="nw">3D 전시관과</span> <span class="nw">섬 지도를</span> <span class="nw">둘 다</span> <span class="nw">만들어 본</span> 뒤 <span class="nw">지도를 골랐습니다.</span> 그러다 섬이 <span class="nw">그려 놓은 지도에</span> 그친다는 생각이 들어, Journey처럼 <span class="nw">멀리 보이는</span> 봉우리를 향해 걸으며 이야기를 읽는 <span class="nw">섬으로 바꾸었습니다.</span> 봉우리를 <span class="nw">오를 때는</span> 시점을 <span class="nw">말 뒤로</span> 낮춰서, 하늘을 배경으로 <span class="nw">선 꼭대기를</span> 올려다보며 <span class="nw">걷게 했습니다.</span></p>
         <p>육각 타일은 <span class="nw">Be the Bee의</span> 판이 바깥으로 자라는 <span class="nw">모양에서 가져왔습니다.</span> 섬의 낮과 밤은 <span class="nw">보는 사람의</span> 시계를 따르고, 소리는 <span class="nw">녹음 파일 없이</span> 브라우저가 그때그때 <span class="nw">만들어 냅니다.</span></p>
         <p>섬은 <span class="nw">빌드 과정</span> 없이 <span class="nw">HTML 파일 하나와</span> three.js로 만들었습니다. 게임 목록과 개발 일지를 허브의 <span class="nw">다른 페이지에서</span> 읽어 오기 때문에, 게임이나 일지를 더하면 봉우리와 길이 <span class="nw">저절로 다시 생깁니다.</span></p>
       </details>
@@ -562,8 +589,9 @@ const FONT = '"Pretendard Variable", Pretendard, "Malgun Gothic", "Apple SD Goth
 const TOUCH = matchMedia('(pointer: coarse)').matches;
 const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const PARAMS = new URLSearchParams(location.search);
-// 빛 번짐과 미니어처 초점 효과는 넓은 화면의 PC에서만 켠다. 폰에서는 무겁다
-const FX = !TOUCH && innerWidth >= 900;
+// 빛 번짐과 미니어처 초점 효과는 넓은 화면의 PC에서만 켠다. 폰에서는 무겁다.
+// 검증할 때 ?nofx 로 열면 끈다(소프트웨어로 그리는 헤드리스 브라우저에서는 한 장에 30초 넘게 걸린다)
+const FX = !TOUCH && innerWidth >= 900 && !PARAMS.has('nofx');
 
 const $ = id => document.getElementById(id);
 const canvas = $('stage');
@@ -593,10 +621,11 @@ const PHASE = (() => {
   return 'night';
 })();
 const NIGHT = PHASE === 'night';
+// bg 는 봉우리를 오를 때 뒤에 깔리는 하늘색이다. 밤에는 장면보다 하늘이 밝아 보이지 않게 sky 보다 조금 어둡게 둔다
 const LIGHT = {
-  day: { sky: '#9fb0d6', ground: '#1b160f', hemi: 1.1, sun: '#fff1dc', sunI: 3.2, sunPos: [-14, 22, 12], glow: 0.9, lamp: 30, bloom: 0.18 },
-  dusk: { sky: '#d0a596', ground: '#1a120c', hemi: 0.95, sun: '#ffb070', sunI: 3.3, sunPos: [-24, 14, 8], glow: 1.4, lamp: 40, bloom: 0.32 },
-  night: { sky: '#4a5c92', ground: '#0a0b10', hemi: 0.7, sun: '#b4c8ff', sunI: 1.6, sunPos: [-10, 20, 10], glow: 2.4, lamp: 50, bloom: 0.4 }
+  day: { sky: '#9fb0d6', bg: '#9fb0d6', ground: '#1b160f', hemi: 1.1, sun: '#fff1dc', sunI: 3.2, sunPos: [-14, 22, 12], glow: 0.9, lamp: 30, bloom: 0.18 },
+  dusk: { sky: '#d0a596', bg: '#d0a596', ground: '#1a120c', hemi: 0.95, sun: '#ffb070', sunI: 3.3, sunPos: [-24, 14, 8], glow: 1.4, lamp: 40, bloom: 0.32 },
+  night: { sky: '#4a5c92', bg: '#3b4a7c', ground: '#0a0b10', hemi: 0.7, sun: '#b4c8ff', sunI: 1.6, sunPos: [-10, 20, 10], glow: 2.4, lamp: 50, bloom: 0.4 }
 }[PHASE];
 
 // ---------- 무대 ----------
@@ -1467,11 +1496,17 @@ for (const reg of regions) {
   reg.light.position.set(reg.top.x, reg.top.y + 3.2, reg.top.z);
   scene.add(reg.light);
 
+  // 꼭대기 건물의 지붕 높이. 봉우리를 오르는 시점이 건물 꼭대기까지 화면에 담도록 잰다.
+  // 투명한 빛줄기와 꼭대기에서 떨어진 물건(마당의 소품, 꼭대기 불)은 뺀다
+  reg.crown = reg.top.y + 1.6;
   reg.group.traverse(o => {
     if (!o.isMesh) return;
     o.userData = { kind: 'region', id: reg.g.id, s0: o.scale.clone() };
     // 빛기둥은 꺼져 있어도 광선에 걸려서, 봉우리 위 하늘을 누르면 꼭대기로 가 버린다. 누름 대상에서 뺀다
     if (o !== reg.beacon.beam) pickables.push(o);
+    if (o.material.transparent) return;
+    const box = new THREE.Box3().setFromObject(o);
+    if (Math.hypot((box.min.x + box.max.x) / 2 - reg.top.x, (box.min.z + box.max.z) / 2 - reg.top.z) < 1.3) reg.crown = Math.max(reg.crown, box.max.y);
   });
 }
 
@@ -1484,14 +1519,22 @@ const plazaTag = makeTag('soomin007의 게임 섬', `직접 만든 게임 ${ORDE
 plazaTag.pos.set(PLAZA_STONE.x, PLAZA_H + 2.5, PLAZA_STONE.z);
 const allTags = [...regions.map(r => r.tag), plazaTag];
 
+// 그날의 글: 말이 선 칸의 날 기둥 옆에 날짜와 일지 제목을 띄운다. 이름표와 같은 방식이고, 크기는 글이 바뀔 때만 잰다
+const say = { el: $('say'), pos: new THREE.Vector3(), alpha: 0, x: 0, y: 0, w: 0, h: 0, on: false };
+
 // 이름표 크기는 글꼴과 화면 폭에 따라 정해지므로, 처음과 창 크기나 글꼴이 바뀔 때만 잰다
-let topLine = 0;
+let topLine = 0, bandLine = 0;
 function measureTags() {
   for (const t of allTags) {
     t.w = t.el.offsetWidth;
     t.h = t.el.offsetHeight;
   }
-  topLine = document.querySelector('.top').getBoundingClientRect().bottom + 8;
+  const bottom = document.querySelector('.top').getBoundingClientRect().bottom;
+  topLine = bottom + 8;
+  // 머리글 뒤 띠는 테두리 있는 '섬 소개' 버튼까지 덮게 머리글 아래로 조금 더 내린다
+  bandLine = Math.ceil(bottom + 12);
+  document.documentElement.style.setProperty('--band', bandLine + 'px');
+  measureSay();
 }
 measureTags();
 document.fonts.addEventListener('loadingdone', measureTags);
@@ -1532,15 +1575,50 @@ function tagAt(x, y) {
   return best ? best.g.id : null;
 }
 
-// 날 기둥: 길의 칸마다 하나씩, 봉우리 바깥쪽 가장자리에 선다(길 들머리 칸은 길 옆에).
+const pp = new THREE.Vector3();
+function measureSay() {
+  say.w = say.el.offsetWidth;
+  say.h = say.el.offsetHeight;
+}
+// 기둥 머리에서 말의 반대쪽으로 비켜 서고, 말의 머리보다 위에 둔다. 머리글 띠와 아래 카드, PC 왼쪽 카드와는 겹치지 않게 민다
+function placeSay() {
+  tp.copy(say.pos).project(camera);
+  const show = say.alpha > 0.01 && tp.z < 1;
+  if (show !== say.on) {
+    say.el.style.visibility = show ? 'visible' : 'hidden';
+    say.on = show;
+  }
+  if (!show) return;
+  const W = innerWidth, H = innerHeight, r = devicePixelRatio || 1;
+  const ax = ((tp.x + 1) / 2) * W, ay = ((1 - tp.y) / 2) * H;
+  pp.copy(pawn.position);
+  pp.y += 1.0;
+  pp.project(camera);
+  const px = ((pp.x + 1) / 2) * W, head = ((1 - pp.y) / 2) * H;
+  const lo = Math.max(PAD, ui.tx), hi = Math.max(lo, W - PAD - say.w);
+  const x = ax >= px ? ax + 12 : ax - 12 - say.w;
+  const ceil = bandLine + 8, floor = H - ui.ty - 6 - say.h;
+  say.x = Math.round(Math.min(Math.max(x, lo), hi) * r) / r;
+  say.y = Math.round(Math.max(Math.min(ay, head) - say.h - 12, ceil) * r) / r;
+  if (say.y > floor) say.y = Math.max(ceil, Math.round(floor * r) / r);
+  say.el.style.transform = `translate(${say.x}px, ${say.y}px)`;
+  say.el.style.opacity = say.alpha.toFixed(3);
+}
+
+// 날 기둥: 길의 칸마다 하나씩, 봉우리 바깥쪽 가장자리에서 앞 칸 쪽 모서리에 선다(비탈을 곧게 오르는 칸은 길 옆에).
+// 말 뒤에서 꼭대기를 올려다보면 바깥 가장자리 한가운데의 기둥은 말 바로 앞에 서서 말을 가렸다. 모서리로 옮기면 말 옆에 선다.
 // 말이 그 칸에 서서 그날의 일지를 보면 불이 켜지고, 켜진 불은 다음에 와도 남아 있다
 const posts = [];
 const DIM = 0.25, LIT = 1.8;
 function buildPosts(reg) {
   reg.posts = reg.steps.map((p, k) => {
+    const prev = reg.path[k + 1];
     const out = new THREE.Vector3(p.x - reg.top.x, 0, p.z - reg.top.z).normalize();
-    const side = k === 0 ? new THREE.Vector3(-out.z, 0, out.x) : out;
-    const at = p.clone().addScaledVector(side, 0.62);
+    const side = new THREE.Vector3(-out.z, 0, out.x);
+    const toPrev = side.dot(new THREE.Vector3(prev.x - p.x, 0, prev.z - p.z).normalize());
+    const at = Math.abs(toPrev) < 0.5
+      ? p.clone().addScaledVector(side, 0.62)
+      : p.clone().addScaledVector(out, 0.4).addScaledVector(side, Math.sign(toPrev) * 0.69);
     const cap = new THREE.MeshStandardMaterial({ color: '#2a2622', emissive: reg.g.color, emissiveIntensity: DIM, roughness: 0.5 });
     const grp = new THREE.Group();
     grp.position.set(at.x, p.y, at.z);
@@ -1559,6 +1637,14 @@ function buildPosts(reg) {
   });
 }
 regions.forEach(buildPosts);
+// 봉우리를 오르는 시점이 말을 볼 때 가로막을 수 있는 것: 땅마다 세운 건물과 소품(투명한 빛줄기는 뺀다)
+const blockers = regions.flatMap(reg => {
+  const list = [];
+  reg.group.traverse(o => { if (o.isMesh && !o.material.transparent) list.push(o); });
+  return list;
+});
+// 카메라가 들어가면 안 되는 건물과 소품의 상자. 섬이 솟아오르는 첫 연출로 크기가 줄기 전에 잰다
+const blockBoxes = blockers.map(o => new THREE.Box3().setFromObject(o).expandByScalar(0.35));
 
 // ---------- 생명: 새, 반딧불 ----------
 
@@ -1673,6 +1759,7 @@ function stepWalk(dt) {
     walk.from.copy(walk.to);
     walk.to.copy(walk.pts[walk.i]);
     walk.t = 0;
+    followHop();
     sfx.hop();
   }
 }
@@ -1829,15 +1916,21 @@ $('bSound').addEventListener('click', () => { wake(); setSound(!sound.on); });
 
 // ---------- 카메라 ----------
 
-let FOV = 40;
+let FOV = 40;       // 섬 전체를 내려다볼 때
+let FOV_NEAR = 54;  // 봉우리를 오를 때. 가까이서 올려다보므로 넓혀야 말과 꼭대기가 함께 들어온다(폰 62, PC 54)
 const ui = { x: 0, y: 0, tx: 0, ty: 0 };  // 카드가 가리는 너비와 높이(px)
 const rig = { target: new THREE.Vector3(0, 0.6, 0), dist: 60, yaw: 0 };
 const want = { target: new THREE.Vector3(0, 0.6, 0), dist: 30, yaw: 0 };
+// 봉우리를 오를 때의 시점: 말 뒤 낮은 자리(eye)에서 꼭대기 쪽(look)을 올려다본다. 섬 전체를 도는 시점(rig)과 k 로 섞어서,
+// k 가 1 이면 이 시점만 쓴다. turn 과 zoom 은 끌기와 휠로 말 둘레를 돌아보거나 물러선 만큼, vista 는 꼭대기 전망이 끝나는 시각이다
+const near = { eye: new THREE.Vector3(), look: new THREE.Vector3(), k: 0, turn: 0, zoom: 1, vista: 0 };
+const nearWant = { eye: new THREE.Vector3(), look: new THREE.Vector3(), pivot: new THREE.Vector3(), k: 0 };
 // mode: overview(광장), walking, step(길의 칸), region(꼭대기), entering, playing
 const state = { mode: 'overview', i: -1, s: 0 };
+const ease = k => k * k * (3 - 2 * k);
 
-function tangents() {
-  const t = Math.tan(THREE.MathUtils.degToRad(FOV) / 2);
+function tangents(fov = FOV) {
+  const t = Math.tan(THREE.MathUtils.degToRad(fov) / 2);
   return { v: t * (innerHeight - ui.ty) / (innerHeight + ui.ty), h: t * (innerWidth - ui.tx) / (innerHeight + ui.ty) };
 }
 
@@ -1849,11 +1942,19 @@ function fitDist(radius) {
 
 function applyView() {
   const W = innerWidth, H = innerHeight, ux = Math.round(ui.x), uy = Math.round(ui.y);
-  camera.fov = FOV;
+  camera.fov = THREE.MathUtils.lerp(FOV, FOV_NEAR, ease(near.k));
   camera.aspect = (W + ux) / (H + uy);
   camera.setViewOffset(W + ux, H + uy, 0, uy, W, H);
   camera.updateProjectionMatrix();
 }
+
+// 하늘: 섬 전체를 볼 때는 바탕과 같은 검은색이고, 봉우리를 오르는 동안에는 그 시각의 하늘색으로 천천히 바뀐다.
+// 탑을 올려다볼 때 뒤가 검으면 탑이 어둠에 묻혀서, 하늘을 배경으로 서 보이게 한다
+const DARK = new THREE.Color('#0b0c0f');
+const SKY = new THREE.Color(LIGHT.bg);
+const sky = { k: 0, on: false };
+const UP = new THREE.Vector3(0, 1, 0);
+const orbitEye = new THREE.Vector3(), eyeGoal = new THREE.Vector3(), lookGoal = new THREE.Vector3(), lookNow = new THREE.Vector3();
 
 function updateRig(dt) {
   if (state.mode === 'walking') {
@@ -1866,15 +1967,55 @@ function updateRig(dt) {
   // 멀리서는 위에서 내려다보고, 가까이 갈수록 눈높이로 내려온다
   const pitch = THREE.MathUtils.lerp(0.55, 0.98, THREE.MathUtils.clamp((rig.dist - 3) / 24, 0, 1));
   const cp = Math.cos(pitch);
-  camera.position.set(
+  orbitEye.set(
     rig.target.x + rig.dist * cp * Math.sin(rig.yaw),
     rig.target.y + rig.dist * Math.sin(pitch),
     rig.target.z + rig.dist * cp * Math.cos(rig.yaw)
   );
-  camera.lookAt(rig.target);
-  // 좁은 화면일수록 카메라가 멀리 서므로, 안개가 섬을 덮지 않게 바라보는 점 너머에서 시작한다
-  scene.fog.near = rig.dist + 9;
-  scene.fog.far = rig.dist + 42;
+
+  // 꼭대기 전망이 끝나면 건물과 카드를 보는 자리로 온다
+  if (near.vista && performance.now() > near.vista) {
+    near.vista = 0;
+    if (state.mode === 'region') {
+      briefCard(false);
+      aimNear(topAt(state.i));
+    }
+  }
+  near.k += (nearWant.k - near.k) * (1 - Math.exp(-dt * 2.2));
+  if (Math.abs(nearWant.k - near.k) < 0.002) near.k = nearWant.k;
+  // 끌기로 말 둘레를 돌아본 만큼, 휠로 물러선 만큼 옮긴 자리
+  eyeGoal.copy(nearWant.eye).sub(nearWant.pivot).applyAxisAngle(UP, near.turn).multiplyScalar(near.zoom).add(nearWant.pivot);
+  lookGoal.copy(nearWant.look).sub(nearWant.pivot).applyAxisAngle(UP, near.turn).add(nearWant.pivot);
+  // 아직 섞이지 않았으면 처음부터 그 자리에 둔다. 섞는 동안 엉뚱한 곳에서 날아오지 않는다
+  if (near.k < 0.01) {
+    near.eye.copy(eyeGoal);
+    near.look.copy(lookGoal);
+  }
+  // 멀리 옮겨 갈 때(꼭대기에서 전망으로 돌아설 때처럼)는 목표보다 높은 데로 향하다가 다가가며 내려앉아,
+  // 꼭대기 건물을 뚫지 않고 넘어간다. 한 칸씩 옮길 때(3 안쪽)는 곧게 간다
+  const arc = Math.min(2.4, Math.max(0, near.eye.distanceTo(eyeGoal) - 3) * 0.5);
+  near.eye.lerp(eyeGoal.addScaledVector(UP, arc), 1 - Math.exp(-dt * 2.6));
+  near.look.lerp(lookGoal, 1 - Math.exp(-dt * 3));
+  const w = ease(near.k);
+  camera.position.lerpVectors(orbitEye, near.eye, w);
+  // 위에서 내려다보다가 말 뒤로 내려오는 사이에는 카메라를 조금 들어, 봉우리를 뚫고 지나가지 않게 한다
+  camera.position.y += Math.sin(Math.PI * w) * 1.6;
+  lookNow.lerpVectors(rig.target, near.look, w);
+  camera.lookAt(lookNow);
+  // 좁은 화면일수록 카메라가 멀리 서므로, 안개가 섬을 덮지 않게 바라보는 점 너머에서 시작한다.
+  // 봉우리를 오를 때는 꼭대기 너머의 먼바다부터 하늘색으로 잦아든다
+  const seen = near.eye.distanceTo(near.look);
+  scene.fog.near = THREE.MathUtils.lerp(rig.dist + 9, seen + 8, w);
+  scene.fog.far = THREE.MathUtils.lerp(rig.dist + 42, seen + 40, w);
+  sky.k += (nearWant.k - sky.k) * (1 - Math.exp(-dt * 1.4));
+  if (Math.abs(nearWant.k - sky.k) < 0.002) sky.k = nearWant.k;
+  scene.background.copy(DARK).lerp(SKY, sky.k);
+  scene.fog.color.copy(scene.background);
+  const on = sky.k > 0.3;
+  if (on !== sky.on) {
+    sky.on = on;
+    document.body.classList.toggle('is-sky', on);
+  }
 }
 
 // 카메라를 돌릴 때는 지금 각도에서 가장 짧은 쪽으로 돈다
@@ -1891,24 +2032,145 @@ function focusOverview() {
   want.target.set(0, 0.9, -1.2);
   want.dist = fitDist(14.4);
   turnTo(0);
+  nearWant.k = 0;
+  near.vista = 0;
 }
 
-// 길의 칸: 말과 꼭대기가 함께 들어오게, 둘 사이를 본다
+// 말 뒤 낮은 시점 하나를 정한다. foot 은 말이 선 칸, goal 은 올려다볼 꼭대기 건물의 지붕, out 은 말에서 카메라 쪽(꼭대기 반대편) 수평 방향이다.
+// 말 뒤로 3.4, 칸보다 1.9 높은 데서 시작해, 말이 빈 화면(머리글과 카드를 뺀 곳)의 아래쪽에 서고 지붕이 위쪽에 함께 들어올 때까지 뒤로 물러선다.
+// 오르는 길 첫 칸에서는 꼭대기가 높이 있어서, 고개만 들면 말이 화면 아래로 빠졌다
+// 칸에 닿으면(sees) 카메라에서 말과 날 기둥까지 건물이나 소품이 가로막는지 보고, 막히면 말 둘레로 조금 돌거나 들어 올린 자리를 차례로 고른다.
+// 도시의 낮은 건물이 말 앞을 가린 칸이 있었다
+const fOut = new THREE.Vector3(), fGoal = new THREE.Vector3(), fDir = new THREE.Vector3(), fBest = new THREE.Vector3(), fRay = new THREE.Raycaster();
+// [말 둘레로 도는 각도, 들어 올리는 높이]. 앞쪽일수록 먼저 고른다
+const TRIES = [[0, 0], [0.35, 0], [-0.35, 0], [0, 0.8], [0.35, 0.8], [-0.35, 0.8], [0, 1.6], [0.7, 0], [-0.7, 0],
+  [0.7, 0.8], [-0.7, 0.8], [0, 2.4], [0.35, 2.4], [-0.35, 2.4], [1, 0.8], [-1, 0.8]];
+// 이웃 봉우리 꼭대기(건물과 굴뚝 연기) 가까이에는 카메라를 세우지 않는다. 키 큰 탑을 담으려고 물러서다 이웃 집 굴뚝 연기 속에 들어간 칸이 있었다
+const awayFromOthers = (eye, goal) => regions.every(reg => Math.hypot(reg.top.x - goal.x, reg.top.z - goal.z) < 1 || Math.hypot(reg.top.x - eye.x, reg.top.z - eye.z) > 3.8);
+// 건물 안에 선 카메라는 광선이 벽 뒷면에 걸리지 않아 가림 검사를 지나쳤다(도시 건물 속에서 말이 안 보인 칸). 건물 상자 안에는 서지 않는다
+const insideBlock = eye => blockBoxes.some(b => b.containsPoint(eye));
+function clearView(eye, sees) {
+  for (const t of sees) {
+    const d = eye.distanceTo(t);
+    fRay.set(eye, fDir.copy(t).sub(eye).normalize());
+    fRay.far = d - 0.3;
+    if (fRay.intersectObjects(blockers, false).length) return false;
+  }
+  return true;
+}
+function frame(foot, goal, out, drop = 0.55, sees = null) {
+  const T = tangents(FOV_NEAR).v;
+  const low = Math.atan(drop * T), high = Math.atan(0.62 * T);
+  const eye = nearWant.eye;
+  let pitch = 0, bestPitch = 0, best = -1;
+  // 걸으며 한 칸씩 따라갈 때는 광선 검사 없이 앞의 몇 자리만 본다
+  for (const [turn, lift] of sees ? TRIES : TRIES.slice(0, 4)) {
+    const dir = fOut.copy(out).applyAxisAngle(UP, turn);
+    for (let b = 3.4; b <= 14; b += 0.2) {
+      eye.copy(foot).addScaledVector(dir, b);
+      // 카메라와 말 사이에 높은 땅(이웃 봉우리, 아래쪽 길)이 있으면 그 위로 든다
+      let y = foot.y + 1.9;
+      for (let k = 3; k <= 10; k++) y = Math.max(y, groundY(foot.x + dir.x * b * k / 10, foot.z + dir.z * b * k / 10) + 0.9);
+      eye.y = y + lift;
+      pitch = Math.atan2(foot.y + 0.45 - eye.y, b) + low;
+      if (Math.atan2(goal.y - eye.y, Math.hypot(goal.x - eye.x, goal.z - eye.z)) - pitch <= high) break;
+    }
+    // 점수: 건물 밖 1, 이웃 꼭대기에서 멀리 2, 말이 보임 3, 날 기둥까지 보임 4. 가장 높은 첫 자리를 쓴다.
+    // 말은 머리와 발치에 더해 양옆까지 본다. 가운데만 보면 말 절반이 건물에 가려도 지나쳤다
+    let score = 0;
+    if (!insideBlock(eye)) score = awayFromOthers(eye, goal) ? 2 : 1;
+    if (score === 2 && sees) {
+      seeLeft.set(-dir.z, 0, dir.x).multiplyScalar(0.32).add(foot).setY(foot.y + 0.4);
+      seeRight.set(dir.z, 0, -dir.x).multiplyScalar(0.32).add(foot).setY(foot.y + 0.4);
+    }
+    if (score === 2 && (!sees || clearView(eye, [sees[0], sees[1], seeLeft, seeRight]))) score = 3;
+    if (score === 3 && (!sees || !sees[2] || clearView(eye, [sees[2]]))) score = 4;
+    if (score > best) {
+      best = score;
+      fBest.copy(eye);
+      bestPitch = pitch;
+    }
+    if (score === 4) break;
+  }
+  eye.copy(fBest);
+  // 말 둘레로 돌아간 자리에서는 말과 꼭대기가 화면 좌우로 갈라지므로, 둘 사이 방향을 본다
+  fDir.set(goal.x - eye.x, 0, goal.z - eye.z).normalize().add(fOut.set(foot.x - eye.x, 0, foot.z - eye.z).normalize());
+  const yaw = Math.atan2(fDir.x, fDir.z);
+  const d = Math.hypot(goal.x - eye.x, goal.z - eye.z);
+  nearWant.look.set(eye.x + Math.sin(yaw) * d, eye.y + Math.tan(bestPitch) * d, eye.z + Math.cos(yaw) * d);
+  nearWant.pivot.copy(foot);
+}
+
+// 길의 칸: 말 뒤에서 꼭대기를 올려다본다. 말이 감아 오르면 카메라도 봉우리를 돈다
+const seeHead = new THREE.Vector3(), seeBase = new THREE.Vector3(), seePost = new THREE.Vector3(), seeLeft = new THREE.Vector3(), seeRight = new THREE.Vector3();
+function stepPose(r, s, check = false) {
+  const reg = regions[r], foot = reg.steps[s - 1];
+  const sees = check ? [seeHead.copy(foot).setY(foot.y + 0.75), seeBase.copy(foot).setY(foot.y + 0.2), seePost.copy(reg.posts[s - 1].grp.position).setY(foot.y + 0.55)] : null;
+  frame(foot, fGoal.set(reg.top.x, reg.crown, reg.top.z), new THREE.Vector3(foot.x - reg.top.x, 0, foot.z - reg.top.z).normalize(), 0.55, sees);
+}
+
+// 꼭대기: 도착 칸에 선 말 뒤에서 꼭대기 건물을 본다. 건물은 도착 칸을 보고 서 있다.
+// 폰에서는 게임 카드가 화면 아래 절반을 덮어서, 말은 빈 화면 맨 아래에 걸쳐도 되게 하고 건물을 먼저 담는다.
+// 카드가 왼쪽에 서는 PC 는 아래가 비어 있으니 말을 칸에서처럼 아래쪽에 온전히 둔다
+function regionPose(r, check = false) {
+  const reg = regions[r], foot = reg.arrival;
+  const sees = check ? [seeHead.copy(foot).setY(foot.y + 0.75), seeBase.copy(foot).setY(foot.y + 0.2), null] : null;
+  frame(foot, fGoal.set(reg.top.x, reg.crown, reg.top.z), new THREE.Vector3(foot.x - reg.top.x, 0, foot.z - reg.top.z).normalize(), ui.ty > 0 ? 0.9 : 0.6, sees);
+}
+
+// 꼭대기 전망: 건물을 등지고 돌아서서, 올라온 쪽(섬 가운데)으로 펼쳐진 섬과 건너편 봉우리를 내려다본다.
+// 먼바다는 안개로 하늘색에 묻혀 수평선이 보이지 않으므로, 수평선 대신 건너편 봉우리들을 빈 화면 가운데에 둔다
+function vistaPose(r) {
+  const reg = regions[r];
+  fOut.set(-reg.top.x, 0, -reg.top.z).normalize(); // 꼭대기에서 섬 가운데 쪽
+  nearWant.eye.copy(reg.top).addScaledVector(fOut, 2.2);
+  nearWant.eye.y = reg.top.y + 3;
+  nearWant.look.copy(fOut).multiplyScalar(SUMMIT_D * 1.6).setY(2.4);
+  nearWant.pivot.copy(reg.arrival);
+}
+
+// 칸이나 꼭대기로 가까운 시점을 옮긴다. 돌아보던 각도와 물러선 거리는 처음으로 돌린다
+// check 는 가림 검사를 할지다. 걷는 동안 한 칸씩 따라갈 때는 하지 않고, 칸에 내려앉았을 때만 한다
+function aimNear(at, check = true) {
+  nearWant.k = 1;
+  near.turn = 0;
+  near.zoom = 1;
+  if (at.s > regions[at.r].n) regionPose(at.r, check);
+  else stepPose(at.r, at.s, check);
+}
+
+// 길의 칸. 섬 전체를 도는 시점도 가까이 옮겨 두어서, 광장으로 돌아갈 때 그 자리에서 물러난다
 function focusStep(r, s) {
   const reg = regions[r], p = reg.steps[s - 1];
   want.target.copy(p).lerp(reg.top, 0.35);
   want.target.y = (p.y + reg.top.y) / 2 + 0.5;
   want.dist = fitDist(4.6);
   turnTo(yawAt({ r, s }));
+  near.vista = 0;
+  aimNear({ r, s });
 }
 
-// 꼭대기: 도착 칸에서 꼭대기의 건물을 본다
-function focusRegion(i) {
+// 꼭대기. 걸어서 막 닿았을 때(vista)는 2초 남짓 섬을 내려다본 뒤 건물 앞으로 온다. 카드는 처음부터 누를 수 있다
+function focusRegion(i, vista = false) {
   const reg = regions[i];
   want.target.copy(reg.arrival).lerp(reg.top, 0.55);
   want.target.y = reg.top.y + 0.7;
   want.dist = fitDist(4.6);
   turnTo(yawAt(topAt(i)));
+  briefCard(vista && !REDUCE);
+  aimNear(topAt(i));
+  near.vista = 0;
+  if (vista && !REDUCE) {
+    vistaPose(i);
+    near.vista = performance.now() + 2400;
+  }
+}
+
+// 꼭대기 전망 동안 폰의 카드를 줄이거나 다시 펼친다. 카드 높이가 바뀌면 빈 화면도 다시 잰다
+function briefCard(on) {
+  if (card.classList.contains('is-brief') === on) return;
+  card.classList.toggle('is-brief', on);
+  measureUI();
 }
 
 // ---------- 마무리 효과 (PC) ----------
@@ -1932,8 +2194,10 @@ function updateTilt() {
   const W = innerWidth, H = innerHeight;
   const r = (H + ui.y) / (2 * H);
   // 흐림은 화면 위아래 끝에서만 살짝 느껴질 만큼으로 둔다 (처음 값 2.2는 화면 전체가 뿌옇게 보였다)
-  tiltH.uniforms.h.value = 0.9 / W;
-  tiltV.uniforms.v.value = 0.9 / H;
+  // 봉우리를 오를 때는 흐림을 걷는다. 가까이서 올려다보는 장면은 미니어처가 아니다
+  const k = 1 - ease(near.k);
+  tiltH.uniforms.h.value = 0.9 * k / W;
+  tiltV.uniforms.v.value = 0.9 * k / H;
   tiltH.uniforms.r.value = r;
   tiltV.uniforms.r.value = r;
 }
@@ -2051,25 +2315,31 @@ function showCard(i) {
   entry.hidden = true;
   dayCard.hidden = true;
   card.hidden = false;
+  card.classList.remove('is-brief');
   measureUI();
 }
 
-// 길의 칸 카드: 몇 번째 칸인지, 그날의 날짜와 일지 제목. 일지가 하나뿐인 날은 첫 문장도 붙인다
+// 길의 칸: 아래 카드에는 몇 번째 칸인지만 쓰고, 그날의 날짜와 일지 제목은 그 칸의 날 기둥 옆에 띄운다.
+// 일지가 하나뿐인 날은 첫 문장도 붙인다
 function showDay(r, s) {
   const reg = regions[r], g = reg.g, day = reg.days?.[s - 1];
   stopPreview();
   setAccent(g.color);
   $('dWhere').innerHTML = `<b>${esc(g.title)}</b> 가는 길, <span class="nw">${reg.n}칸 가운데</span> <span class="nw">${s}번째 칸</span>`;
+  say.el.style.setProperty('--c', g.color);
   if (day) {
     const items = day.items.map(n => logs[g.id].entries[n]);
-    $('dDate').textContent = day.date;
-    $('dList').innerHTML = items.map(e => `<p class="day__title">${wrapKo(e.title)}</p>`).join('')
-      + (items.length === 1 && items[0].first ? `<p class="day__first">${wrapKo(items[0].first, 16)}</p>` : '');
+    $('sayDate').textContent = day.date;
+    $('sayList').innerHTML = items.map(e => `<p class="say__title">${wrapKo(e.title)}</p>`).join('')
+      + (items.length === 1 && items[0].first ? `<p class="say__first">${wrapKo(items[0].first, 16)}</p>` : '');
   } else {
-    $('dDate').textContent = '';
-    $('dList').innerHTML = '<p class="day__first">이 게임의 일지를 <span class="nw">불러오지 못했습니다.</span></p>';
+    $('sayDate').textContent = '';
+    $('sayList').innerHTML = '<p class="say__first">이 게임의 일지를 <span class="nw">불러오지 못했습니다.</span></p>';
   }
-  $('dDate').hidden = !day;
+  $('sayDate').hidden = !day;
+  say.pos.copy(reg.posts[s - 1].grp.position);
+  say.pos.y += 0.62;
+  measureSay();
   $('bRead').hidden = !day;
   $('bUp').textContent = s < reg.n ? '다음 칸' : '꼭대기로';
   entry.hidden = true;
@@ -2112,14 +2382,34 @@ function travel(to) {
   walk.from.copy(pawn.position);
   walk.to.copy(walk.pts[0]);
   // 같은 길에서 한두 칸 옮길 때는 카드를 그대로 두어 화면이 출렁이지 않게 한다
-  const near = walk.pts.length <= 2 && to.r >= 0 && to.r === walk.at.r && state.mode !== 'overview';
+  const small = walk.pts.length <= 2 && to.r >= 0 && to.r === walk.at.r && state.mode !== 'overview';
+  // 광장이나 다른 봉우리로 갈 때는 위로 물러나 말을 따라가고, 목적지 봉우리의 길에 들어서면 다시 말 뒤로 내려온다
+  if (to.r < 0 || to.r !== walk.at.r) nearWant.k = 0;
+  near.vista = 0;
   state.mode = 'walking';
   turnTo(yawAt(to));
-  if (!near) {
+  if (!small) {
     want.dist = fitDist(6.5);
     showEntry(`<b>${esc(toward(nameAt(to)))}</b> 가는 중입니다.`);
   }
+  followHop();
   sfx.hop();
+}
+
+// 말이 지나는 자리가 어느 칸인지. 광장 한가운데는 광장, 광장 가장자리는 0번째 칸이다
+function atOf(p) {
+  for (const reg of regions) {
+    const k = reg.path.indexOf(p);
+    if (k >= 0) return k === 0 ? PLAZA : { r: reg.i, s: k - 1 };
+  }
+  return null;
+}
+
+// 말이 이번에 뛰어 갈 자리가 목적지 봉우리의 길이면, 시점도 그 칸 뒤로 따라간다.
+// 한 칸씩 따라가야 봉우리를 감아 도는 동안 카메라가 산을 가로질러 뚫고 지나가지 않는다
+function followHop() {
+  const next = atOf(walk.pts[walk.i]);
+  if (next && next.r >= 0 && next.s >= 1 && next.r === walk.dest.r) aimNear(next, false);
 }
 
 function arrive() {
@@ -2152,7 +2442,7 @@ function arrive() {
     state.mode = 'region';
     state.i = at.r;
     showCard(at.r);
-    focusRegion(at.r);
+    focusRegion(at.r, moved);
     if (moved) sfx.arrive();
   }
 }
@@ -2190,6 +2480,13 @@ function enterGame() {
   measureUI();
   want.target.copy(reg.entrance);
   want.dist = 1.4;
+  // 말 뒤 시점에서도 건물 문으로 다가간다
+  near.vista = 0;
+  near.turn = 0;
+  near.zoom = 1;
+  nearWant.look.copy(reg.entrance);
+  nearWant.pivot.copy(reg.entrance);
+  nearWant.eye.sub(reg.entrance).setLength(1.4).add(reg.entrance);
   setTimeout(() => {
     // 폰과 태블릿은 게임을 원래 주소에서 연다. 화면 방향과 전체 화면은 게임이 스스로 맞추고,
     // 뒤로 가기를 누르면 주소의 #땅이름 으로 이 땅 앞에 다시 선다
@@ -2342,7 +2639,7 @@ function pick(e) {
 
 let press = null;
 canvas.addEventListener('pointerdown', e => {
-  press = { x: e.clientX, y: e.clientY, yaw: want.yaw, moved: false };
+  press = { x: e.clientX, y: e.clientY, yaw: want.yaw, turn: near.turn, moved: false };
   canvas.setPointerCapture(e.pointerId);
 });
 canvas.addEventListener('pointermove', e => {
@@ -2353,7 +2650,9 @@ canvas.addEventListener('pointermove', e => {
   const dx = e.clientX - press.x;
   if (Math.abs(dx) > 6 || Math.abs(e.clientY - press.y) > 6) press.moved = true;
   if (press.moved && state.mode !== 'entering' && state.mode !== 'playing') {
-    want.yaw = press.yaw - dx * 0.006;
+    // 봉우리를 오르는 동안에는 말 둘레를 돌아본다. 너무 돌면 카메라가 봉우리 안으로 들어가서 한쪽으로 1라디안까지만
+    if (nearWant.k) near.turn = THREE.MathUtils.clamp(press.turn - dx * 0.006, -1, 1);
+    else want.yaw = press.yaw - dx * 0.006;
     canvas.classList.add('is-drag');
   }
 });
@@ -2368,7 +2667,8 @@ canvas.addEventListener('pointercancel', () => {
 });
 canvas.addEventListener('wheel', e => {
   e.preventDefault();
-  want.dist = THREE.MathUtils.clamp(want.dist * (1 + e.deltaY * 0.0012), 4, 60);
+  if (nearWant.k) near.zoom = THREE.MathUtils.clamp(near.zoom * (1 + e.deltaY * 0.0012), 0.75, 1.8);
+  else want.dist = THREE.MathUtils.clamp(want.dist * (1 + e.deltaY * 0.0012), 4, 60);
 }, { passive: false });
 
 $('bPlay').addEventListener('click', enterGame);
@@ -2504,22 +2804,45 @@ function loop() {
     if (reg.anim) reg.anim(time, dt);
     if (reg.beacon.on) reg.beacon.flame.scale.set(1, 1 + Math.sin(time * 11 + reg.i) * 0.14, 1);
   }
-  // 봉우리를 오르는 동안에는 그 봉우리 이름표만 남긴다. 다른 봉우리 이름표가 오르는 길 위에 떠서 가렸다
+  // 봉우리로 가는 동안에는 그 봉우리 이름표만 남긴다. 다른 봉우리 이름표가 오르는 길 위에 떠서 가렸다.
+  // 말 뒤로 내려와 오르기 시작하면 그 이름표도 걷는다. 이름은 아래 카드에 있고, 하늘을 올려다보는 화면을 가리지 않게 한다
   if (introDone) {
     const focusR = (walk.dest || walk.at).r;
     for (const reg of regions) {
-      const goal = focusR < 0 || reg.i === focusR ? 1 : 0;
+      const goal = nearWant.k ? 0 : focusR < 0 || reg.i === focusR ? 1 : 0;
       reg.tag.alpha += (goal - reg.tag.alpha) * Math.min(1, raw * 6);
     }
   }
   // 광장 이름판은 섬 전체를 볼 때만 보인다. 땅에 다가가면 화면을 가리지 않게 사라진다
   const plazaGoal = (state.mode === 'overview' ? 1 : 0) * (introDone ? 1 : THREE.MathUtils.clamp((intro - 1.4) / 0.4, 0, 1));
   plazaTag.alpha += (plazaGoal - plazaTag.alpha) * Math.min(1, raw * 6);
+  // 그날의 글은 칸에 서 있을 때만 띄운다. 다음 칸으로 뛰면 빨리 걷고, 내려앉은 뒤 천천히 띄운다
+  const sayGoal = state.mode === 'step' ? 1 : 0;
+  say.alpha += (sayGoal - say.alpha) * Math.min(1, raw * (sayGoal ? 5 : 14));
   draw();
   // 이름표는 화면 위 글자라 카메라와 상관없이 늘 같은 크기로 또렷하다. 위치만 이번 프레임의 카메라로 옮긴다
   camera.updateMatrixWorld();
   for (const reg of regions) placeTag(reg.tag, false);
   placeTag(plazaTag, true);
+  placeSay();
+}
+
+// 카메라, 하늘, 카드 자리를 기다리지 않고 지금 목표에 바로 맞춘다. 주소의 #땅이름 으로 꼭대기에서 시작할 때와 검증에 쓴다
+function settle() {
+  if (near.vista) {
+    briefCard(false);
+    aimNear(topAt(state.i));
+  }
+  near.vista = 0;
+  ui.x = ui.tx;
+  ui.y = ui.ty;
+  rig.target.copy(want.target);
+  rig.dist = want.dist;
+  rig.yaw = want.yaw;
+  near.k = sky.k = nearWant.k;
+  near.eye.copy(nearWant.eye);
+  near.look.copy(nearWant.look);
+  say.alpha = state.mode === 'step' ? 1 : 0;
 }
 
 function resize() {
@@ -2529,6 +2852,7 @@ function resize() {
     composer.setSize(innerWidth, innerHeight);
   }
   FOV = innerWidth < innerHeight ? 52 : 40;
+  FOV_NEAR = innerWidth < innerHeight ? 62 : 54;
   measureUI();
   measureTags();
   ui.x = ui.tx;
@@ -2574,8 +2898,7 @@ if (startLand) {
   state.i = startLand.i;
   showCard(state.i);
   focusRegion(state.i);
-  rig.target.copy(want.target);
-  rig.yaw = want.yaw;
+  settle();
 }
 rig.dist = want.dist * 1.35; // 첫 화면은 조금 먼 데서 섬으로 다가온다
 
@@ -2596,7 +2919,17 @@ updateSea();
 loading.classList.add('is-done');
 renderer.setAnimationLoop(loop);
 // 검증용: 창이 가려져 그리기가 멈춰 있을 때 ?debug 로 열면 한 프레임씩 직접 돌릴 수 있다
-if (PARAMS.has('debug')) Object.assign(window, { __tick: loop, __posts: posts, __island: { regions, state, walk, travel, climb, markDay, clearLit, showEnding, showDay } });
+// jump 는 말을 그 자리에 바로 세우고 시점과 하늘까지 맞춘다(그날의 글이 놓이는 자리를 46칸 모두 잴 때 쓴다)
+if (PARAMS.has('debug')) Object.assign(window, { __tick: loop, __posts: posts, __island: {
+  regions, state, walk, travel, climb, markDay, clearLit, showEnding, showDay, focusRegion, near, nearWant, say, sky,
+  jump(at) {
+    walk.dest = walk.queue = null;
+    walk.at = at;
+    pawn.position.copy(posAt(at));
+    arrive();
+    settle();
+  }
+} });
 </script>
 </body>
 </html>
