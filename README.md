@@ -27,6 +27,7 @@ assets/shots/     소개 페이지에 쓰는 스크린샷
 og.png            허브 공유 썸네일 (1200x630)
 icon.png          파비콘 (256x256)
 tools/            배포 전 검사 도구. check-text.cjs 는 폭마다 넘침과 줄 끝을, check-design.cjs 는 AI 디자인 흔적을 찾는다
+                  island-*.cjs 는 섬 검사(island-walk 한 바퀴, island-extra 소개 창과 안내 화면, island-days 날짜 카드 줄바꿈, island-tags 이름표)
 known-issues.md   반복해서 빠지기 쉬운 함정 모음. 코드를 고치기 전에 먼저 읽는다
 DESIGN_HANDOFF.md 디자인 도구에 넘기는 브리프
 session_logs/     작업 세션마다 남기는 기록
